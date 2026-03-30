@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>절세 시뮬레이터 | 데이터머니</title>
+<meta name="description" content="연금저축, IRP, ISA 활용 절세액을 자동 계산. 소득에 따른 세액공제 한도와 절세 전략을 확인하세요.">
+<style>
+  :root { --navy:#0F172A; --blue:#2563EB; --yellow:#FACC15; --green:#16A34A; --text:#F8FAFC; --sub:#64748B; --bg:#F1F5F9; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Pretendard','Apple SD Gothic Neo',sans-serif; background: var(--bg); color: var(--navy); }
+  header { background: var(--navy); padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
+  header .logo { color: var(--text); font-size: 18px; font-weight: 700; text-decoration: none; }
+  header .logo span { color: var(--blue); }
+  .container { max-width: 720px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { color: var(--sub); font-size: 14px; margin-bottom: 28px; }
+  .card { background: #fff; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .card h2 { font-size: 16px; font-weight: 600; margin-bottom: 20px; }
+  .field { margin-bottom: 18px; }
+  label { display: block; font-size: 13px; color: var(--sub); margin-bottom: 6px; font-weight: 500; }
+  .input-wrap { position: relative; }
+  input[type=number], select { width: 100%; padding: 11px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 15px; outline: none; }
+  input:focus, select:focus { border-color: var(--blue); }
+  .unit { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--sub); font-size: 13px; pointer-events: none; }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .btn-calc { width: 100%; padding: 15px; background: var(--blue); color: #fff; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; }
+  .btn-calc:hover { background: #1d4ed8; }
+  .result-card { background: var(--navy); border-radius: 12px; padding: 24px; color: var(--text); display: none; }
+  .result-card.show { display: block; }
+  .big-saving { text-align: center; padding: 20px 0; border-bottom: 1px solid #1e293b; margin-bottom: 20px; }
+  .big-saving .label { color: var(--sub); font-size: 13px; margin-bottom: 8px; }
+  .big-saving .amount { color: var(--yellow); font-size: 40px; font-weight: 700; }
+  .big-saving .note { color: #94A3B8; font-size: 12px; margin-top: 6px; }
+  .breakdown { display: grid; gap: 10px; }
+  .breakdown-row { display: flex; justify-content: space-between; align-items: center; background: #1e293b; border-radius: 8px; padding: 12px 16px; }
+  .breakdown-row .blabel { color: #94A3B8; font-size: 13px; }
+  .breakdown-row .bvalue { font-size: 15px; font-weight: 600; }
+  .breakdown-row .bvalue.pos { color: #4ade80; }
+  .breakdown-row .bvalue.neg { color: #f87171; }
+  .tip { background: #1e3a8a; border-radius: 8px; padding: 16px; margin-top: 16px; }
+  .tip h4 { color: var(--text); font-size: 14px; margin-bottom: 8px; }
+  .tip ul { color: #93C5FD; font-size: 13px; line-height: 1.8; padding-left: 16px; }
+  .premium-lock { background: linear-gradient(135deg,#1e3a8a,var(--navy)); border-radius: 12px; padding: 32px 24px; text-align: center; margin-top: 20px; }
+  .premium-lock h3 { color: var(--text); font-size: 18px; margin-bottom: 8px; }
+  .premium-lock p { color: var(--sub); font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
+  .premium-lock ul { text-align: left; display: inline-block; color: #94A3B8; font-size: 13px; margin-bottom: 20px; }
+  .premium-lock ul li { margin-bottom: 6px; }
+  .btn-pay { display: inline-block; background: var(--yellow); color: var(--navy); padding: 13px 32px; border-radius: 8px; font-weight: 700; font-size: 15px; text-decoration: none; cursor: pointer; border: none; }
+  .premium-features { display: none; }
+  .premium-features.unlocked { display: block; }
+  @media (max-width:500px) { .row-2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="https://datamoney.kr">데이터<span>머니</span></a>
+  <span style="color:#64748B;font-size:13px">절세 시뮬레이터</span>
+</header>
+<div class="container">
+  <h1>절세 시뮬레이터</h1>
+  <p class="subtitle">연금저축·IRP·ISA 활용 시 절감되는 세금을 계산합니다</p>
+
+  <div class="card">
+    <h2>기본 정보 입력</h2>
+    <div class="row-2">
+      <div class="field">
+        <label>총 급여 (연봉)</label>
+        <div class="input-wrap">
+          <input type="number" id="salary" value="60000000" step="1000000">
+          <span class="unit">원</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>근로소득 유형</label>
+        <select id="incomeType">
+          <option value="employee">근로소득 (직장인)</option>
+          <option value="self">사업소득 (프리랜서/자영업)</option>
+        </select>
+      </div>
+    </div>
+    <div class="row-2">
+      <div class="field">
+        <label>연금저축 납입액 (연간)</label>
+        <div class="input-wrap">
+          <input type="number" id="pension" value="6000000" step="100000">
+          <span class="unit">원</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>IRP 추가 납입액 (연간)</label>
+        <div class="input-wrap">
+          <input type="number" id="irp" value="3000000" step="100000">
+          <span class="unit">원</span>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label>ISA 납입액 (연간)</label>
+      <div class="input-wrap">
+        <input type="number" id="isa" value="20000000" step="1000000">
+        <span class="unit">원</span>
+      </div>
+    </div>
+    <button class="btn-calc" onclick="calculate()">절세액 계산하기</button>
+  </div>
+
+  <div class="result-card" id="resultCard">
+    <div class="big-saving">
+      <div class="label">예상 연간 절세액</div>
+      <div class="amount" id="totalSaving">—</div>
+      <div class="note" id="savingNote"></div>
+    </div>
+    <div class="breakdown" id="breakdown"></div>
+    <div class="tip" id="tipBox"></div>
+  </div>
+
+  <div id="premiumSection">
+    <div class="premium-lock" id="lockBox">
+      <h3>🔒 고급 절세 분석</h3>
+      <p>소득 구간별 최적 납입 전략과 10년 절세 누적 효과를 확인하세요.</p>
+      <ul>
+        <li>✅ 소득 구간별 최적 납입 금액 추천</li>
+        <li>✅ 10년/20년 누적 절세액 계산</li>
+        <li>✅ 퇴직 후 수령 전략 시뮬레이션</li>
+        <li>✅ ISA vs 연금저축 비교 분석</li>
+      </ul>
+      <button class="btn-pay" onclick="openPayment()">9,900원으로 잠금 해제</button>
+    </div>
+    <div class="premium-features" id="premiumFeatures">
+      <div class="card" style="background:#0F172A;color:#F8FAFC">
+        <h2 style="color:#94A3B8">10년 누적 절세 시뮬레이션</h2>
+        <canvas id="longTermChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+const LS_URL = "https://datamoney.lemonsqueezy.com/checkout/buy/tax-simulator";
+
+(function() {
+  if (new URLSearchParams(location.search).get("paid") === "1" || localStorage.getItem("dm_tax_paid") === "true") unlock();
+})();
+
+function unlock() {
+  localStorage.setItem("dm_tax_paid", "true");
+  document.getElementById("lockBox").style.display = "none";
+  document.getElementById("premiumFeatures").classList.add("unlocked");
+}
+
+function openPayment() { window.open(LS_URL + "?embed=1", "_blank", "width=500,height=700"); }
+
+function fmt(n) { return Math.abs(n).toLocaleString() + "원"; }
+
+// 소득세율 (2024 기준)
+function calcTax(taxable) {
+  const brackets = [
+    [14000000, 0.06], [36000000, 0.15], [88000000, 0.24],
+    [150000000, 0.35], [300000000, 0.38], [500000000, 0.40],
+    [1000000000, 0.42], [Infinity, 0.45],
+  ];
+  let tax = 0, prev = 0;
+  for (const [limit, rate] of brackets) {
+    if (taxable <= prev) break;
+    tax += (Math.min(taxable, limit) - prev) * rate;
+    prev = limit;
+  }
+  return tax;
+}
+
+function calculate() {
+  const salary = Number(document.getElementById("salary").value);
+  const pensionInput = Number(document.getElementById("pension").value);
+  const irpInput = Number(document.getElementById("irp").value);
+  const isaInput = Number(document.getElementById("isa").value);
+
+  // 소득세율 구간 판단
+  const highIncome = salary >= 55000000;
+  const taxRate = highIncome ? 0.15 : 0.12; // 세액공제율
+
+  // 연금저축 + IRP 한도
+  const pensionIrpLimit = 9000000;
+  const pensionCap = Math.min(6000000, pensionInput);
+  const irpCap = Math.min(pensionIrpLimit - pensionCap, irpInput);
+  const pensionIrpTotal = pensionCap + irpCap;
+  const pensionTaxCredit = Math.round(pensionIrpTotal * taxRate);
+
+  // ISA 비과세 혜택 (일반형: 200만, 서민형: 400만)
+  const isaNonTaxLimit = 2000000;
+  const isaRoi = isaInput * 0.05; // 5% 예상 수익 가정
+  const isaExempt = Math.min(isaRoi, isaNonTaxLimit);
+  const isaTaxSaving = Math.round(isaExempt * 0.154); // 배당소득세 15.4%
+
+  const total = pensionTaxCredit + isaTaxSaving;
+
+  document.getElementById("totalSaving").textContent = fmt(total);
+  document.getElementById("savingNote").textContent =
+    `연금저축·IRP ${fmt(pensionTaxCredit)} + ISA 비과세 ${fmt(isaTaxSaving)}`;
+
+  const rows = [
+    { label: "연금저축 납입 (실질 납입)", value: fmt(pensionCap), cls: "" },
+    { label: "IRP 추가 납입", value: fmt(irpCap), cls: "" },
+    { label: `세액공제율 (${highIncome ? "소득 5,500만 초과" : "소득 5,500만 이하"})`, value: (taxRate * 100).toFixed(0) + "%", cls: "" },
+    { label: "연금저축·IRP 세액공제", value: fmt(pensionTaxCredit), cls: "pos" },
+    { label: "ISA 비과세 절세 추정", value: fmt(isaTaxSaving), cls: "pos" },
+    { label: "합계 절세액", value: fmt(total), cls: "pos" },
+  ];
+
+  document.getElementById("breakdown").innerHTML = rows.map(r =>
+    `<div class="breakdown-row">
+       <span class="blabel">${r.label}</span>
+       <span class="bvalue ${r.cls}">${r.value}</span>
+     </div>`
+  ).join("");
+
+  const tips = [];
+  if (pensionInput < 6000000) tips.push(`연금저축을 ${fmt(6000000 - pensionInput)} 더 납입하면 추가 세액공제 가능`);
+  if (irpInput < (9000000 - pensionCap)) tips.push(`IRP를 ${fmt(9000000 - pensionCap - irpInput)} 더 납입하면 최대 공제 달성`);
+  if (isaInput < 20000000) tips.push("ISA는 연간 2,000만원까지 납입 가능 (5년 만기 비과세 혜택)");
+  if (tips.length) {
+    document.getElementById("tipBox").innerHTML =
+      `<h4>💡 절세 추가 팁</h4><ul>${tips.map(t => `<li>${t}</li>`).join("")}</ul>`;
+  }
+
+  document.getElementById("resultCard").classList.add("show");
+
+  if (localStorage.getItem("dm_tax_paid") === "true") buildLongTerm(pensionTaxCredit + isaTaxSaving);
+
+  document.getElementById("resultCard").scrollIntoView({ behavior: "smooth" });
+}
+
+function buildLongTerm(annualSaving) {
+  const labels = Array.from({length: 21}, (_, i) => i + "년");
+  const cumulative = labels.map((_, i) => annualSaving * i);
+  const ctx = document.getElementById("longTermChart").getContext("2d");
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [{ label: "누적 절세액", data: cumulative, borderColor: "#FACC15", backgroundColor: "rgba(250,204,21,.15)", tension: 0.4, fill: true }],
+    },
+    options: {
+      plugins: { legend: { labels: { color: "#94A3B8" } } },
+      scales: {
+        x: { ticks: { color: "#64748B" }, grid: { color: "#1e293b" } },
+        y: { ticks: { color: "#64748B", callback: v => Math.round(v / 10000) + "만" }, grid: { color: "#1e293b" } },
+      },
+    },
+  });
+}
+</script>
+</body>
+</html>

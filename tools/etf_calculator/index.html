@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ETF 수익률 계산기 | 데이터머니</title>
+<meta name="description" content="ETF 적립식 투자 수익률을 직접 계산해보세요. 복리 효과, 원금, 수익금을 한눈에 확인.">
+<style>
+  :root {
+    --navy: #0F172A; --blue: #2563EB; --yellow: #FACC15;
+    --green: #16A34A; --red: #DC2626; --text: #F8FAFC;
+    --sub: #64748B; --bg: #F1F5F9; --card: #ffffff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; background: var(--bg); color: var(--navy); }
+
+  header { background: var(--navy); padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
+  header .logo { color: var(--text); font-size: 18px; font-weight: 700; text-decoration: none; }
+  header .logo span { color: var(--blue); }
+
+  .container { max-width: 720px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { color: var(--sub); font-size: 14px; margin-bottom: 28px; }
+
+  .card { background: var(--card); border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .card h2 { font-size: 16px; font-weight: 600; margin-bottom: 20px; color: var(--navy); }
+
+  .field { margin-bottom: 18px; }
+  label { display: block; font-size: 13px; color: var(--sub); margin-bottom: 6px; font-weight: 500; }
+  .input-wrap { position: relative; }
+  input[type=number], select {
+    width: 100%; padding: 11px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px;
+    font-size: 15px; outline: none; transition: border-color .2s;
+    background: #fff; color: var(--navy);
+  }
+  input[type=number]:focus, select:focus { border-color: var(--blue); }
+  .unit { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--sub); font-size: 13px; pointer-events: none; }
+
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  .btn-calc {
+    width: 100%; padding: 15px; background: var(--blue); color: #fff;
+    border: none; border-radius: 10px; font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: background .2s;
+  }
+  .btn-calc:hover { background: #1d4ed8; }
+
+  /* 결과 */
+  .result-card { background: var(--navy); border-radius: 12px; padding: 24px; color: var(--text); display: none; }
+  .result-card.show { display: block; }
+  .result-card h2 { font-size: 16px; color: var(--sub); margin-bottom: 20px; }
+  .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+  .result-item { text-align: center; }
+  .result-item .rlabel { font-size: 11px; color: var(--sub); margin-bottom: 4px; }
+  .result-item .rvalue { font-size: 20px; font-weight: 700; }
+  .result-item .rvalue.highlight { color: var(--yellow); }
+  .result-item .rvalue.green { color: #4ade80; }
+
+  /* 차트 */
+  canvas { width: 100% !important; border-radius: 8px; }
+
+  /* 프리미엄 잠금 */
+  .premium-lock { background: linear-gradient(135deg, #1e3a8a 0%, #0F172A 100%); border-radius: 12px; padding: 32px 24px; text-align: center; margin-top: 20px; }
+  .premium-lock .lock-icon { font-size: 36px; margin-bottom: 12px; }
+  .premium-lock h3 { color: var(--text); font-size: 18px; margin-bottom: 8px; }
+  .premium-lock p { color: var(--sub); font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
+  .premium-lock ul { text-align: left; display: inline-block; color: #94A3B8; font-size: 13px; margin-bottom: 20px; }
+  .premium-lock ul li { margin-bottom: 6px; }
+  .btn-pay {
+    display: inline-block; background: var(--yellow); color: var(--navy);
+    padding: 13px 32px; border-radius: 8px; font-weight: 700; font-size: 15px;
+    text-decoration: none; cursor: pointer; border: none;
+  }
+  .btn-pay:hover { background: #eab308; }
+
+  .premium-features { display: none; }
+  .premium-features.unlocked { display: block; }
+
+  .table-wrap { overflow-x: auto; margin-top: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: #1e293b; color: var(--sub); padding: 10px 12px; text-align: right; }
+  th:first-child { text-align: left; }
+  td { padding: 9px 12px; border-bottom: 1px solid #1e293b; color: #CBD5E1; text-align: right; }
+  td:first-child { text-align: left; color: var(--sub); }
+
+  @media (max-width: 500px) {
+    .result-grid { grid-template-columns: 1fr 1fr; }
+    .row-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="https://datamoney.kr">데이터<span>머니</span></a>
+  <span style="color:#64748B;font-size:13px">ETF 수익률 계산기</span>
+</header>
+
+<div class="container">
+  <h1>ETF 적립식 수익률 계산기</h1>
+  <p class="subtitle">매월 일정 금액을 ETF에 투자했을 때 복리 수익을 계산합니다</p>
+
+  <div class="card">
+    <h2>투자 조건 입력</h2>
+
+    <div class="row-2">
+      <div class="field">
+        <label>초기 투자금</label>
+        <div class="input-wrap">
+          <input type="number" id="initial" value="10000000" min="0" step="100000">
+          <span class="unit">원</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>월 적립금</label>
+        <div class="input-wrap">
+          <input type="number" id="monthly" value="500000" min="0" step="10000">
+          <span class="unit">원</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row-2">
+      <div class="field">
+        <label>연 기대 수익률</label>
+        <div class="input-wrap">
+          <input type="number" id="rate" value="8" min="0.1" max="50" step="0.1">
+          <span class="unit">%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>투자 기간</label>
+        <div class="input-wrap">
+          <input type="number" id="years" value="20" min="1" max="50" step="1">
+          <span class="unit">년</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>배당 재투자 (DRIP)</label>
+      <select id="drip">
+        <option value="yes">포함 (자동 재투자)</option>
+        <option value="no">미포함</option>
+      </select>
+    </div>
+
+    <button class="btn-calc" onclick="calculate()">수익률 계산하기</button>
+  </div>
+
+  <!-- 결과 -->
+  <div class="result-card" id="resultCard">
+    <h2>계산 결과</h2>
+    <div class="result-grid">
+      <div class="result-item">
+        <div class="rlabel">최종 자산</div>
+        <div class="rvalue highlight" id="totalValue">—</div>
+      </div>
+      <div class="result-item">
+        <div class="rlabel">총 납입 원금</div>
+        <div class="rvalue" id="totalPrincipal">—</div>
+      </div>
+      <div class="result-item">
+        <div class="rlabel">총 수익금</div>
+        <div class="rvalue green" id="totalProfit">—</div>
+      </div>
+    </div>
+    <canvas id="chart"></canvas>
+  </div>
+
+  <!-- 프리미엄: 연도별 상세 테이블 -->
+  <div id="premiumSection">
+    <div class="premium-lock" id="lockBox">
+      <div class="lock-icon">🔒</div>
+      <h3>고급 기능 잠금 해제</h3>
+      <p>연도별 상세 자산 변화 표, 세후 수익률 시뮬레이션,<br>인플레이션 반영 실질 수익률을 확인하세요.</p>
+      <ul>
+        <li>✅ 연도별 자산 변화 테이블</li>
+        <li>✅ 배당소득세 적용 세후 수익</li>
+        <li>✅ 인플레이션 반영 실질 가치</li>
+        <li>✅ 여러 시나리오 비교 (낙관/기본/비관)</li>
+      </ul>
+      <button class="btn-pay" onclick="openPayment()">9,900원으로 잠금 해제</button>
+    </div>
+
+    <div class="premium-features" id="premiumFeatures">
+      <div class="card" style="background:#0F172A">
+        <h2 style="color:#94A3B8">연도별 자산 변화</h2>
+        <div class="table-wrap">
+          <table id="yearlyTable"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+// Lemon Squeezy 결제
+const LS_CHECKOUT_URL = "https://datamoney.lemonsqueezy.com/checkout/buy/etf-calculator";
+
+function openPayment() {
+  // Lemon Squeezy overlay
+  window.open(LS_CHECKOUT_URL + "?embed=1", "_blank", "width=500,height=700");
+}
+
+// 결제 완료 콜백 (Lemon Squeezy webhook 또는 URL 파라미터로 처리)
+(function checkPaid() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get("paid") === "1" || localStorage.getItem("dm_etf_paid") === "true") {
+    unlock();
+  }
+})();
+
+function unlock() {
+  localStorage.setItem("dm_etf_paid", "true");
+  document.getElementById("lockBox").style.display = "none";
+  document.getElementById("premiumFeatures").classList.add("unlocked");
+}
+
+let chartInstance = null;
+
+function fmt(n) {
+  if (n >= 1e8) return (n / 1e8).toFixed(1) + "억";
+  if (n >= 1e4) return Math.round(n / 1e4) + "만";
+  return n.toLocaleString();
+}
+
+function calculate() {
+  const initial = Number(document.getElementById("initial").value) || 0;
+  const monthly = Number(document.getElementById("monthly").value) || 0;
+  const rate    = Number(document.getElementById("rate").value) / 100;
+  const years   = Number(document.getElementById("years").value) || 1;
+
+  const monthlyRate = rate / 12;
+  const months = years * 12;
+
+  let value = initial;
+  const labels = ["시작"];
+  const values = [initial];
+  const principals = [initial];
+  let principal = initial;
+  const yearlyData = [];
+
+  for (let m = 1; m <= months; m++) {
+    value = (value + monthly) * (1 + monthlyRate);
+    principal += monthly;
+    if (m % 12 === 0) {
+      const yr = m / 12;
+      labels.push(yr + "년");
+      values.push(Math.round(value));
+      principals.push(Math.round(principal));
+      yearlyData.push({
+        year: yr,
+        total: Math.round(value),
+        principal: Math.round(principal),
+        profit: Math.round(value - principal),
+        roi: (((value / principal) - 1) * 100).toFixed(1),
+      });
+    }
+  }
+
+  const totalValue = Math.round(value);
+  const totalPrincipal = Math.round(principal);
+  const totalProfit = totalValue - totalPrincipal;
+
+  document.getElementById("totalValue").textContent = fmt(totalValue) + "원";
+  document.getElementById("totalPrincipal").textContent = fmt(totalPrincipal) + "원";
+  document.getElementById("totalProfit").textContent = "+" + fmt(totalProfit) + "원";
+
+  const rc = document.getElementById("resultCard");
+  rc.classList.add("show");
+
+  // 차트
+  if (chartInstance) chartInstance.destroy();
+  const ctx = document.getElementById("chart").getContext("2d");
+  chartInstance = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "원금",
+          data: principals,
+          backgroundColor: "#2563EB",
+          stack: "s",
+        },
+        {
+          label: "수익",
+          data: values.map((v, i) => v - principals[i]),
+          backgroundColor: "#FACC15",
+          stack: "s",
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { labels: { color: "#94A3B8" } },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${fmt(ctx.raw)}원`,
+          },
+        },
+      },
+      scales: {
+        x: { ticks: { color: "#64748B" }, grid: { color: "#1e293b" } },
+        y: {
+          ticks: { color: "#64748B", callback: v => fmt(v) },
+          grid: { color: "#1e293b" },
+        },
+      },
+    },
+  });
+
+  // 프리미엄 테이블
+  if (localStorage.getItem("dm_etf_paid") === "true") {
+    buildTable(yearlyData);
+  }
+
+  rc.scrollIntoView({ behavior: "smooth" });
+}
+
+function buildTable(data) {
+  const tbl = document.getElementById("yearlyTable");
+  tbl.innerHTML = `
+    <tr>
+      <th style="text-align:left">연도</th>
+      <th>총 자산</th>
+      <th>납입 원금</th>
+      <th>누적 수익</th>
+      <th>수익률</th>
+    </tr>
+    ${data.map(r => `
+    <tr>
+      <td>${r.year}년차</td>
+      <td>${fmt(r.total)}원</td>
+      <td>${fmt(r.principal)}원</td>
+      <td style="color:#4ade80">+${fmt(r.profit)}원</td>
+      <td style="color:#FACC15">+${r.roi}%</td>
+    </tr>`).join("")}
+  `;
+}
+</script>
+</body>
+</html>

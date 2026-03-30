@@ -1,0 +1,8 @@
+name = "datamoney-redirects"
+main = "workers/redirect.js"
+compatibility_date = "2024-01-01"
+
+# 커스텀 도메인: datamoney.kr/go/*
+[[routes]]
+pattern = "datamoney.kr/go/*"
+zone_name = "datamoney.kr"
