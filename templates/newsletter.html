@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>{{EMAIL_SUBJECT}}</title>
+<style>
+  body { margin: 0; padding: 0; background: #F1F5F9; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; }
+  .wrapper { max-width: 600px; margin: 0 auto; background: #ffffff; }
+  .header { background: #0F172A; padding: 28px 32px; text-align: center; }
+  .header .logo { color: #F8FAFC; font-size: 20px; font-weight: 700; letter-spacing: 1px; }
+  .header .logo span { color: #2563EB; }
+  .hero { background: #0F172A; padding: 0 32px 32px; border-bottom: 3px solid #2563EB; }
+  .hero .date { color: #64748B; font-size: 12px; }
+  .hero h1 { color: #F8FAFC; font-size: 22px; font-weight: 700; line-height: 1.4; margin: 8px 0 0; }
+  .body { padding: 32px; }
+  .key-data { background: #EFF6FF; border: 2px solid #2563EB; border-radius: 10px; padding: 24px; margin: 0 0 28px; text-align: center; }
+  .key-data .label { color: #64748B; font-size: 12px; margin-bottom: 6px; }
+  .key-data .figure { color: #1e40af; font-size: 36px; font-weight: 700; }
+  .key-data .context { color: #475569; font-size: 13px; margin-top: 6px; }
+  .summary { margin: 0 0 28px; }
+  .summary p { color: #334155; font-size: 14px; line-height: 1.8; margin: 0 0 12px; }
+  .yt-btn { display: block; background: #DC2626; color: #ffffff !important; text-align: center; padding: 14px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 15px; margin: 0 0 32px; }
+  .divider { border: none; border-top: 1px solid #e2e8f0; margin: 28px 0; }
+  .footer { background: #F8FAFC; padding: 24px 32px; text-align: center; border-top: 1px solid #e2e8f0; }
+  .footer p { color: #94A3B8; font-size: 11px; margin: 4px 0; }
+  .footer a { color: #64748B; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- 헤더 -->
+  <div class="header">
+    <div class="logo">데이터<span>머니</span></div>
+  </div>
+
+  <!-- 히어로 -->
+  <div class="hero">
+    <div class="date">{{EMAIL_DATE}}</div>
+    <h1>{{EMAIL_SUBJECT}}</h1>
+  </div>
+
+  <!-- 본문 -->
+  <div class="body">
+    {{EMAIL_BODY}}
+  </div>
+
+  <!-- 풋터 -->
+  <div class="footer">
+    <p>데이터머니 | <a href="https://datamoney.kr">datamoney.kr</a></p>
+    <p>구독 해지: <a href="{{UNSUBSCRIBE_URL}}">여기를 클릭</a></p>
+    <p>© 2026 데이터머니. All rights reserved.</p>
+  </div>
+
+</div>
+</body>
+</html>

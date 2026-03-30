@@ -1,6 +1,7 @@
 name = "datamoney-redirects"
 main = "workers/redirect.js"
 compatibility_date = "2024-01-01"
+account_id = "be57534be2be85cb30b64abced4212fa"
 
 # 커스텀 도메인: datamoney.kr/go/*
 [[routes]]
