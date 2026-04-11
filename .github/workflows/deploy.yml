@@ -19,8 +19,7 @@ jobs:
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           projectName: datamoney-tools
           directory: .
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-
+          
   deploy-worker:
     name: Deploy Redirect Worker
     runs-on: ubuntu-latest
