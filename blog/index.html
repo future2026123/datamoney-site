@@ -3,137 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>데이터머니 블로그</title>
-<meta name="description" content="ETF, 절세, 배당, 금리 관련 핵심 내용을 숫자와 사례 중심으로 정리한 데이터머니 블로그입니다.">
+<title>데이터머니 블로그 | ETF 적립식 투자, 절세, 배당</title>
+<meta name="description" content="ETF 적립식 투자, 절세, 배당 전략을 숫자 중심으로 정리한 데이터머니 블로그입니다. 글을 읽고 계산기로 바로 확인할 수 있습니다.">
+<link rel="canonical" href="https://datamoney.kr/blog/">
 <style>
-  :root {
-    --navy: #091425;
-    --panel: #ffffff;
-    --line: rgba(15, 23, 42, 0.08);
-    --text: #0f172a;
-    --sub: #475569;
-    --blue: #2563eb;
-    --bg: #eef4fb;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: "Pretendard Variable", "Pretendard", "Apple SD Gothic Neo", sans-serif;
-    color: var(--text);
-    background:
-      radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 18%),
-      linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
-  }
-  a { color: inherit; text-decoration: none; }
-  .wrap { width: min(1080px, calc(100% - 28px)); margin: 0 auto; padding: 18px 0 64px; }
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    padding: 16px 0;
-  }
-  .logo { font-weight: 800; font-size: 24px; letter-spacing: -0.03em; }
-  .logo span { color: var(--blue); }
-  .nav { display: flex; gap: 10px; flex-wrap: wrap; }
-  .nav a {
-    padding: 10px 14px;
-    border-radius: 999px;
-    border: 1px solid var(--line);
-    font-size: 14px;
-    color: #334155;
-    background: rgba(255,255,255,0.7);
-  }
-  .hero, .panel {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 28px;
-    box-shadow: 0 12px 40px rgba(15, 23, 42, 0.05);
-  }
-  .hero {
-    padding: 34px 28px;
-    margin-top: 12px;
-  }
-  .eyebrow {
-    display: inline-block;
-    padding: 8px 12px;
-    border-radius: 999px;
-    background: #eff6ff;
-    color: #1d4ed8;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  h1 {
-    margin: 18px 0 12px;
-    font-size: clamp(34px, 6vw, 64px);
-    line-height: 0.98;
-    letter-spacing: -0.05em;
-  }
-  .hero p {
-    max-width: 760px;
-    margin: 0;
-    color: var(--sub);
-    line-height: 1.8;
-    font-size: 16px;
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px;
-    margin-top: 22px;
-  }
-  .panel {
-    padding: 22px;
-  }
-  .panel strong {
-    display: block;
-    margin-bottom: 10px;
-    font-size: 22px;
-    letter-spacing: -0.03em;
-  }
-  .panel p {
-    margin: 0;
-    color: var(--sub);
-    line-height: 1.75;
-  }
-  .cta {
-    margin-top: 22px;
-    padding: 26px 28px;
-    border-radius: 28px;
-    background: linear-gradient(135deg, var(--navy), #16345d);
-    color: #f8fbff;
-  }
-  .cta h2 {
-    margin: 0 0 10px;
-    font-size: 30px;
-    letter-spacing: -0.04em;
-  }
-  .cta p {
-    margin: 0 0 18px;
-    color: #cbd5e1;
-    line-height: 1.75;
-  }
-  .cta a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 46px;
-    padding: 0 18px;
-    border-radius: 14px;
-    background: #2563eb;
-    color: #fff;
-    font-weight: 700;
-  }
-  footer {
-    margin-top: 24px;
-    color: #64748b;
-    font-size: 13px;
-  }
-  @media (max-width: 900px) {
-    .grid { grid-template-columns: 1fr; }
-  }
+  :root { --bg:#eef4fb; --panel:#ffffff; --navy:#0b1628; --text:#0f172a; --sub:#475569; --line:rgba(15,23,42,.08); --blue:#2563eb; --blue-soft:#eff6ff; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Pretendard Variable","Pretendard","Apple SD Gothic Neo",sans-serif; color:var(--text); background:radial-gradient(circle at top left, rgba(37,99,235,.08), transparent 18%),linear-gradient(180deg,#f8fbff 0%, var(--bg) 100%); }
+  a { color:inherit; text-decoration:none; }
+  .wrap { width:min(1120px, calc(100% - 28px)); margin:0 auto; padding:18px 0 64px; }
+  header { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:16px 0; }
+  .logo { font-weight:800; font-size:24px; letter-spacing:-.03em; }
+  .logo span { color:var(--blue); }
+  .nav { display:flex; gap:10px; flex-wrap:wrap; }
+  .nav a { padding:10px 14px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.72); color:#334155; font-size:14px; }
+  .hero,.post-card,.topic-card,.cta { background:var(--panel); border:1px solid var(--line); border-radius:28px; box-shadow:0 12px 40px rgba(15,23,42,.05); }
+  .hero { display:grid; grid-template-columns:1.2fr .8fr; gap:22px; padding:28px; margin-top:12px; }
+  .eyebrow,.tag { display:inline-flex; align-items:center; padding:8px 12px; border-radius:999px; background:var(--blue-soft); color:#1d4ed8; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+  h1 { margin:18px 0 14px; font-size:clamp(36px, 6vw, 64px); line-height:.96; letter-spacing:-.05em; }
+  .hero p,.topic-card p,.post-card p,.cta p { margin:0; color:var(--sub); line-height:1.8; }
+  .hero-side { padding:22px; border-radius:24px; background:linear-gradient(135deg,var(--navy),#16345d); color:#f8fbff; }
+  .hero-side strong { display:block; margin-bottom:10px; font-size:28px; letter-spacing:-.04em; }
+  .hero-side p { color:#cbd5e1; }
+  .section-head { display:flex; justify-content:space-between; align-items:end; gap:16px; margin:28px 0 18px; }
+  .section-head h2 { margin:0 0 8px; font-size:32px; letter-spacing:-.04em; }
+  .section-head p { margin:0; color:var(--sub); }
+  .posts { display:grid; grid-template-columns:1.3fr .7fr; gap:18px; }
+  .post-card { padding:24px; display:block; }
+  .post-card.featured { background:radial-gradient(circle at top right, rgba(37,99,235,.08), transparent 20%), var(--panel); }
+  .post-card h3 { margin:18px 0 12px; font-size:34px; line-height:1.1; letter-spacing:-.04em; }
+  .meta { display:flex; gap:12px; flex-wrap:wrap; margin-top:18px; color:#1e3a8a; font-size:13px; font-weight:700; }
+  .topic-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+  .topic-card { padding:22px; }
+  .topic-card strong { display:block; margin-bottom:10px; font-size:22px; letter-spacing:-.03em; }
+  .cta { margin-top:22px; padding:26px 28px; background:linear-gradient(135deg,#0b1628,#16345d); color:#f8fbff; }
+  .cta h2 { margin:0 0 10px; font-size:30px; letter-spacing:-.04em; }
+  .cta p { color:#cbd5e1; margin-bottom:18px; }
+  .cta a { display:inline-flex; align-items:center; justify-content:center; min-height:46px; padding:0 18px; border-radius:14px; background:#2563eb; color:#fff; font-weight:700; }
+  footer { margin-top:24px; color:#64748b; font-size:13px; }
+  @media (max-width:900px) { .hero,.posts,.topic-grid { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
@@ -148,30 +56,44 @@
     </header>
 
     <section class="hero">
-      <span class="eyebrow">Blog</span>
-      <h1>숫자로 읽는 투자 인사이트</h1>
-      <p>ETF, 절세, 배당, 금리 이슈를 데이터 중심으로 풀어내는 콘텐츠 허브입니다. 지금은 블로그 섹션을 정리 중이며, 본격적인 글 유입을 이 경로로 받을 수 있게 구성했습니다.</p>
+      <div>
+        <span class="eyebrow">Blog</span>
+        <h1>검색 유입을 계산기로 연결하는 블로그</h1>
+        <p>데이터머니 블로그는 단순 정보형 글로 끝나지 않습니다. 글에서 숫자를 이해하고, 계산기에서 바로 검증하는 흐름으로 유입을 설계합니다.</p>
+      </div>
+      <aside class="hero-side">
+        <strong>첫 샘플 글 공개</strong>
+        <p>ETF 적립식 투자 주제를 시작점으로 삼아 검색 유입을 받고, 본문 안에서 ETF 계산기로 자연스럽게 이어지도록 구성했습니다.</p>
+      </aside>
     </section>
 
-    <section class="grid">
-      <article class="panel">
-        <strong>ETF</strong>
-        <p>적립식 투자, 수익률 가정, 복리 결과를 숫자로 설명하는 글을 모읍니다.</p>
-      </article>
-      <article class="panel">
-        <strong>절세</strong>
-        <p>연금저축, IRP, ISA 조합과 세액공제 효과를 실제 계산 기준으로 정리합니다.</p>
-      </article>
-      <article class="panel">
-        <strong>배당</strong>
-        <p>배당수익률, 현금흐름, DRIP 시뮬레이션을 바탕으로 배당 전략을 다룹니다.</p>
-      </article>
+    <div class="section-head"><div><h2>최신 글</h2><p>검색 의도가 분명하고 계산기와 바로 연결되는 주제부터 쌓습니다.</p></div></div>
+    <section class="posts">
+      <a class="post-card featured" href="/blog/etf-monthly-50manwon-20years/">
+        <span class="tag">ETF 적립식 투자</span>
+        <h3>ETF 적립식 투자, 매달 50만원이면 20년 뒤 얼마가 될까</h3>
+        <p>매달 50만원 적립을 가정했을 때 8% 수익률 기준으로 자산이 어떻게 쌓이는지, 어떤 변수에 따라 결과가 달라지는지 정리했습니다.</p>
+        <div class="meta"><span>읽는 시간 5분</span><span>계산기 CTA 포함</span><span>2026-04-11</span></div>
+      </a>
+      <div class="post-card">
+        <span class="tag">읽는 흐름</span>
+        <h3 style="font-size:26px">이 글을 읽고 나서</h3>
+        <p>글에서 복리 구조를 이해한 뒤 ETF 계산기로 초기 자금, 적립금, 수익률을 바꿔보면 자기 상황에 맞는 숫자를 바로 확인할 수 있습니다.</p>
+        <div class="meta"><span><a href="/tools/etf-calculator">ETF 계산기 열기</a></span></div>
+      </div>
+    </section>
+
+    <div class="section-head"><div><h2>주제 축</h2><p>향후 글은 계산기 유입과 연결되는 세 가지 축으로 확장합니다.</p></div></div>
+    <section class="topic-grid">
+      <article class="topic-card"><strong>ETF</strong><p>적립식 투자, 수익률 가정, 복리 결과처럼 검색량이 높고 계산기로 이어지기 쉬운 주제를 다룹니다.</p></article>
+      <article class="topic-card"><strong>절세</strong><p>연금저축, IRP, ISA 조합과 세액공제 효과를 실제 숫자 기준으로 설명하고 시뮬레이터로 연결합니다.</p></article>
+      <article class="topic-card"><strong>배당</strong><p>월 배당금 목표, DRIP, 배당 성장률 같은 주제를 배당 계산기와 묶어 운영합니다.</p></article>
     </section>
 
     <section class="cta">
-      <h2>계산기와 함께 보세요</h2>
-      <p>블로그에서 내용을 읽고, 도구 페이지에서 숫자를 직접 바꿔보는 흐름으로 유입을 설계할 수 있습니다.</p>
-      <a href="/tools/">도구 보러 가기</a>
+      <h2>숫자는 계산기로 확인하세요</h2>
+      <p>글에서 개념을 보고, 도구에서 자신의 숫자로 바꾸는 흐름이 데이터머니 블로그의 핵심입니다.</p>
+      <a href="/tools/">계산기 보러 가기</a>
     </section>
 
     <footer>© 2026 데이터머니 · datamoney.kr</footer>

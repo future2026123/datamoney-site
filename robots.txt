@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://datamoney.kr/sitemap.xml

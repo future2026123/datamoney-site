@@ -5,119 +5,41 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>데이터머니 도구 모음</title>
 <meta name="description" content="ETF 수익률 계산기, 절세 시뮬레이터, 배당 포트폴리오 계산기를 한곳에서 확인하세요.">
+<link rel="canonical" href="https://datamoney.kr/tools/">
 <style>
-  :root {
-    --navy: #0f172a;
-    --blue: #2563eb;
-    --sub: #475569;
-    --bg: #eef4fb;
-    --card: #ffffff;
-    --line: rgba(37, 99, 235, 0.12);
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: "Pretendard Variable", "Pretendard", "Apple SD Gothic Neo", sans-serif;
-    color: var(--navy);
-    background:
-      radial-gradient(circle at top right, rgba(142, 240, 255, 0.55), transparent 20%),
-      linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
-  }
-  a { color: inherit; text-decoration: none; }
-  .wrap { width: min(1080px, calc(100% - 28px)); margin: 0 auto; padding: 18px 0 72px; }
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    padding: 16px 0;
-  }
-  .logo { font-weight: 800; font-size: 24px; letter-spacing: -0.03em; }
-  .logo span { color: var(--blue); }
-  .link-chip {
-    padding: 10px 14px;
-    border-radius: 999px;
-    border: 1px solid var(--line);
-    color: #334155;
-    font-size: 14px;
-  }
-  .hero { padding: 34px 0 30px; }
-  .hero h1 {
-    margin: 0 0 12px;
-    font-size: clamp(34px, 6vw, 64px);
-    line-height: 0.98;
-    letter-spacing: -0.05em;
-  }
-  .hero p {
-    max-width: 760px;
-    margin: 0;
-    color: var(--sub);
-    line-height: 1.8;
-    font-size: 16px;
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px;
-    margin-top: 24px;
-  }
-  .card {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 28px;
-    padding: 24px;
-    box-shadow: 0 12px 40px rgba(15, 23, 42, 0.05);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 18px 48px rgba(15, 23, 42, 0.1);
-  }
-  .card strong {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 16px;
-    background: #eff6ff;
-    color: var(--blue);
-    font-size: 22px;
-  }
-  .card h2 {
-    margin: 18px 0 10px;
-    font-size: 24px;
-    letter-spacing: -0.03em;
-  }
-  .card p {
-    margin: 0 0 18px;
-    color: var(--sub);
-    line-height: 1.75;
-    min-height: 84px;
-  }
-  .meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #1e3a8a;
-    font-weight: 700;
-    font-size: 14px;
-  }
-  footer {
-    margin-top: 28px;
-    color: #64748b;
-    font-size: 13px;
-  }
-  @media (max-width: 900px) {
-    .grid { grid-template-columns: 1fr; }
-  }
+  :root { --navy:#0f172a; --blue:#2563eb; --sub:#475569; --bg:#eef4fb; --card:#ffffff; --line:rgba(37,99,235,.12); }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Pretendard Variable","Pretendard","Apple SD Gothic Neo",sans-serif; color:var(--navy); background:radial-gradient(circle at top right, rgba(142,240,255,.55), transparent 20%),linear-gradient(180deg,#f8fbff 0%, var(--bg) 100%); }
+  a { color:inherit; text-decoration:none; }
+  .wrap { width:min(1080px, calc(100% - 28px)); margin:0 auto; padding:18px 0 72px; }
+  header { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:16px 0; }
+  .logo { font-weight:800; font-size:24px; letter-spacing:-.03em; }
+  .logo span { color:var(--blue); }
+  .link-row { display:flex; gap:10px; flex-wrap:wrap; }
+  .link-chip { padding:10px 14px; border-radius:999px; border:1px solid var(--line); color:#334155; font-size:14px; }
+  .hero { padding:34px 0 30px; }
+  .hero h1 { margin:0 0 12px; font-size:clamp(34px, 6vw, 64px); line-height:.98; letter-spacing:-.05em; }
+  .hero p { max-width:760px; margin:0; color:var(--sub); line-height:1.8; font-size:16px; }
+  .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; margin-top:24px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:28px; padding:24px; box-shadow:0 12px 40px rgba(15,23,42,.05); transition:transform .2s ease, box-shadow .2s ease; }
+  .card:hover { transform:translateY(-4px); box-shadow:0 18px 48px rgba(15,23,42,.1); }
+  .card strong { display:inline-flex; align-items:center; justify-content:center; width:48px; height:48px; border-radius:16px; background:#eff6ff; color:var(--blue); font-size:22px; }
+  .card h2 { margin:18px 0 10px; font-size:24px; letter-spacing:-.03em; }
+  .card p { margin:0 0 18px; color:var(--sub); line-height:1.75; min-height:84px; }
+  .meta { display:flex; justify-content:space-between; align-items:center; color:#1e3a8a; font-weight:700; font-size:14px; }
+  .blog-promo { margin-top:22px; padding:24px; border-radius:28px; background:linear-gradient(135deg,#0f172a,#1d4ed8); color:#f8fbff; }
+  .blog-promo h2 { margin:0 0 10px; font-size:30px; letter-spacing:-.04em; }
+  .blog-promo p { margin:0 0 18px; color:#dbeafe; line-height:1.75; }
+  .blog-promo a { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:0 16px; border-radius:14px; background:rgba(255,255,255,.16); color:#fff; font-weight:700; }
+  footer { margin-top:28px; color:#64748b; font-size:13px; }
+  @media (max-width:900px) { .grid { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <a class="logo" href="/">데이터<span>머니</span></a>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <div class="link-row">
         <a class="link-chip" href="/blog/">블로그</a>
         <a class="link-chip" href="https://www.youtube.com/@datamoneykr" target="_blank" rel="noopener noreferrer">YouTube</a>
       </div>
@@ -129,24 +51,15 @@
     </section>
 
     <section class="grid">
-      <a class="card" href="/tools/etf-calculator">
-        <strong>E</strong>
-        <h2>ETF 수익률 계산기</h2>
-        <p>초기 자금과 적립금, 기대 수익률을 넣고 복리 누적 결과를 확인합니다.</p>
-        <div class="meta"><span>무료</span><span>바로 열기</span></div>
-      </a>
-      <a class="card" href="/tools/tax-simulator">
-        <strong>T</strong>
-        <h2>절세 시뮬레이터</h2>
-        <p>연금저축, IRP, ISA 조합에 따라 얼마나 세금을 줄일 수 있는지 계산합니다.</p>
-        <div class="meta"><span>무료</span><span>바로 열기</span></div>
-      </a>
-      <a class="card" href="/tools/dividend-calculator">
-        <strong>D</strong>
-        <h2>배당 포트폴리오 계산기</h2>
-        <p>배당수익률과 성장률, DRIP 적용 여부를 기반으로 목표 배당금 도달 시점을 봅니다.</p>
-        <div class="meta"><span>무료</span><span>바로 열기</span></div>
-      </a>
+      <a class="card" href="/tools/etf-calculator"><strong>E</strong><h2>ETF 수익률 계산기</h2><p>초기 자금과 적립금, 기대 수익률을 넣고 복리 누적 결과를 확인합니다.</p><div class="meta"><span>무료</span><span>바로 열기</span></div></a>
+      <a class="card" href="/tools/tax-simulator"><strong>T</strong><h2>절세 시뮬레이터</h2><p>연금저축, IRP, ISA 조합에 따라 얼마나 세금을 줄일 수 있는지 계산합니다.</p><div class="meta"><span>무료</span><span>바로 열기</span></div></a>
+      <a class="card" href="/tools/dividend-calculator"><strong>D</strong><h2>배당 포트폴리오 계산기</h2><p>배당수익률과 성장률, DRIP 적용 여부를 기반으로 목표 배당금 도달 시점을 봅니다.</p><div class="meta"><span>무료</span><span>바로 열기</span></div></a>
+    </section>
+
+    <section class="blog-promo">
+      <h2>먼저 글로 이해하고, 계산기로 확인하세요</h2>
+      <p>첫 샘플 글인 “ETF 적립식 투자, 매달 50만원이면 20년 뒤 얼마가 될까”에서 복리 구조를 이해한 뒤 계산기로 숫자를 바로 바꿔볼 수 있습니다.</p>
+      <a href="/blog/etf-monthly-50manwon-20years/">샘플 글 읽기</a>
     </section>
 
     <footer>© 2026 데이터머니 · datamoney.kr · 본 도구는 정보 제공 목적이며 투자 권유가 아닙니다.</footer>
