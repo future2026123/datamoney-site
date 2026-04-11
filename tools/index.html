@@ -3,92 +3,150 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>데이터머니 — 금융 계산기 도구</title>
-<meta name="description" content="ETF 수익률 계산기, 절세 시뮬레이터, 배당 포트폴리오 계산기. 데이터로 읽는 금융.">
+<title>데이터머니 도구 모음</title>
+<meta name="description" content="ETF 수익률 계산기, 절세 시뮬레이터, 배당 포트폴리오 계산기를 한곳에서 확인하세요.">
 <style>
-  :root { --navy:#0F172A; --blue:#2563EB; --yellow:#FACC15; --sub:#64748B; --bg:#F1F5F9; }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Pretendard','Apple SD Gothic Neo',sans-serif; background: var(--bg); color: var(--navy); }
-  header { background: var(--navy); padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; }
-  .logo { color: #F8FAFC; font-size: 22px; font-weight: 700; text-decoration: none; }
+  :root {
+    --navy: #0f172a;
+    --blue: #2563eb;
+    --sub: #475569;
+    --bg: #eef4fb;
+    --card: #ffffff;
+    --line: rgba(37, 99, 235, 0.12);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Pretendard Variable", "Pretendard", "Apple SD Gothic Neo", sans-serif;
+    color: var(--navy);
+    background:
+      radial-gradient(circle at top right, rgba(142, 240, 255, 0.55), transparent 20%),
+      linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+  }
+  a { color: inherit; text-decoration: none; }
+  .wrap { width: min(1080px, calc(100% - 28px)); margin: 0 auto; padding: 18px 0 72px; }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+  }
+  .logo { font-weight: 800; font-size: 24px; letter-spacing: -0.03em; }
   .logo span { color: var(--blue); }
-  .yt-link { color: #94A3B8; font-size: 13px; text-decoration: none; }
-  .yt-link:hover { color: #F8FAFC; }
-  .hero { background: var(--navy); padding: 48px 24px 56px; text-align: center; border-bottom: 3px solid var(--blue); }
-  .hero h1 { color: #F8FAFC; font-size: 28px; font-weight: 700; margin-bottom: 12px; }
-  .hero p { color: var(--sub); font-size: 15px; }
-  .container { max-width: 800px; margin: 0 auto; padding: 48px 16px 80px; }
-  .section-title { font-size: 18px; font-weight: 700; margin-bottom: 24px; color: var(--navy); }
-  .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
-  .tool-card { background: #fff; border-radius: 14px; padding: 28px 24px; box-shadow: 0 1px 6px rgba(0,0,0,.08); text-decoration: none; color: inherit; transition: transform .15s, box-shadow .15s; display: block; }
-  .tool-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,.12); }
-  .tool-icon { font-size: 36px; margin-bottom: 14px; }
-  .tool-card h2 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
-  .tool-card p { font-size: 13px; color: var(--sub); line-height: 1.6; margin-bottom: 16px; }
-  .tool-badge { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
-  .badge-free { background: #DCFCE7; color: #166534; }
-  .badge-pro { background: #FEF9C3; color: #713F12; }
-  .cta { margin-top: 48px; background: var(--navy); border-radius: 14px; padding: 32px 28px; text-align: center; }
-  .cta h3 { color: #F8FAFC; font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-  .cta p { color: var(--sub); font-size: 14px; margin-bottom: 20px; }
-  .cta a { display: inline-block; background: #DC2626; color: #fff; padding: 12px 28px; border-radius: 8px; font-weight: 700; text-decoration: none; font-size: 15px; }
-  footer { background: var(--navy); padding: 24px; text-align: center; }
-  footer p { color: #475569; font-size: 12px; }
-  @media (max-width: 500px) { .hero h1 { font-size: 22px; } }
+  .link-chip {
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    color: #334155;
+    font-size: 14px;
+  }
+  .hero { padding: 34px 0 30px; }
+  .hero h1 {
+    margin: 0 0 12px;
+    font-size: clamp(34px, 6vw, 64px);
+    line-height: 0.98;
+    letter-spacing: -0.05em;
+  }
+  .hero p {
+    max-width: 760px;
+    margin: 0;
+    color: var(--sub);
+    line-height: 1.8;
+    font-size: 16px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 24px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    padding: 24px;
+    box-shadow: 0 12px 40px rgba(15, 23, 42, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 48px rgba(15, 23, 42, 0.1);
+  }
+  .card strong {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    background: #eff6ff;
+    color: var(--blue);
+    font-size: 22px;
+  }
+  .card h2 {
+    margin: 18px 0 10px;
+    font-size: 24px;
+    letter-spacing: -0.03em;
+  }
+  .card p {
+    margin: 0 0 18px;
+    color: var(--sub);
+    line-height: 1.75;
+    min-height: 84px;
+  }
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #1e3a8a;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  footer {
+    margin-top: 28px;
+    color: #64748b;
+    font-size: 13px;
+  }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
+  <div class="wrap">
+    <header>
+      <a class="logo" href="/">데이터<span>머니</span></a>
+      <a class="link-chip" href="https://youtube.com/@datamoney_kr" target="_blank" rel="noopener noreferrer">YouTube</a>
+    </header>
 
-<header>
-  <a class="logo" href="/">데이터<span>머니</span></a>
-  <a class="yt-link" href="https://youtube.com/@datamoney_kr" target="_blank">▶ YouTube 채널</a>
-</header>
+    <section class="hero">
+      <h1>투자에 필요한 계산은<br>먼저 숫자로 확인합니다.</h1>
+      <p>ETF 적립식 수익률, 절세 전략, 배당 현금흐름까지. 데이터머니의 핵심 계산기를 모아둔 정적 도구 페이지입니다.</p>
+    </section>
 
-<div class="hero">
-  <h1>금융 계산기 도구</h1>
-  <p>데이터로 직접 계산하고, 내 투자를 점검하세요</p>
-</div>
+    <section class="grid">
+      <a class="card" href="/tools/etf-calculator">
+        <strong>E</strong>
+        <h2>ETF 수익률 계산기</h2>
+        <p>초기 자금과 적립금, 기대 수익률을 넣고 복리 누적 결과를 확인합니다.</p>
+        <div class="meta"><span>무료</span><span>바로 열기</span></div>
+      </a>
+      <a class="card" href="/tools/tax-simulator">
+        <strong>T</strong>
+        <h2>절세 시뮬레이터</h2>
+        <p>연금저축, IRP, ISA 조합에 따라 얼마나 세금을 줄일 수 있는지 계산합니다.</p>
+        <div class="meta"><span>무료</span><span>바로 열기</span></div>
+      </a>
+      <a class="card" href="/tools/dividend-calculator">
+        <strong>D</strong>
+        <h2>배당 포트폴리오 계산기</h2>
+        <p>배당수익률과 성장률, DRIP 적용 여부를 기반으로 목표 배당금 도달 시점을 봅니다.</p>
+        <div class="meta"><span>무료</span><span>바로 열기</span></div>
+      </a>
+    </section>
 
-<div class="container">
-  <div class="section-title">무료 계산기</div>
-  <div class="tools-grid">
-
-    <a class="tool-card" href="/etf_calculator/">
-      <div class="tool-icon">📈</div>
-      <h2>ETF 수익률 계산기</h2>
-      <p>적립식 투자 시 복리 수익을 계산합니다. 원금·수익·최종 자산을 한눈에 확인.</p>
-      <span class="tool-badge badge-free">무료</span>
-      <span class="tool-badge badge-pro" style="margin-left:6px">연도별 표 유료</span>
-    </a>
-
-    <a class="tool-card" href="/tax_simulator/">
-      <div class="tool-icon">🧾</div>
-      <h2>절세 시뮬레이터</h2>
-      <p>연금저축·IRP·ISA 활용 시 절세액을 자동 계산합니다. 세액공제 한도 포함.</p>
-      <span class="tool-badge badge-free">무료</span>
-      <span class="tool-badge badge-pro" style="margin-left:6px">장기 분석 유료</span>
-    </a>
-
-    <a class="tool-card" href="/dividend_calculator/">
-      <div class="tool-icon">💰</div>
-      <h2>배당 포트폴리오 계산기</h2>
-      <p>배당 DRIP 복리 효과와 목표 월 배당금 달성 시뮬레이션을 계산합니다.</p>
-      <span class="tool-badge badge-free">무료</span>
-      <span class="tool-badge badge-pro" style="margin-left:6px">세후 상세 유료</span>
-    </a>
-
+    <footer>© 2026 데이터머니 · datamoney.kr · 본 도구는 정보 제공 목적이며 투자 권유가 아닙니다.</footer>
   </div>
-
-  <div class="cta">
-    <h3>매일 금융 데이터 영상 업로드</h3>
-    <p>ETF, 배당, 절세, 금리 — 데이터 중심으로 분석합니다</p>
-    <a href="https://youtube.com/@datamoney_kr" target="_blank">▶ 채널 구독하기</a>
-  </div>
-</div>
-
-<footer>
-  <p>© 2026 데이터머니 · datamoney.kr · 본 도구는 정보 제공 목적이며 투자 권유가 아닙니다</p>
-</footer>
-
 </body>
 </html>

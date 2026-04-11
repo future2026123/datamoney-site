@@ -4,3 +4,10 @@
 /tools/etf-calculator     /tools/etf_calculator/index.html     200
 /tools/tax-simulator      /tools/tax_simulator/index.html      200
 /tools/dividend-calculator /tools/dividend_calculator/index.html 200
+/etf_calculator           /tools/etf-calculator                301
+/etf_calculator/          /tools/etf-calculator                301
+/tax_simulator            /tools/tax-simulator                 301
+/tax_simulator/           /tools/tax-simulator                 301
+/dividend_calculator      /tools/dividend-calculator           301
+/dividend_calculator/     /tools/dividend-calculator           301
+/tools                    /tools/                              200

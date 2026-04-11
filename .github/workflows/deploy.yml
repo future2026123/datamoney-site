@@ -2,12 +2,12 @@ name: Deploy to Cloudflare Pages
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   workflow_dispatch:
 
 jobs:
   deploy-pages:
-    name: Deploy Tools (Cloudflare Pages)
+    name: Deploy Static Site (Cloudflare Pages)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,7 +18,7 @@ jobs:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           projectName: datamoney-tools
-          directory: tools
+          directory: .
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-worker:
