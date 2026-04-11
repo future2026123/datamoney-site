@@ -17,14 +17,9 @@
   .logo span { color:var(--blue); }
   .nav { display:flex; gap:10px; flex-wrap:wrap; }
   .nav a { padding:10px 14px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.72); color:#334155; font-size:14px; }
-  .hero,.post-card,.topic-card,.cta { background:var(--panel); border:1px solid var(--line); border-radius:28px; box-shadow:0 12px 40px rgba(15,23,42,.05); }
-  .hero { display:grid; grid-template-columns:1.2fr .8fr; gap:22px; padding:28px; margin-top:12px; }
-  .eyebrow,.tag { display:inline-flex; align-items:center; padding:8px 12px; border-radius:999px; background:var(--blue-soft); color:#1d4ed8; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
-  h1 { margin:18px 0 14px; font-size:clamp(36px, 6vw, 64px); line-height:.96; letter-spacing:-.05em; }
-  .hero p,.topic-card p,.post-card p,.cta p { margin:0; color:var(--sub); line-height:1.8; }
-  .hero-side { padding:22px; border-radius:24px; background:linear-gradient(135deg,var(--navy),#16345d); color:#f8fbff; }
-  .hero-side strong { display:block; margin-bottom:10px; font-size:28px; letter-spacing:-.04em; }
-  .hero-side p { color:#cbd5e1; }
+  .post-card,.topic-card,.cta { background:var(--panel); border:1px solid var(--line); border-radius:28px; box-shadow:0 12px 40px rgba(15,23,42,.05); }
+  .tag { display:inline-flex; align-items:center; padding:8px 12px; border-radius:999px; background:var(--blue-soft); color:#1d4ed8; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+  .post-card p,.topic-card p,.cta p { margin:0; color:var(--sub); line-height:1.8; }
   .section-head { display:flex; justify-content:space-between; align-items:end; gap:16px; margin:28px 0 18px; }
   .section-head h2 { margin:0 0 8px; font-size:32px; letter-spacing:-.04em; }
   .section-head p { margin:0; color:var(--sub); }
@@ -41,7 +36,7 @@
   .cta p { color:#cbd5e1; margin-bottom:18px; }
   .cta a { display:inline-flex; align-items:center; justify-content:center; min-height:46px; padding:0 18px; border-radius:14px; background:#2563eb; color:#fff; font-weight:700; }
   footer { margin-top:24px; color:#64748b; font-size:13px; }
-  @media (max-width:900px) { .hero,.posts,.topic-grid { grid-template-columns:1fr; } }
+  @media (max-width:900px) { .posts,.topic-grid { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
@@ -54,19 +49,6 @@
         <a href="https://www.youtube.com/@datamoneykr" target="_blank" rel="noopener noreferrer">YouTube</a>
       </nav>
     </header>
-
-    <section class="hero">
-      <div>
-        <span class="eyebrow">Blog</span>
-        <h1>검색 유입을 계산기로 연결하는 블로그</h1>
-        <p>데이터머니 블로그는 단순 정보형 글로 끝나지 않습니다. 글에서 숫자를 이해하고, 계산기에서 바로 검증하는 흐름으로 유입을 설계합니다.</p>
-      </div>
-      <aside class="hero-side">
-        <strong>첫 샘플 글 공개</strong>
-        <p>ETF 적립식 투자 주제를 시작점으로 삼아 검색 유입을 받고, 본문 안에서 ETF 계산기로 자연스럽게 이어지도록 구성했습니다.</p>
-      </aside>
-    </section>
-
     <div class="section-head"><div><h2>최신 글</h2><p>검색 의도가 분명하고 계산기와 바로 연결되는 주제부터 쌓습니다.</p></div></div>
     <section class="posts">
       <a class="post-card featured" href="/blog/etf-monthly-50manwon-20years/">
