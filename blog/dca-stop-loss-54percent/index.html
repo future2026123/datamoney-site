@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>하락장에 적립식 멈추면 오히려 54% 손해입니다 | 데이터머니</title>
+<meta name="description" content="2026년 코스피 -20% 하락장, 적립식 자동이체를 끊으면 20년 후 1억 1천만원 손해. 2008·2020·2022 데이터와 Vanguard 연구로 확인합니다.">
+<link rel="canonical" href="https://datamoney.kr/blog/dca-stop-loss-54percent/">
+<style>
+  :root { --bg:#f3f7fd; --panel:#ffffff; --navy:#0b1628; --text:#111827; --sub:#475569; --line:rgba(15,23,42,.08); --blue:#2563eb; --blue-soft:#eff6ff; --green-soft:#ecfdf5; --yellow-soft:#fefce8; --red-soft:#fff1f2; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Pretendard Variable","Pretendard","Apple SD Gothic Neo",sans-serif; color:var(--text); background:radial-gradient(circle at top left, rgba(37,99,235,.08), transparent 18%),linear-gradient(180deg,#f9fbff 0%, var(--bg) 100%); }
+  a { color:inherit; text-decoration:none; }
+  .wrap { width:min(1120px, calc(100% - 28px)); margin:0 auto; padding:18px 0 72px; }
+  header { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:16px 0; }
+  .logo { font-weight:800; font-size:24px; letter-spacing:-.03em; }
+  .logo span { color:var(--blue); }
+  .nav { display:flex; gap:10px; flex-wrap:wrap; }
+  .nav a { padding:10px 14px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.72); color:#334155; font-size:14px; }
+  .article-shell { display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:20px; margin-top:12px; }
+  .article,.aside-card { background:var(--panel); border:1px solid var(--line); border-radius:28px; box-shadow:0 12px 40px rgba(15,23,42,.05); }
+  .article { padding:34px 30px; }
+  .label { display:inline-flex; align-items:center; padding:8px 12px; border-radius:999px; background:var(--blue-soft); color:#1d4ed8; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+  h1 { margin:18px 0 14px; font-size:clamp(32px, 5.5vw, 56px); line-height:1.05; letter-spacing:-.04em; }
+  .meta { display:flex; gap:12px; flex-wrap:wrap; color:var(--sub); font-size:14px; margin-bottom:22px; }
+  .lead { font-size:18px; color:#334155; line-height:1.85; margin-bottom:26px; }
+  h2 { margin:34px 0 12px; font-size:28px; letter-spacing:-.04em; }
+  h3 { margin:22px 0 8px; font-size:20px; letter-spacing:-.03em; }
+  p,li { color:#334155; line-height:1.9; font-size:16px; }
+  ul,ol { padding-left:22px; }
+  li { margin-bottom:6px; }
+  .highlight,.cta-box,.calc-box,.warn-box { border-radius:22px; padding:22px; margin:24px 0; }
+  .highlight { background:var(--blue-soft); border:1px solid rgba(37,99,235,.12); }
+  .highlight strong,.calc-box strong,.cta-box strong,.warn-box strong { display:block; margin-bottom:10px; font-size:20px; letter-spacing:-.03em; }
+  .calc-box { background:var(--green-soft); border:1px solid rgba(4,120,87,.14); }
+  .warn-box { background:var(--yellow-soft); border:1px solid rgba(202,138,4,.18); }
+  .cta-box { background:linear-gradient(135deg,var(--navy),#16345d); color:#f8fbff; }
+  .cta-box p { color:#cbd5e1; }
+  .button { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:0 18px; border-radius:14px; background:#2563eb; color:#fff; font-weight:700; margin-top:8px; }
+  .data-table { width:100%; border-collapse:collapse; margin:18px 0; font-size:15px; }
+  .data-table th { background:#0b1628; color:#fff; padding:12px 14px; text-align:left; }
+  .data-table td { padding:11px 14px; border-bottom:1px solid var(--line); }
+  .data-table tr:nth-child(even) td { background:#f8fbff; }
+  .data-table .red { color:#dc2626; font-weight:700; }
+  .data-table .green { color:#059669; font-weight:700; }
+  .data-table .highlight-row td { background:#fef9c3 !important; font-weight:700; }
+  .impact-box { background:linear-gradient(135deg,#0b1628,#1e3a5f); border-radius:22px; padding:28px; margin:24px 0; text-align:center; }
+  .impact-box .num { font-size:72px; font-weight:900; color:#FACC15; line-height:1; }
+  .impact-box .label-sm { font-size:20px; color:#94A3B8; margin-top:8px; }
+  .video-box { border-radius:22px; overflow:hidden; margin:28px 0; background:#000; aspect-ratio:16/9; position:relative; }
+  .video-box iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
+  .aside { display:grid; gap:16px; }
+  .aside-card { padding:22px; position:sticky; top:18px; }
+  .aside-card h3 { margin:0 0 12px; font-size:22px; letter-spacing:-.03em; }
+  .aside-card p { margin:0 0 14px; font-size:14px; color:#475569; }
+  .mini-list { display:grid; gap:10px; }
+  .mini-list a { display:block; padding:14px; border-radius:16px; background:#f8fbff; border:1px solid var(--line); color:#1e293b; font-size:14px; font-weight:600; }
+  footer { margin-top:24px; color:#64748b; font-size:13px; }
+  @media (max-width:980px) { .article-shell { grid-template-columns:1fr; } .aside-card { position:static; } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="logo" href="/">데이터<span>머니</span></a>
+      <nav class="nav">
+        <a href="/">홈</a>
+        <a href="/blog/">블로그</a>
+        <a href="/tools/">도구</a>
+        <a href="https://www.youtube.com/@datamoneykr" target="_blank" rel="noopener noreferrer">YouTube</a>
+      </nav>
+    </header>
+
+    <div class="article-shell">
+      <article class="article">
+        <span class="label">DCA · 적립식 투자</span>
+        <h1>하락장에 적립식 멈추면 오히려 54% 손해입니다</h1>
+        <div class="meta">
+          <span>2026-04-12</span>
+          <span>읽는 시간 8분</span>
+          <span>데이터머니</span>
+        </div>
+        <p class="lead">2026년 3월 코스피가 고점 대비 -20% 하락하자 자동이체를 끊고 싶은 충동이 생깁니다. 그러나 데이터는 정반대를 말합니다. 하락장마다 적립식을 멈춘 사람은 20년 후 1억 1천만원이 적습니다. 2008 · 2020 · 2022 세 번의 하락장 데이터와 Vanguard, NDVR 연구로 확인합니다.</p>
+
+        <div class="video-box">
+          <iframe src="https://www.youtube.com/embed/zSbQOVngJ8w" title="하락장에 적립식 멈추면 오히려 54% 손해입니다" allowfullscreen loading="lazy"></iframe>
+        </div>
+
+        <div class="impact-box">
+          <div class="num">1억 1천만원</div>
+          <div class="label-sm">하락장마다 멈춘 사람 vs 한 번도 안 멈춘 사람, 20년 후 자산 차이</div>
+        </div>
+
+        <h2>2026년 3월, 코스피는 무슨 일이 있었나</h2>
+        <p>코스피는 2026년 2월 26일 장중 6,347을 기록하며 사상 최고가를 썼습니다. 그러나 이란 전쟁 위기가 촉발되면서 3월 3일 하루 7.24%, 3월 4일에는 12.06% 하락했습니다. 역대 일간 최대 낙폭입니다. 3월 한 달 월간 하락률은 19.08%로 2008년 이후 최악이었습니다.</p>
+        <p>외국인은 연초 이후 코스피에서 47조원을 순매도했고, 시가총액 최대 987조원이 증발했습니다. 월 50만원 적립식 ETF를 5년째 유지 중인 38세 직장인 기준으로, 평가손실이 약 672만원에 달했습니다.</p>
+        <p>바로 이 구간에서 자동이체를 끊는 사람들이 나옵니다.</p>
+
+        <h2>멈추면 얼마나 손해인가 — 세 가지 데이터</h2>
+
+        <h3>① 삼성자산운용 장기 추적 데이터</h3>
+        <p>삼성자산운용이 두 그룹의 수익률을 장기 추적했습니다.</p>
+        <table class="data-table">
+          <thead><tr><th>그룹</th><th>행동</th><th>연평균 수익률</th></tr></thead>
+          <tbody>
+            <tr><td>A그룹</td><td>하락장마다 적립 중단</td><td class="red">6.0%</td></tr>
+            <tr class="highlight-row"><td>B그룹</td><td>한 번도 중단하지 않음</td><td class="green">8.2%</td></tr>
+          </tbody>
+        </table>
+        <p>연 2.2%포인트 차이입니다. 20년 복리로 환산하면 최종 자산의 54%가 갈립니다. 월 50만원 기준 약 1억 1천만원 손해입니다.</p>
+
+        <h3>② 세 번의 하락장 시뮬레이션</h3>
+        <table class="data-table">
+          <thead><tr><th>하락장</th><th>낙폭/기간</th><th>중단 시 20년 후 손해</th></tr></thead>
+          <tbody>
+            <tr><td>2008 금융위기</td><td>-54.5% / 약 1년</td><td class="red">약 5,500만원</td></tr>
+            <tr><td>2020 코로나</td><td>-35% / 72일</td><td class="red">약 3,500만원</td></tr>
+            <tr><td>2022 금리 베어마켓</td><td>-35.3% / 16개월</td><td class="red">약 6,000만원</td></tr>
+            <tr class="highlight-row"><td>세 번 모두 중단</td><td>—</td><td class="red">약 1억 1천만원</td></tr>
+          </tbody>
+        </table>
+        <p>2025년 코스피 75.6% 상승(역대 3위)은 2022년 베어마켓을 버틴 사람에게만 전달됐습니다.</p>
+
+        <h3>③ Vanguard 2024 연구 — 25일의 법칙</h3>
+        <p>뱅가드는 1996~2024년 28년을 분석했습니다. 이 기간 미국 주식 누적 수익률은 1,218%입니다. 베어마켓이 5번 발생했고 모두 통과한 결과입니다.</p>
+
+        <div class="warn-box">
+          <strong>최고 수익률 상위 25일만 놓쳤을 경우</strong>
+          <p>최종 자산: <strong>$865,000 → $345,000 (60% 감소)</strong><br>
+          그 25일은 언제인가? — 폭락 직후 반등일에 집중되어 있습니다.<br>
+          가장 무서운 순간 바로 다음 날이 최고 수익일입니다.<br>
+          적립식을 멈춘 사람은 정확히 이 날에 투자하지 않습니다.</p>
+        </div>
+
+        <h2>타이밍을 노려도 DCA를 이기기 어렵다</h2>
+        <p>NDVR 연구에 따르면 저점에서 단 2개월만 엇나가도, 97%의 확률로 DCA 완주자를 이기지 못합니다. 저점을 정확히 맞히는 것이 사실상 불가능하기 때문입니다.</p>
+        <p>더 충격적인 건 "Even God Couldn't Beat DCA" 연구입니다. 완벽한 저점 예측 능력이 있어도 40년 구간의 70%에서 DCA 완주자에게 졌습니다. 저점을 기다리는 동안 복리 성장이 멈추기 때문입니다.</p>
+
+        <div class="calc-box">
+          <strong>결론: 타이밍보다 시장에 머무는 시간</strong>
+          <p>완벽한 타이밍이 있어도 70%는 지는 전략입니다. DCA는 수익률 전략이 아니라 시장에 머무는 시간을 확보하는 전략입니다.</p>
+        </div>
+
+        <h2>지금 바로 해야 할 3가지</h2>
+        <ol>
+          <li><strong>자동이체 확인</strong> — 켜져 있으면 그대로 둡니다. 꺼져 있으면 오늘 다시 켭니다. 설정 3분이 20년 후 1억 1천만원을 지킵니다.</li>
+          <li><strong>추가 납입 여력 검토</strong> — 코스피 -20% 구간은 평단가를 낮출 최적 시점입니다. 생활비·비상금 확보 후 여력 범위 내에서만 고려합니다. 이번 달 50만원 추가 납입 시 20년 후 약 380만원 추가됩니다.</li>
+          <li><strong>ISA 납입 한도 확인</strong> — 하락장이 ISA 한도를 소진하기 가장 유리한 시점입니다. 서민형 비과세 한도 400만원, 일반형의 두 배입니다. 비과세 혜택과 평단가 하락 혜택을 동시에 얻습니다.</li>
+        </ol>
+
+        <h2>38세 기준 22년 후 시뮬레이션</h2>
+        <table class="data-table">
+          <thead><tr><th>시나리오</th><th>60세 최종 자산(추정)</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row"><td>하락장마다 버팀</td><td class="green">약 3억 5천만원~4억</td></tr>
+            <tr><td>세 번 모두 중단</td><td class="red">약 2억 2천만원</td></tr>
+            <tr><td>차이</td><td class="red">약 1억 3천만원</td></tr>
+          </tbody>
+        </table>
+        <p>이 차이는 수익률에서 나오지 않습니다. 하락장에서 아무것도 하지 않은 것과 멈춘 것의 차이입니다.</p>
+
+        <div class="highlight">
+          <strong>오늘 확인한 3가지</strong>
+          <ol>
+            <li>하락장마다 멈추면 20년 후 1억 1천만원 손해</li>
+            <li>안전을 위해 멈추면 오히려 54% 더 적은 자산</li>
+            <li>최고 수익일 25일을 놓치면 최종 자산 60% 감소</li>
+          </ol>
+          <p>세 가지 모두 멈추지 않는 것으로 해결됩니다. 지금 자동이체 설정을 확인하세요.</p>
+        </div>
+
+        <div class="cta-box">
+          <strong>데이터 기반 투자 인사이트</strong>
+          <p>다음 하락장 데이터도 같은 방식으로 분석합니다.</p>
+          <a class="button" href="https://www.youtube.com/@datamoneykr" target="_blank" rel="noopener noreferrer">유튜브 구독하기</a>
+        </div>
+      </article>
+
+      <aside class="aside">
+        <div class="aside-card">
+          <h3>핵심 수치</h3>
+          <p>하락장마다 멈추면 20년 후 <strong>1억 1천만원</strong> 손해<br>안전을 위해 멈추면 <strong>54%</strong> 더 적은 자산<br>최고 수익일 25일 놓치면 <strong>60%</strong> 감소</p>
+        </div>
+        <div class="aside-card">
+          <h3>관련 글</h3>
+          <div class="mini-list">
+            <a href="/blog/ria-overseas-stock-yangdose-0won/">RIA로 해외주식 양도세 0원 만들기</a>
+            <a href="/blog/etf-monthly-50manwon-20years/">매달 50만원 ETF 20년 후 얼마?</a>
+            <a href="/blog/dividend-100manwon-roadmap/">월 100만원 배당 로드맵</a>
+          </div>
+        </div>
+        <div class="aside-card">
+          <h3>출처</h3>
+          <div class="mini-list">
+            <a href="https://www.vanguard.ca/en/insights/the-difficulty-and-rewards-of-staying-the-course" target="_blank" rel="noopener">Vanguard 2024 연구</a>
+            <a href="https://ofdollarsanddata.com/even-god-couldnt-beat-dollar-cost-averaging/" target="_blank" rel="noopener">Of Dollars and Data</a>
+            <a href="https://ndvr.com/pdf/documents/journal/NDVR-TimeInVsTimingTheMarket-October2023.pdf" target="_blank" rel="noopener">NDVR 연구 (2023)</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>© 2026 데이터머니 · datamoney.kr</footer>
+  </div>
+</body>
+</html>
