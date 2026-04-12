@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIA 계좌로 해외주식 양도세 0원 만들기 — 5월 31일까지 D-49 | 데이터머니</title>
+<meta name="description" content="해외주식 양도차익 5천만원이면 세금 1,045만원. RIA 국내시장복귀계좌 이용 시 5월 31일 전 매도로 100% 감면 가능. 4가지 조건과 3분 실행 가이드 정리.">
+<link rel="canonical" href="https://datamoney.kr/blog/ria-overseas-stock-yangdose-0won/">
+<style>
+  :root { --bg:#f3f7fd; --panel:#ffffff; --navy:#0b1628; --text:#111827; --sub:#475569; --line:rgba(15,23,42,.08); --blue:#2563eb; --blue-soft:#eff6ff; --green-soft:#ecfdf5; --yellow-soft:#fefce8; --red-soft:#fff1f2; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Pretendard Variable","Pretendard","Apple SD Gothic Neo",sans-serif; color:var(--text); background:radial-gradient(circle at top left, rgba(37,99,235,.08), transparent 18%),linear-gradient(180deg,#f9fbff 0%, var(--bg) 100%); }
+  a { color:inherit; text-decoration:none; }
+  .wrap { width:min(1120px, calc(100% - 28px)); margin:0 auto; padding:18px 0 72px; }
+  header { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:16px 0; }
+  .logo { font-weight:800; font-size:24px; letter-spacing:-.03em; }
+  .logo span { color:var(--blue); }
+  .nav { display:flex; gap:10px; flex-wrap:wrap; }
+  .nav a { padding:10px 14px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.72); color:#334155; font-size:14px; }
+  .article-shell { display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:20px; margin-top:12px; }
+  .article,.aside-card { background:var(--panel); border:1px solid var(--line); border-radius:28px; box-shadow:0 12px 40px rgba(15,23,42,.05); }
+  .article { padding:34px 30px; }
+  .label { display:inline-flex; align-items:center; padding:8px 12px; border-radius:999px; background:var(--blue-soft); color:#1d4ed8; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+  h1 { margin:18px 0 14px; font-size:clamp(32px, 5.5vw, 56px); line-height:1.05; letter-spacing:-.04em; }
+  .meta { display:flex; gap:12px; flex-wrap:wrap; color:var(--sub); font-size:14px; margin-bottom:22px; }
+  .lead { font-size:18px; color:#334155; line-height:1.85; margin-bottom:26px; }
+  h2 { margin:34px 0 12px; font-size:28px; letter-spacing:-.04em; }
+  h3 { margin:24px 0 8px; font-size:20px; letter-spacing:-.03em; }
+  p,li { color:#334155; line-height:1.9; font-size:16px; }
+  ul,ol { padding-left:22px; }
+  li { margin-bottom:6px; }
+  .highlight,.cta-box,.calc-box,.warn-box,.tax-box { border-radius:22px; padding:22px; margin:24px 0; }
+  .highlight { background:var(--blue-soft); border:1px solid rgba(37,99,235,.12); }
+  .highlight strong,.calc-box strong,.cta-box strong,.warn-box strong,.tax-box strong { display:block; margin-bottom:10px; font-size:20px; letter-spacing:-.03em; }
+  .calc-box { background:var(--green-soft); border:1px solid rgba(4,120,87,.14); }
+  .warn-box { background:var(--yellow-soft); border:1px solid rgba(202,138,4,.18); }
+  .tax-box { background:var(--red-soft); border:1px solid rgba(225,29,72,.14); }
+  .cta-box { background:linear-gradient(135deg,var(--navy),#16345d); color:#f8fbff; }
+  .cta-box p { color:#cbd5e1; }
+  .button { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:0 18px; border-radius:14px; background:#2563eb; color:#fff; font-weight:700; margin-top:8px; }
+  .deadline-banner { background:linear-gradient(135deg,#dc2626,#9f1239); color:#fff; border-radius:22px; padding:22px 28px; margin:24px 0; display:flex; align-items:center; gap:18px; }
+  .deadline-banner .days { font-size:60px; font-weight:900; line-height:1; letter-spacing:-.04em; }
+  .deadline-banner .desc { font-size:16px; line-height:1.6; }
+  .deadline-banner .desc strong { display:block; font-size:22px; letter-spacing:-.03em; }
+  .tax-table { width:100%; border-collapse:collapse; margin:18px 0; font-size:15px; }
+  .tax-table th { background:#0b1628; color:#fff; padding:12px 14px; text-align:left; }
+  .tax-table td { padding:11px 14px; border-bottom:1px solid var(--line); }
+  .tax-table tr:nth-child(even) td { background:#f8fbff; }
+  .tax-table .zero { color:#059669; font-weight:700; }
+  .tax-table .highlight-row td { background:#fef9c3 !important; font-weight:700; }
+  .step-list { counter-reset:steps; padding-left:0; list-style:none; }
+  .step-list li { counter-increment:steps; padding:14px 14px 14px 52px; position:relative; border-left:3px solid var(--blue); margin-bottom:12px; background:#f8fbff; border-radius:0 14px 14px 0; }
+  .step-list li::before { content:counter(steps); position:absolute; left:-18px; top:12px; width:34px; height:34px; background:#2563eb; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:15px; }
+  .video-box { border-radius:22px; overflow:hidden; margin:28px 0; background:#000; aspect-ratio:16/9; position:relative; }
+  .video-box iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
+  .aside { display:grid; gap:16px; }
+  .aside-card { padding:22px; position:sticky; top:18px; }
+  .aside-card h3 { margin:0 0 12px; font-size:22px; letter-spacing:-.03em; }
+  .aside-card p { margin:0 0 14px; font-size:14px; color:#475569; }
+  .mini-list { display:grid; gap:10px; }
+  .mini-list a { display:block; padding:14px; border-radius:16px; background:#f8fbff; border:1px solid var(--line); color:#1e293b; font-size:14px; font-weight:600; }
+  .dm-affiliate-box { background:#f0f9ff; border:1px solid rgba(14,165,233,.18); border-radius:22px; padding:22px; margin:24px 0; }
+  .dm-affiliate-box h3 { margin:0 0 12px; font-size:18px; }
+  .dm-affiliate-box ul { padding-left:18px; }
+  .dm-affiliate-box a { color:#0369a1; text-decoration:underline; }
+  footer { margin-top:24px; color:#64748b; font-size:13px; }
+  @media (max-width:980px) { .article-shell { grid-template-columns:1fr; } .aside-card { position:static; } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="logo" href="/">데이터<span>머니</span></a>
+      <nav class="nav">
+        <a href="/">홈</a>
+        <a href="/blog/">블로그</a>
+        <a href="/tools/">도구</a>
+        <a href="https://www.youtube.com/@datamoneykr" target="_blank" rel="noopener noreferrer">YouTube</a>
+      </nav>
+    </header>
+
+    <div class="article-shell">
+      <article class="article">
+        <span class="label">해외주식 절세</span>
+        <h1>RIA 계좌로 해외주식 양도세 0원 만들기 — 5월 31일까지 D-49</h1>
+        <div class="meta">
+          <span>2026-04-12</span>
+          <span>읽는 시간 7분</span>
+          <span>데이터머니</span>
+        </div>
+        <p class="lead">미국 주식 수익이 250만원을 넘으면 양도세가 붙습니다. 5천만원 차익이면 세금만 1,045만원. 그런데 RIA(국내시장복귀계좌)를 이용하면 5월 31일 전 매도 시 이 세금을 0원으로 만들 수 있습니다. 조건 4가지와 3분 실행 가이드를 정리했습니다.</p>
+
+        <div class="deadline-banner">
+          <div class="days">D-49</div>
+          <div class="desc">
+            <strong>5월 31일 100% 감면 구간 마감</strong>
+            2026년 4월 12일 기준. 이 구간이 지나면 절세 폭이 줄어듭니다.
+          </div>
+        </div>
+
+        <h2>해외주식 양도세, 얼마나 나올까</h2>
+        <p>해외주식을 팔아 이익이 생기면 양도소득세가 부과됩니다. 세율은 22%(소득세 20% + 지방소득세 2%)이며, 연간 250만원의 기본공제만 적용됩니다.</p>
+        <p>38세 직장인이 미국 주식에서 5천만원 양도차익을 실현했다고 가정하면 세금이 이렇게 됩니다.</p>
+
+        <div class="tax-box">
+          <strong>세금 계산 예시 (차익 5천만원)</strong>
+          <ul>
+            <li>양도차익: 5,000만원</li>
+            <li>기본공제: −250만원 (소득세법 제103조)</li>
+            <li>과세표준: 4,750만원</li>
+            <li>세율: 22%</li>
+            <li><strong>납부세액: 1,045만원</strong></li>
+          </ul>
+        </div>
+
+        <p>RIA 계좌를 이용하면 이 1,045만원이 0원이 됩니다.</p>
+
+        <h2>RIA란 무엇인가</h2>
+        <p>RIA는 <strong>국내시장복귀계좌(Return to domestic market Individual savings Account)</strong>의 약자입니다. 정부가 1년 한시로 만든 해외주식 양도세 면제 제도입니다.</p>
+        <p>배경은 2025년 말 환율 급등입니다. 원달러 환율이 치솟으면서 외환시장 수급이 불안해졌고, 한국인의 해외주식 투자 규모가 약 250조 원(한국예탁결제원, 2026.1 기준)에 달하자 정부가 이 자금을 국내로 유도하기 위해 세금 면제 카드를 꺼냈습니다.</p>
+        <p>기획재정부가 2025년 12월 24일 발표, 조특법 개정으로 확정되어 2026년 3월 24일부터 시행 중입니다.</p>
+
+        <h2>매도 시점별 감면율 — 날짜가 곧 돈</h2>
+        <p>RIA의 절세 폭은 매도 시점에 따라 달라집니다. 5월 31일이 가장 유리합니다.</p>
+
+        <table class="tax-table">
+          <thead>
+            <tr><th>매도 시점</th><th>감면율</th><th>납부세액 (차익 5천만원 기준)</th></tr>
+          </thead>
+          <tbody>
+            <tr class="highlight-row"><td>5월 31일 이전</td><td>100%</td><td class="zero">0원</td></tr>
+            <tr><td>6월~7월</td><td>80%</td><td>209만원</td></tr>
+            <tr><td>8월~12월</td><td>50%</td><td>523만원</td></tr>
+            <tr><td>RIA 미이용</td><td>0%</td><td>1,045만원</td></tr>
+          </tbody>
+        </table>
+
+        <p>5월 31일과 6월 1일, 단 하루 차이로 납부세액이 209만원 더 늘어납니다. 날짜가 곧 돈입니다.</p>
+
+        <h2>RIA 혜택 조건 4가지 — 하나라도 빠지면 0원</h2>
+
+        <div class="warn-box">
+          <strong>계좌만 만들면 세금이 0원이 되지 않습니다</strong>
+          <p>RIA 계좌를 개설해도 아래 4가지 조건을 모두 충족해야 혜택이 적용됩니다. 하나라도 빠지면 1,045만원이 그대로 청구됩니다.</p>
+        </div>
+
+        <ol>
+          <li><strong>2025년 12월 23일 이전 보유분만 적용</strong> — 이 날짜 이전에 매입한 주식만 해당됩니다. 이후 새로 산 주식은 대상이 아닙니다.</li>
+          <li><strong>해외주식을 RIA 계좌 안에서 매도</strong> — 일반 계좌에서 매도하면 혜택이 없습니다. 반드시 RIA 계좌로 주식을 이전한 뒤 매도해야 합니다.</li>
+          <li><strong>원화 환전 후 국내주식·펀드 재투자</strong> — 매도 자금을 원화로 환전하고, 국내주식이나 국내주식형 ETF에 재투자해야 합니다.</li>
+          <li><strong>국내 투자 1년 이상 유지</strong> — 1년 이내에 인출하면 받은 혜택 전액을 반납합니다. 가산세(이자상당액)까지 추가로 부과됩니다.</li>
+        </ol>
+
+        <h2>흔한 함정 3가지</h2>
+
+        <h3>함정 1. 5천만원 한도의 의미</h3>
+        <p>5천만원은 세금 감면액 한도가 아니라 매도금액 기준 한도입니다. 여러 증권사에 나눠도 전 금융권 합산 5천만원입니다. 기본공제 250만원 이하 차익이면 원래도 세금이 0원이라 RIA 효과가 없습니다.</p>
+
+        <h3>함정 2. 1년 락업</h3>
+        <p>RIA로 매도한 자금을 국내 주식에 재투자한 뒤 1년간 원금을 유지해야 합니다. 원금을 초과한 수익분은 출금 가능하지만, 원금을 빼면 혜택 전부를 반납합니다.</p>
+
+        <h3>함정 3. 신규 매입분 완전 제외</h3>
+        <p>2025년 12월 24일 이후 매입한 해외주식은 혜택 대상이 아닙니다. 기존 보유분과 신규 매입분을 반드시 구분해서 계산해야 합니다.</p>
+
+        <h2>차익 규모별 절세액 비교</h2>
+
+        <table class="tax-table">
+          <thead>
+            <tr><th>케이스</th><th>양도차익</th><th>원래 세금</th><th>RIA 이용 시</th><th>절세액</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>케이스 A</td><td>200만원</td><td class="zero">0원</td><td class="zero">0원</td><td>0원 (기본공제 이하)</td></tr>
+            <tr><td>케이스 B</td><td>500만원</td><td>55만원</td><td class="zero">0원</td><td>55만원</td></tr>
+            <tr class="highlight-row"><td>케이스 C</td><td>5천만원</td><td>1,045만원</td><td class="zero">0원</td><td>1,045만원</td></tr>
+          </tbody>
+        </table>
+
+        <p>차익 5천만원 절세액 1,045만원은 연봉 기준 약 한 달치 급여와 같습니다. RIA는 차익이 클수록 효과가 큽니다.</p>
+
+        <div class="calc-box">
+          <strong>추가 혜택: 환헷지 파생상품 투자</strong>
+          <p>환헷지 파생상품에 투자하면 양도소득에서 투자액의 5%를 추가 공제받을 수 있습니다. 1인당 한도 500만원. RIA와 병행하면 절세 폭이 더 커집니다. 이 혜택도 2026년 1년 한시입니다.</p>
+        </div>
+
+        <h2>3분 실행 가이드 — 4단계</h2>
+
+        <ol class="step-list">
+          <li>
+            <strong>증권사 앱에서 해외주식 매입 내역 확인</strong><br>
+            2025년 12월 23일 이전에 산 종목과 수량을 체크합니다. 이후 매입분은 목록에서 제외합니다. 이 확인에 1분이면 충분합니다.
+          </li>
+          <li>
+            <strong>RIA 국내시장복귀계좌 개설</strong><br>
+            미래에셋, 키움, 삼성, NH 등 주요 증권사 앱에서 'RIA'로 검색하면 됩니다. 1인 1계좌 원칙이고 개설은 5분 이내입니다.
+          </li>
+          <li>
+            <strong>해외주식을 RIA 계좌로 이전 후 매도</strong><br>
+            기존 계좌의 주식을 RIA로 이전(입고)한 뒤 반드시 RIA 안에서 매도합니다. 매도 후 원화 환전까지 완료합니다. 미국 ETF를 팔고 같은 지수를 추종하는 국내 ETF를 다시 사는 방식도 유효합니다. 자산 방향은 그대로, 세금만 0원이 됩니다.
+          </li>
+          <li>
+            <strong>국내 ETF 매수 후 1년 유지</strong><br>
+            환전 자금으로 코스피200 ETF, 국내상장 S&P500 ETF 등 국내주식형 ETF를 매수합니다. 변동성이 낮은 인덱스 ETF가 1년 버티기에 수월합니다. 월배당 ETF를 선택하면 대기 기간에 배당 수익도 챙길 수 있습니다.
+          </li>
+        </ol>
+
+        <div class="warn-box">
+          <strong>시간 여유가 줄고 있습니다</strong>
+          <p>증권사 RIA 개설부터 입고, 매도, 환전까지 최소 3~5 영업일이 걸립니다. 5월 31일 마감이 49일 남았지만 영업일 기준으로 계산하면 여유가 생각보다 짧습니다. 지금 시작해야 기간 안에 완료할 수 있습니다.</p>
+        </div>
+
+        <h2>최종 체크리스트 3가지</h2>
+        <ul>
+          <li>차익 250만원 이하면 RIA 효과 없음 (원래도 세금 0원)</li>
+          <li>1년 이내 출금 시 혜택 전액 추징됨</li>
+          <li>2025년 12월 24일 이후 신규 매입분은 제외</li>
+        </ul>
+
+        <div class="highlight">
+          <strong>핵심 3가지만 기억하세요</strong>
+          <ol>
+            <li>5월 31일 전에 RIA에서 매도하면 세금 0원</li>
+            <li>매도 후 국내 ETF를 1년 유지해야 함</li>
+            <li>2025년 12월 23일 이전 보유분만 해당</li>
+          </ol>
+          <p>1,045만원을 아끼는 데 드는 시간은 30분입니다. 지금 증권사 앱을 열어서 매입일부터 확인해보세요.</p>
+        </div>
+
+        <h2>영상으로 보기</h2>
+        <p>대본 전체를 담은 유튜브 영상입니다. 감면율 표, 케이스별 절세 계산, 4단계 실행 가이드를 시각적으로 확인할 수 있습니다.</p>
+        <div class="video-box">
+          <iframe src="https://www.youtube.com/embed/AmyqHO3RK5w" title="RIA 계좌로 해외주식 양도세 0원 만들기" allowfullscreen loading="lazy"></iframe>
+        </div>
+
+        <div class="cta-box">
+          <strong>다음 절세 시즌도 미리 알고 싶다면</strong>
+          <p>데이터머니는 세금·투자 타이밍 정보를 데이터 기반으로 정리합니다. 구독해두시면 다음 절세 시즌 전에 먼저 알려드립니다.</p>
+          <a class="button" href="https://www.youtube.com/@datamoneykr" target="_blank" rel="noopener noreferrer">유튜브 구독하기</a>
+        </div>
+      </article>
+
+      <aside class="aside">
+        <div class="aside-card">
+          <h3>D-49 마감</h3>
+          <p>5월 31일 100% 감면 구간이 끝나기 전에 RIA를 개설하세요. 증권사 앱에서 'RIA 국내시장복귀계좌'를 검색하면 됩니다.</p>
+          <a class="button" href="https://www.youtube.com/watch?v=AmyqHO3RK5w" target="_blank" rel="noopener noreferrer">영상으로 전체 과정 보기</a>
+        </div>
+        <div class="aside-card">
+          <h3>관련 글</h3>
+          <div class="mini-list">
+            <a href="/blog/etf-monthly-50manwon-20years/">ETF 적립식 투자, 매달 50만원이면 20년 뒤 얼마?</a>
+            <a href="/blog/dividend-100manwon-roadmap/">월 100만원 배당 만들기 로드맵</a>
+          </div>
+        </div>
+        <div class="aside-card">
+          <h3>절세 요약</h3>
+          <div class="mini-list">
+            <a href="#">5월 31일 전: 세금 0원</a>
+            <a href="#">6~7월: 세금 209만원</a>
+            <a href="#">8월~: 세금 523만원</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>© 2026 데이터머니 · datamoney.kr</footer>
+  </div>
+</body>
+</html>
