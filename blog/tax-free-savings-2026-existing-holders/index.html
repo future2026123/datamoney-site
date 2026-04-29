@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>비과세종합저축 2026 기존 가입자 대응 전략 — 자동만기연장 함정과 증권사 이전 | 데이터머니</title>
+<meta name="description" content="2026년 1월 1일부터 비과세종합저축 가입 조건이 바뀌었습니다. 기존 가입자도 자동만기연장 시점에 비과세 혜택을 잃을 수 있습니다. 기초연금 수급 여부 확인 방법과 증권사 이전 전략을 정리합니다.">
+<link rel="canonical" href="https://datamoney.kr/blog/tax-free-savings-2026-existing-holders/">
+<meta property="og:title" content="비과세종합저축 2026 기존 가입자 대응 전략 — 자동만기연장 함정과 증권사 이전">
+<meta property="og:description" content="5천만원 비과세 통장, 만기 연장할 때 기초연금 수급자가 아니면 일반과세로 전환됩니다. 지금 확인해야 할 3가지.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://datamoney.kr/blog/tax-free-savings-2026-existing-holders/">
+<style>
+  :root { --bg:#f3f7fd; --panel:#ffffff; --navy:#0b1628; --text:#111827; --sub:#475569; --line:rgba(15,23,42,.08); --blue:#2563eb; --blue-soft:#eff6ff; --green-soft:#ecfdf5; --red-soft:#fff1f2; --amber-soft:#fffbeb; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Pretendard Variable","Pretendard","Apple SD Gothic Neo",sans-serif; color:var(--text); background:radial-gradient(circle at top left, rgba(37,99,235,.08), transparent 18%),linear-gradient(180deg,#f9fbff 0%, var(--bg) 100%); }
+  a { color:inherit; text-decoration:none; }
+  .wrap { width:min(1120px, calc(100% - 28px)); margin:0 auto; padding:18px 0 72px; }
+  header { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:16px 0; }
+  .logo { font-weight:800; font-size:24px; letter-spacing:-.03em; }
+  .logo span { color:var(--blue); }
+  .nav { display:flex; gap:10px; flex-wrap:wrap; }
+  .nav a { padding:10px 14px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.72); color:#334155; font-size:14px; }
+  .article-shell { display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:20px; margin-top:12px; }
+  .article,.aside-card { background:var(--panel); border:1px solid var(--line); border-radius:28px; box-shadow:0 12px 40px rgba(15,23,42,.05); }
+  .article { padding:34px 30px; }
+  .label { display:inline-flex; align-items:center; padding:8px 12px; border-radius:999px; background:var(--blue-soft); color:#1d4ed8; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+  h1 { margin:18px 0 14px; font-size:clamp(28px, 4.5vw, 48px); line-height:1.08; letter-spacing:-.05em; }
+  h2 { margin:36px 0 14px; font-size:clamp(20px, 3vw, 28px); letter-spacing:-.04em; }
+  h3 { margin:26px 0 10px; font-size:20px; letter-spacing:-.03em; }
+  .meta { display:flex; gap:12px; flex-wrap:wrap; color:var(--sub); font-size:14px; margin-bottom:22px; }
+  .lead { font-size:18px; color:#334155; line-height:1.85; margin-bottom:26px; }
+  p { line-height:1.9; margin:0 0 16px; }
+  .yt-embed { position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:20px; margin:0 0 28px; }
+  .yt-embed iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:0; }
+  .toc { background:#f8fafc; border:1px solid var(--line); border-radius:16px; padding:18px 22px; margin:0 0 28px; }
+  .toc h3 { margin:0 0 12px; font-size:16px; color:#64748b; font-weight:700; letter-spacing:.05em; text-transform:uppercase; }
+  .toc ol { margin:0; padding-left:18px; }
+  .toc li { font-size:15px; margin-bottom:6px; }
+  .toc a { color:#1d4ed8; }
+  .highlight { background:var(--blue-soft); border-left:4px solid var(--blue); border-radius:0 12px 12px 0; padding:16px 20px; margin:16px 0 24px; font-size:15px; line-height:1.8; }
+  .warn { background:var(--amber-soft); border-left:4px solid #f59e0b; border-radius:0 12px 12px 0; padding:16px 20px; margin:16px 0 24px; font-size:15px; line-height:1.8; }
+  .good { background:var(--green-soft); border-left:4px solid #10b981; border-radius:0 12px 12px 0; padding:16px 20px; margin:16px 0 24px; font-size:15px; line-height:1.8; }
+  .bad { background:var(--red-soft); border-left:4px solid #ef4444; border-radius:0 12px 12px 0; padding:16px 20px; margin:16px 0 24px; font-size:15px; line-height:1.8; }
+  .number-badge { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:50%; background:#0f172a; color:#f8fafc; font-size:13px; font-weight:800; margin-right:8px; vertical-align:middle; }
+  .compare-table { width:100%; border-collapse:collapse; margin:0 0 24px; font-size:15px; }
+  .compare-table th { background:#f1f5f9; padding:12px 14px; text-align:left; font-weight:700; border-bottom:2px solid var(--line); }
+  .compare-table td { padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:top; }
+  .compare-table tr:nth-child(even) td { background:#fafafa; }
+  .stat-row { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:14px; margin:16px 0 24px; }
+  .stat-box { background:#f8fafc; border:1px solid var(--line); border-radius:16px; padding:18px; text-align:center; }
+  .stat-box .num { font-size:28px; font-weight:900; color:#0f172a; letter-spacing:-.03em; }
+  .stat-box .lbl { font-size:13px; color:var(--sub); margin-top:4px; }
+  .aside { display:grid; gap:16px; }
+  .aside-card { padding:22px; position:sticky; top:18px; }
+  .aside-card h3 { margin:0 0 12px; font-size:20px; letter-spacing:-.03em; }
+  .aside-card p { margin:0 0 14px; font-size:15px; color:var(--sub); }
+  .mini-list { display:grid; gap:10px; }
+  .mini-list a { display:block; padding:14px; border-radius:16px; background:#f8fbff; border:1px solid var(--line); color:#1e293b; font-size:14px; font-weight:600; }
+  .button { display:inline-flex; align-items:center; justify-content:center; padding:14px 22px; border-radius:14px; background:var(--blue); color:#fff; font-weight:700; font-size:15px; margin-top:8px; }
+  footer { margin-top:24px; color:#64748b; font-size:13px; }
+  @media (max-width:980px) { .article-shell { grid-template-columns:1fr; } .aside-card { position:static; } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="logo" href="/">데이터<span>머니</span></a>
+      <nav class="nav">
+        <a href="/">홈</a>
+        <a href="/blog/">블로그</a>
+        <a href="/tools/">도구</a>
+        <a href="https://www.youtube.com/@datamoneykr" target="_blank" rel="noopener noreferrer">YouTube</a>
+      </nav>
+    </header>
+
+    <div class="article-shell">
+      <article class="article">
+        <span class="label">비과세종합저축 · 절세 · 기초연금</span>
+        <h1>비과세종합저축 2026 기존 가입자 — 자동만기연장 함정과 증권사 이전 전략</h1>
+        <div class="meta"><span>2026-04-17</span><span>읽는 시간 10분</span><span>데이터머니</span></div>
+
+        <p class="lead">5천만원을 비과세 통장에 두면 연 30만 8천원의 이자 세금이 0원입니다. 그런데 2026년 1월 1일부터 가입 조건이 바뀌었고, 이미 가입한 분들도 만기 시점에 조건이 재확인됩니다. 기초연금 수급자가 아니라면 자동 재예치 순간 일반과세로 전환될 수 있습니다.</p>
+
+        <div class="yt-embed">
+          <iframe
+            src="https://www.youtube.com/embed/uC31ZuTxXls"
+            title="비과세종합저축 2027년 시행인 줄 아셨다면 3개월 늦으셨습니다"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        </div>
+
+        <nav class="toc">
+          <h3>목차</h3>
+          <ol>
+            <li><a href="#what-is">비과세종합저축이란 — 절세 효과 계산</a></li>
+            <li><a href="#change-2026">2026년 1월 변경 내용</a></li>
+            <li><a href="#existing-holders">기존 가입자 주의사항 — 자동만기연장 함정</a></li>
+            <li><a href="#eligibility">기초연금 수급 자격 확인 방법</a></li>
+            <li><a href="#securities">증권사 이전 전략 — 상품별 비교</a></li>
+            <li><a href="#action-guide">지금 바로 할 3가지</a></li>
+          </ol>
+        </nav>
+
+        <!-- 1 -->
+        <h2 id="what-is"><span class="number-badge">1</span>비과세종합저축이란 — 절세 효과 계산</h2>
+
+        <p>비과세종합저축은 <strong>조세특례제한법 제88조의2</strong>에 근거한 세제혜택 상품입니다. 전 금융기관 합산 원금 5,000만원 한도 내에서 발생하는 이자소득과 배당소득에 세금이 전혀 붙지 않습니다.</p>
+
+        <p>일반 예금은 이자에 15.4%(소득세 14% + 지방소득세 1.4%)가 원천징수됩니다. 5천만원을 연 4% 금리 예금에 넣으면 이자 200만원 중 30만 8천원이 세금으로 빠집니다. 비과세 계좌라면 이 30만 8천원 전액을 수령합니다.</p>
+
+        <div class="stat-row">
+          <div class="stat-box">
+            <div class="num">30.8만원</div>
+            <div class="lbl">연간 절세액 (연 4% 가정)</div>
+          </div>
+          <div class="stat-box">
+            <div class="num">154만원</div>
+            <div class="lbl">5년 누적</div>
+          </div>
+          <div class="stat-box">
+            <div class="num">308만원</div>
+            <div class="lbl">10년 누적</div>
+          </div>
+          <div class="stat-box">
+            <div class="num">616만원</div>
+            <div class="lbl">20년 누적</div>
+          </div>
+        </div>
+
+        <p>한도는 1인당 5,000만원이며 부부가 각자 자격을 갖추면 합산 1억원까지 가능합니다. 예금·채권·펀드·ETF·배당주의 이자와 배당 모두 적용됩니다.</p>
+
+        <!-- 2 -->
+        <h2 id="change-2026"><span class="number-badge">2</span>2026년 1월 변경 내용</h2>
+
+        <p>2025년 12월 2일 국회 본회의를 통과한 세법개정안(법률 제21223호)이 <strong>2026년 1월 1일부터 시행</strong>됩니다. 일몰기한은 2025년 말에서 2028년 12월 31일로 3년 연장됐습니다.</p>
+
+        <div class="warn">
+          <strong>⚠️ 핵심 변경 — 가입 대상 축소</strong><br>
+          이전: 만 65세 이상 거주자<br>
+          이후: 만 65세 이상 거주자 <strong>중 기초연금 수급자</strong><br>
+          (장애인·국가유공자·기초생활수급자는 연령·수급 여부 무관 가입 가능)
+        </div>
+
+        <table class="compare-table">
+          <thead>
+            <tr><th>구분</th><th>2025년 말까지</th><th>2026년 1월 1일부터</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>가입 연령</td><td>만 65세 이상</td><td>만 65세 이상</td></tr>
+            <tr><td>소득 조건</td><td>없음</td><td>기초연금 수급자여야 함</td></tr>
+            <tr><td>일몰기한</td><td>2025년 12월 31일</td><td>2028년 12월 31일</td></tr>
+            <tr><td>한도</td><td>1인당 5,000만원</td><td>동일</td></tr>
+          </tbody>
+        </table>
+
+        <!-- 3 -->
+        <h2 id="existing-holders"><span class="number-badge">3</span>기존 가입자 주의사항 — 자동만기연장 함정</h2>
+
+        <p>2025년 12월 31일 이전에 가입한 계좌는 <strong>만기까지 비과세 혜택이 유지</strong>됩니다. 중도해지해도 과거 발생한 이자에 대한 소급 추징 규정은 조세특례제한법 제88조의2에 없습니다.</p>
+
+        <div class="warn">
+          <strong>⚠️ 자동만기연장(재예치)이 문제입니다</strong><br>
+          은행 비과세 정기예금은 보통 1~3년 만기입니다. 만기 도래 시 자동 재예치를 선택하면, 그 시점에 <strong>가입 자격이 재확인</strong>됩니다. 기초연금 비수급자라면 재예치 순간 일반과세 상품으로 전환될 수 있습니다.
+        </div>
+
+        <p>즉, 가입 당시에는 자격이 있었더라도 만기 시점에 자격을 잃으면 이후 발생하는 이자부터 15.4% 세금이 붙습니다. 10년 기준 308만원, 20년 기준 616만원의 영구 손실입니다.</p>
+
+        <div class="highlight">
+          <strong>반전 — 해지 후 재가입·계좌 이동은 어렵습니다</strong><br>
+          2026년부터 재가입은 기초연금 수급자만 가능합니다. 공식적인 은행→증권사 계좌이동 제도도 없습니다. 해지 후 신규 개설이 유일한 경로이며, 한도 DB 반영에 수일이 걸립니다.
+        </div>
+
+        <!-- 4 -->
+        <h2 id="eligibility"><span class="number-badge">4</span>기초연금 수급 자격 확인 방법</h2>
+
+        <p>기초연금 수급 여부는 소득인정액 기준으로 결정됩니다. 2026년 기준은 다음과 같습니다.</p>
+
+        <table class="compare-table">
+          <thead>
+            <tr><th>가구 유형</th><th>월 소득인정액 기준</th><th>연환산</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>단독가구</td><td class="good"><strong>247만원 이하</strong></td><td>약 2,964만원</td></tr>
+            <tr><td>부부가구</td><td class="good"><strong>395만 2천원 이하</strong></td><td>약 4,742만원</td></tr>
+          </tbody>
+        </table>
+
+        <p>소득인정액은 단순 월급이 아닙니다. 근로소득·연금소득에 재산 환산액(집·차·예금)과 부채를 반영한 금액입니다. 자녀와 함께 사는 경우 가구원별 계산이 달라집니다.</p>
+
+        <div class="good">
+          <strong>확인 방법</strong><br>
+          복지로(bokjiro.go.kr) → 서비스 신청 → 기초연금 모의계산<br>
+          또는 가까운 주민센터에서 5분 내 조회 가능
+        </div>
+
+        <!-- 5 -->
+        <h2 id="securities"><span class="number-badge">5</span>증권사 이전 전략 — 상품별 비교</h2>
+
+        <p>기초연금 수급자라면 은행 대신 증권사 비과세계좌 개설을 검토할 수 있습니다. 증권사 계좌는 만기를 수십 년 단위로 길게 설정할 수 있어 자격 재확인 빈도가 줄어듭니다.</p>
+
+        <table class="compare-table">
+          <thead>
+            <tr><th>증권사</th><th>국내 주식·ETF</th><th>채권·펀드</th><th>ELS·RP</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>미래에셋·한국투자</td><td>✅</td><td>✅</td><td>✅</td></tr>
+            <tr><td>키움</td><td>✅</td><td>✅</td><td>일부</td></tr>
+            <tr><td><strong>삼성증권</strong></td><td><strong>❌</strong></td><td>✅</td><td>미확인</td></tr>
+            <tr><td>KB·신한·NH</td><td>미확인</td><td>✅</td><td>미확인</td></tr>
+          </tbody>
+        </table>
+
+        <div class="bad">
+          <strong>❌ 해외주식·해외 ETF는 전 증권사 편입 불가</strong><br>
+          S&P500·나스닥 ETF 절세가 목적이라면 이 계좌는 해당되지 않습니다. 비과세 혜택은 이자와 배당에 한정됩니다.
+        </div>
+
+        <p>증권사 펀드·채권은 예금자 보호 대상이 아닙니다. 원금 손실 가능성이 있으므로 운용 상품을 직접 확인해야 합니다.</p>
+
+        <!-- 6 -->
+        <h2 id="action-guide"><span class="number-badge">6</span>지금 바로 할 3가지</h2>
+
+        <div class="highlight">
+          <strong>1단계 — 기초연금 수급 여부 확인</strong><br>
+          부모님이 65세 이상이라면 복지로 또는 주민센터에서 수급 여부를 먼저 확인하세요. 이 확인 없이는 어떤 결정도 내리지 않는 것이 안전합니다.
+        </div>
+
+        <div class="highlight">
+          <strong>2단계 — 기존 계좌 만기일 확인</strong><br>
+          가입한 금융기관 콜센터에 만기일과 자동재예치 조건을 확인하세요. 만기 전에 수급 자격이 없다면 해지·재가입보다 만기까지 유지가 정답입니다.
+        </div>
+
+        <div class="highlight">
+          <strong>3단계 — 수급자라면 증권사 이전 검토</strong><br>
+          수급자라면 미래에셋·한국투자 등 상품 범위가 넓은 증권사 비과세계좌로 이전을 검토할 수 있습니다. 만기를 길게 설정하면 자격 재확인 빈도가 줄어듭니다.
+        </div>
+
+        <div style="margin-top:32px;">
+          <a class="button" href="https://youtu.be/uC31ZuTxXls" target="_blank" rel="noopener noreferrer">영상 바로 보기</a>
+        </div>
+
+        <hr style="margin:36px 0; border:none; border-top:1px solid var(--line);">
+        <p style="font-size:13px; color:var(--sub);">⚠️ 이 글은 투자 권유가 아닙니다. 모든 내용은 공개된 데이터를 기반으로 한 정보 제공 목적입니다. 투자 결정은 본인의 판단과 책임 하에 이루어져야 합니다.</p>
+      </article>
+
+      <aside class="aside">
+        <div class="aside-card">
+          <h3>핵심 요약</h3>
+          <p>비과세종합저축 2026년 변경 사항과 기존 가입자 대응 전략</p>
+          <div class="mini-list">
+            <span style="display:block; padding:14px; border-radius:16px; background:#f8fbff; border:1px solid var(--line); color:#1e293b; font-size:14px;">📅 시행일: 2026년 1월 1일</span>
+            <span style="display:block; padding:14px; border-radius:16px; background:#fff7ed; border:1px solid #fed7aa; color:#9a3412; font-size:14px; font-weight:600;">⚠️ 기초연금 수급자만 신규가입 가능</span>
+            <span style="display:block; padding:14px; border-radius:16px; background:#f8fbff; border:1px solid var(--line); color:#1e293b; font-size:14px;">💰 연 절세액: 30.8만원 (연 4% 가정)</span>
+            <span style="display:block; padding:14px; border-radius:16px; background:#f8fbff; border:1px solid var(--line); color:#1e293b; font-size:14px;">📌 일몰기한: 2028년 12월 31일</span>
+          </div>
+        </div>
+        <div class="aside-card">
+          <h3>관련 영상</h3>
+          <div class="mini-list">
+            <a href="https://youtu.be/uC31ZuTxXls" target="_blank" rel="noopener noreferrer">▶ 비과세종합저축 2026 완전 정리</a>
+          </div>
+        </div>
+        <div class="aside-card">
+          <h3>관련 글</h3>
+          <div class="mini-list">
+            <a href="/blog/irp-vs-isa-order-guide/">IRP vs ISA 납입 순서 완전 정리</a>
+            <a href="/blog/super-isa-youth-isa-guide/">슈퍼ISA 가이드</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <p>© 2026 데이터머니 · <a href="/">datamoney.kr</a></p>
+    </footer>
+  </div>
+</body>
+</html>

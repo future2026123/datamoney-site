@@ -27,6 +27,14 @@
   .post-card { padding:24px; display:block; }
   .post-card.featured { background:radial-gradient(circle at top right, rgba(37,99,235,.08), transparent 20%), var(--panel); }
   .post-card h3 { margin:18px 0 12px; font-size:34px; line-height:1.1; letter-spacing:-.04em; }
+  .metric-num { display:inline-flex; flex-direction:column; align-items:flex-start; padding:12px 16px; border-radius:14px; background:#f8fafc; border:1px solid var(--line); margin:0 0 14px; }
+  .metric-num strong { display:block; font-size:30px; font-weight:800; letter-spacing:-.04em; line-height:1; color:#0f172a; font-feature-settings:"tnum" 1; }
+  .metric-num span { display:block; font-size:11px; color:#64748b; margin-top:6px; letter-spacing:.06em; text-transform:uppercase; font-weight:600; }
+  .metric-num.neg strong { color:#dc2626; }
+  .metric-num.pos strong { color:#059669; }
+  .metric-num.blue strong { color:#2563eb; }
+  .post-card.featured .metric-num { padding:14px 18px; background:rgba(255,255,255,.72); }
+  .post-card.featured .metric-num strong { font-size:38px; }
   .meta { display:flex; gap:12px; flex-wrap:wrap; margin-top:18px; color:#1e3a8a; font-size:13px; font-weight:700; }
   .topic-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
   .topic-card { padding:22px; }
@@ -51,81 +59,101 @@
     </header>
     <div class="section-head"><div><h2>최신 글</h2><p>검색 의도가 분명하고 계산기와 바로 연결되는 주제부터 쌓습니다.</p></div></div>
     <section class="posts">
+      <a class="post-card featured" href="/blog/leverage-etf-volatility-decay-2026/">
+        <span class="tag">레버리지 ETF · 변동성 손실</span>
+        <h3>ETF 2배의 함정 — 레버리지가 절반이 되는 이유</h3>
+        <div class="metric-num neg"><strong>+2.56%</strong><span>레버리지 10년 누적 (KODEX 200 +4.6%)</span></div>
+        <p>KODEX 200 10년 +4.6%, KODEX 레버리지 +2.56%. 일별 추종 구조와 변동성 손실, 운용자산 함정, 개별 종목 4% 미만 확률까지 데이터로 정리합니다.</p>
+        <div class="meta"><span>읽는 시간 9분</span><span>유튜브 영상 포함</span><span>2026-04-29</span></div>
+      </a>
       <a class="post-card featured" href="/blog/semiconductor-etf-4-myths/">
         <span class="tag">반도체ETF · 사실검증</span>
         <h3>반도체 ETF의 4가지 거짓말 — 미국 100년 통계로 정면 반박</h3>
+        <div class="metric-num neg"><strong>51.6%</strong><span>종목 평생 마이너스 (미국 100년)</span></div>
         <p>100개 주식 사면 51개는 평생 마이너스. 시장 부를 만드는 종목은 4%도 안 됩니다. AUM 1등이 진짜 좋은 ETF인지, SK하이닉스가 인센티브 10억으로 오른 게 맞는지 데이터로 검증합니다.</p>
         <div class="meta"><span>읽는 시간 9분</span><span>유튜브 영상 포함</span><span>2026-04-28</span></div>
       </a>
-      <a class="post-card featured" href="/blog/uptrend-myth-3-fallacies-2026/">
+      <a class="post-card" href="/blog/uptrend-myth-3-fallacies-2026/">
         <span class="tag">투자 심리 · 행동경제학</span>
         <h3>"숏 친 사람만 망한다"는 착각 — 우상향 믿어도 똑같이 무너지는 3가지 논리 오류</h3>
+        <div class="metric-num neg"><strong>-60%</strong><span>SOXS 폭락 직후</span></div>
         <p>SOXS 60% 폭락 이후 등장한 결과론적 비판은 결정의 질을 평가하지 않습니다. 생존자 편향·결과 기반 추론·순환 논증 — 닛케이 34년·중국 18년 데이터로 우상향 신앙이 무너지는 이유를 검증합니다.</p>
         <div class="meta"><span>읽는 시간 8분</span><span>유튜브 영상 포함</span><span>2026-04-27</span></div>
       </a>
-      <a class="post-card featured" href="/blog/side-income-tax-300-rule-2026/">
+      <a class="post-card" href="/blog/side-income-tax-300-rule-2026/">
         <span class="tag">종합소득세 · 300만원 룰</span>
         <h3>부수입 신고 안 하면 가산세 20% — 직장인 300만원 룰 정확히 계산</h3>
+        <div class="metric-num neg"><strong>20%</strong><span>무신고 가산세 (7년 추징)</span></div>
         <p>강연료 750만원이 분기점, 무신고는 7년까지 추징. 직장인이 헷갈리는 4가지 부수입 신고 기준과 분리과세·종합과세 비교까지 국세청 공식 자료로 정리했습니다.</p>
         <div class="meta"><span>읽는 시간 7분</span><span>유튜브 영상 포함</span><span>2026-04-26</span></div>
       </a>
-      <a class="post-card featured" href="/blog/health-insurance-settlement-2026-april/">
+      <a class="post-card" href="/blog/health-insurance-settlement-2026-april/">
         <span class="tag">건보료 · 4월 정산</span>
         <h3>4월 월급 21만 9,000원 빠진 이유 — 1,035만 명 건보료 정산 완전 분석</h3>
+        <div class="metric-num neg"><strong>21.9만원</strong><span>4월 평균 추가 납부</span></div>
         <p>2026년 4월 직장인 1,035만 명이 평균 21만 9,000원을 추가 납부합니다. 소득세 환급과 다른 후불 정산 구조, 본인 금액 계산식, 100만 원 넘으면 12회 무이자 분할 신청 절차까지 정리했습니다.</p>
         <div class="meta"><span>읽는 시간 9분</span><span>유튜브 영상 포함</span><span>2026-04-25</span></div>
       </a>
-      <a class="post-card featured" href="/blog/dividend-monthly-100-2026/">
+      <a class="post-card" href="/blog/dividend-monthly-100-2026/">
         <span class="tag">배당투자 · 분리과세</span>
         <h3>월 100만원 배당 받으려면 결국 3억이 필요합니다 | 2026년 분리과세 완전판</h3>
+        <div class="metric-num blue"><strong>2.84억</strong><span>월 100만원 배당 원금 (세후)</span></div>
         <p>세후 월 100만원 배당에 원금 2억 8,400만원이 필요합니다. 2026년 분리과세 혜택 적용 대상과 ETF 제외 이유, 커버드콜 함정, ISA 활용법까지 숫자로 정리합니다.</p>
         <div class="meta"><span>읽는 시간 12분</span><span>유튜브 영상 포함</span><span>2026-04-21</span></div>
       </a>
-      <a class="post-card featured" href="/blog/isa-3yr-pungcha-strategy/">
+      <a class="post-card" href="/blog/isa-3yr-pungcha-strategy/">
         <span class="tag">ISA · 풍차돌리기</span>
         <h3>ISA 3년마다 풍차돌리기 — 20년 묵히면 혜택 6번 손해</h3>
+        <div class="metric-num pos"><strong>6번</strong><span>비과세 혜택 추가 수령 (20년)</span></div>
         <p>ISA 계좌는 장기 유지하면 비과세 혜택을 1번밖에 못 받습니다. 3년마다 해지·재가입해 20년 동안 6~7번 반복 수령하는 전략과 만기 후 연금계좌 이전 10% 추가 공제까지 정리했습니다.</p>
         <div class="meta"><span>읽는 시간 10분</span><span>유튜브 영상 포함</span><span>2026-04-18</span></div>
       </a>
-      <a class="post-card featured" href="/blog/tax-free-savings-2026-existing-holders/">
+      <a class="post-card" href="/blog/tax-free-savings-2026-existing-holders/">
         <span class="tag">비과세종합저축 · 절세</span>
         <h3>비과세종합저축 2026 기존 가입자 — 자동만기연장 함정과 증권사 이전</h3>
+        <div class="metric-num blue"><strong>2026.1.1</strong><span>가입 조건 변경 시점</span></div>
         <p>2026년 1월 1일부터 가입 조건이 바뀌었습니다. 기존 가입자도 만기 시점에 기초연금 수급자가 아니면 일반과세로 전환될 수 있습니다.</p>
         <div class="meta"><span>읽는 시간 10분</span><span>유튜브 영상 포함</span><span>2026-04-17</span></div>
       </a>
-      <a class="post-card featured" href="/blog/irp-vs-isa-order-guide/">
+      <a class="post-card" href="/blog/irp-vs-isa-order-guide/">
         <span class="tag">IRP · ISA · 절세</span>
         <h3>IRP 먼저 채우면 세금 66만원 손해 — 납입 순서 완전 정리</h3>
+        <div class="metric-num neg"><strong>66만원</strong><span>납입 순서 오류 손실</span></div>
         <p>IRP·연금저축·ISA 납입 순서가 틀리면 세금 최대 66만원을 버립니다. 소득 구간별 최적 순서와 국민성장 ISA 변수까지 현행 법령 기준으로 정리합니다.</p>
         <div class="meta"><span>읽는 시간 12분</span><span>유튜브 영상 포함</span><span>2026-04-17</span></div>
       </a>
-      <a class="post-card featured" href="/blog/variable-mortgage-cofix-rate-2026/">
+      <a class="post-card" href="/blog/variable-mortgage-cofix-rate-2026/">
         <span class="tag">주담대 · 금리</span>
         <h3>한은 금리 동결인데 왜 내 주담대 이자가 올랐는지 계산해봤습니다</h3>
+        <div class="metric-num blue"><strong>5.0%</strong><span>변동/고정 손익분기점</span></div>
         <p>기준금리 7차 연속 동결인데 COFIX가 반등해 주담대가 올랐습니다. 3억 30년 변동 vs 고정 시뮬레이션, 손익분기점 5.0%, 보금자리론 30년 절감 효과까지 계산했습니다.</p>
         <div class="meta"><span>읽는 시간 10분</span><span>유튜브 영상 포함</span><span>2026-04-15</span></div>
       </a>
-      <a class="post-card featured" href="/blog/sp500-tariff-loss-190manwon/">
+      <a class="post-card" href="/blog/sp500-tariff-loss-190manwon/">
         <span class="tag">S&amp;P500 · ETF</span>
         <h3>환율 올라도 S&amp;P500 ETF 손해가 -190만원인 이유</h3>
+        <div class="metric-num neg"><strong>-190만원</strong><span>관세 쇼크 손실 (1,000만원 기준)</span></div>
         <p>관세 쇼크 기간 달러 -21.3%, 환율 +2.9%, 원화 -19%. 1,000만원이 810만원으로 줄었는데 환율 방어 효과는 23만원에 불과했습니다. 수치로 계산합니다.</p>
         <div class="meta"><span>읽는 시간 8분</span><span>유튜브 영상 포함</span><span>2026-04-15</span></div>
       </a>
-      <a class="post-card featured" href="/blog/parking-account-interest-comparison/">
+      <a class="post-card" href="/blog/parking-account-interest-comparison/">
         <span class="tag">파킹통장</span>
         <h3>파킹통장 금리비교 총정리 — 금액별 최적 통장과 세후 이자 계산</h3>
+        <div class="metric-num pos"><strong>253만원</strong><span>1억 통장 차이 (연 세후)</span></div>
         <p>같은 1억 원인데 통장 하나 차이로 연 253만원이 갈립니다. 금액별(50만·1천만·5천만·1억) 최적 파킹통장과 세후 실수령 이자를 전부 비교했습니다.</p>
         <div class="meta"><span>읽는 시간 8분</span><span>유튜브 영상 포함</span><span>2026-04-14</span></div>
       </a>
-      <a class="post-card featured" href="/blog/dca-etf-halakjang-2026/">
+      <a class="post-card" href="/blog/dca-etf-halakjang-2026/">
         <span class="tag">DCA · 적립식 투자</span>
         <h3>하락장에 자동이체 끊으면 20년 후 1억 1천만원 손해입니다</h3>
+        <div class="metric-num neg"><strong>-1.1억</strong><span>20년 후 자산 차이</span></div>
         <p>2026년 코스피 -19% 구간, 자동이체를 끊으면 20년 후 1억 1천만원 손해. 2008·2020·2022 세 번의 실증 데이터와 Vanguard·NDVR 연구로 계산했습니다.</p>
         <div class="meta"><span>읽는 시간 10분</span><span>유튜브 영상 포함</span><span>2026-04-13</span></div>
       </a>
-      <a class="post-card featured" href="/blog/dca-stop-loss-54percent/">
+      <a class="post-card" href="/blog/dca-stop-loss-54percent/">
         <span class="tag">적립식 투자</span>
         <h3>하락장에 적립식 멈추면 오히려 54% 손해입니다</h3>
+        <div class="metric-num neg"><strong>-54%</strong><span>적립 중단 시 손실</span></div>
         <p>2008·2020·2022 세 번 모두 중단했을 때 20년 후 자산 차이 1억 1천만원. Vanguard·NDVR 연구와 실제 코스피 데이터로 계산했습니다.</p>
         <div class="meta"><span>읽는 시간 8분</span><span>유튜브 영상 포함</span><span>2026-04-12</span></div>
       </a>
@@ -139,15 +167,10 @@
 
     <div class="section-head"><div><h2>이전 글</h2></div></div>
     <section class="posts">
-      <a class="post-card featured" href="/blog/dca-etf-halakjang-2026/">
-        <span class="tag">DCA · 적립식 투자</span>
-        <h3>하락장에 자동이체 끊으면 20년 후 1억 1천만원 손해입니다</h3>
-        <p>2026년 코스피 -19% 구간, 자동이체를 끊으면 20년 후 1억 1천만원 손해. 2008·2020·2022 세 번의 실증 데이터와 Vanguard·NDVR 연구로 계산했습니다.</p>
-        <div class="meta"><span>읽는 시간 10분</span><span>유튜브 영상 포함</span><span>2026-04-13</span></div>
-      </a>
-      <a class="post-card featured" href="/blog/ria-overseas-stock-yangdose-0won/">
+      <a class="post-card" href="/blog/ria-overseas-stock-yangdose-0won/">
         <span class="tag">해외주식 절세</span>
         <h3>RIA 계좌로 해외주식 양도세 0원 만들기 — 5월 31일까지 D-49</h3>
+        <div class="metric-num pos"><strong>1,045만원</strong><span>RIA 절세 가능액 (차익 5천만원 기준)</span></div>
         <p>차익 5천만원이면 양도세 1,045만원. RIA 국내시장복귀계좌로 5월 31일 전에 매도하면 세금 0원. 조건 4가지와 3분 실행 가이드 정리.</p>
         <div class="meta"><span>읽는 시간 7분</span><span>유튜브 영상 포함</span><span>2026-04-12</span></div>
       </a>
@@ -157,18 +180,10 @@
         <p>5월 31일 이전 → 100% 감면 (세금 0원)<br>6~7월 → 80% 감면 (209만원)<br>8월~ → 50% 감면 (523만원)</p>
         <div class="meta"><span><a href="/blog/ria-overseas-stock-yangdose-0won/">전체 가이드 보기</a></span></div>
       </div>
-    </section>
-
-    <section class="posts">
-      <a class="post-card featured" href="/blog/dca-etf-halakjang-2026/">
-        <span class="tag">DCA · 적립식 투자</span>
-        <h3>하락장에 자동이체 끊으면 20년 후 1억 1천만원 손해입니다</h3>
-        <p>2026년 코스피 -19% 구간, 자동이체를 끊으면 20년 후 1억 1천만원 손해. 2008·2020·2022 세 번의 실증 데이터와 Vanguard·NDVR 연구로 계산했습니다.</p>
-        <div class="meta"><span>읽는 시간 10분</span><span>유튜브 영상 포함</span><span>2026-04-13</span></div>
-      </a>
-      <a class="post-card featured" href="/blog/dividend-100manwon-roadmap/">
+      <a class="post-card" href="/blog/dividend-100manwon-roadmap/">
         <span class="tag">배당 투자</span>
         <h3>그래도 배당투자 해야 하는 이유, 월 100만원까지 현실적 경로</h3>
+        <div class="metric-num blue"><strong>3억</strong><span>월 100만원 배당 목표 (개략)</span></div>
         <p>왜 배당투자를 계속 봐야 하는지, 월 100만원 배당금까지 가는 현실적인 경로가 무엇인지 정리하고 실제 영상과 계산기로 바로 이어지게 만들었습니다.</p>
         <div class="meta"><span>읽는 시간 6분</span><span>영상 CTA 포함</span><span>2026-04-11</span></div>
       </a>

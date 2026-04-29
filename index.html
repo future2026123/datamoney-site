@@ -65,7 +65,21 @@
   .tool-card p { margin:0 0 18px; line-height:1.7; min-height:72px; }
   .tool-meta { justify-content:space-between; align-items:center; color:var(--mist); font-size:14px; }
   .footer { margin-top:24px; border-radius:28px; padding:20px 24px; display:flex; justify-content:space-between; align-items:center; gap:16px; color:var(--sub); font-size:13px; }
+  .metric-num { display:inline-flex; flex-direction:column; align-items:flex-start; padding:12px 16px; border-radius:14px; background:rgba(255,255,255,.04); border:1px solid var(--line); margin:14px 0 4px; }
+  .metric-num strong { display:block; font-size:30px; font-weight:800; letter-spacing:-.04em; line-height:1; color:var(--text); font-feature-settings:"tnum" 1; }
+  .metric-num span { display:block; font-size:11px; color:var(--sub); margin-top:6px; letter-spacing:.06em; text-transform:uppercase; font-weight:600; }
+  .metric-num.neg strong { color:#ff6b6b; }
+  .metric-num.pos strong { color:#4ade80; }
+  .metric-num.blue strong { color:var(--cyan); }
+  .metric-num.gold strong { color:var(--gold); }
+  .mini-strip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:18px; }
+  .mini-post { padding:18px 18px 16px; border-radius:20px; border:1px solid var(--line); background:rgba(8,17,31,.55); display:block; transition:transform .2s ease, border-color .2s ease; }
+  .mini-post:hover { transform:translateY(-3px); border-color:rgba(142,240,255,.35); }
+  .mini-post .tag-mini { font-size:10px; color:var(--cyan); letter-spacing:.14em; text-transform:uppercase; font-weight:700; }
+  .mini-post h4 { margin:10px 0 6px; font-size:16px; line-height:1.4; letter-spacing:-.02em; color:var(--text); font-weight:700; }
+  .mini-post .num-mini { color:var(--gold); font-weight:800; font-size:18px; letter-spacing:-.03em; margin-top:8px; display:block; font-feature-settings:"tnum" 1; }
   @media (max-width:980px) { .hero,.blog-strip,.tools { grid-template-columns:1fr; } .section-head,.footer { display:block; } .footer a { display:inline-block; margin-top:10px; } }
+  @media (max-width:780px) { .mini-strip { grid-template-columns:1fr; } }
   @media (max-width:640px) { .shell { width:min(100% - 20px,1180px); padding-top:12px; } .topbar,.hero-copy,.hero-side,.section,.footer { border-radius:24px; } .hero-copy,.section { padding:24px; } .hero-side { padding:18px; } h1 { font-size:42px; } .hero-copy p { font-size:15px; } }
 </style>
 </head>
@@ -92,7 +106,7 @@
       </div>
       <aside class="hero-side">
         <div class="metric cyan"><strong>3 Tools</strong><span>ETF, 절세, 배당 계산기를 한 도메인에서 바로 사용합니다.</span></div>
-        <div class="metric gold"><strong>1 Sample Post</strong><span>검색 유입을 계산기로 연결하는 첫 샘플 글을 블로그에 추가했습니다.</span></div>
+        <div class="metric gold"><strong>19 Posts</strong><span>ETF·세금·배당 데이터 분석 글이 누적되어 있습니다.</span></div>
         <div class="metric"><strong>Static Site</strong><span>메인 사이트는 정적으로 운영하고, 제휴 링크만 Worker로 분리해 단순하게 유지합니다.</span></div>
       </aside>
     </section>
@@ -101,23 +115,43 @@
       <div class="section-head">
         <div>
           <h2>추천 글</h2>
-          <p>검색 유입을 받아 계산기로 연결하는 첫 샘플 글입니다.</p>
+          <p>최근 발행한 데이터 분석 글 중 검색·계산기 흐름이 가장 강한 항목입니다.</p>
         </div>
       </div>
       <div class="blog-strip">
-        <a class="blog-card" href="/blog/dividend-100manwon-roadmap/">
-          <span class="eyebrow">Featured Post</span>
-          <h3>그래도 배당투자 해야 하는 이유, 월 100만원까지 현실적 경로</h3>
-          <p>배당 투자에 관심 있는 검색 유입을 받고, 글 안에서 유튜브 영상 클릭과 배당 계산기 사용까지 이어지게 만든 신규 글입니다.</p>
-          <div class="meta"><span>배당</span><span>읽는 시간 6분</span><span>영상 CTA 포함</span></div>
+        <a class="blog-card" href="/blog/leverage-etf-volatility-decay-2026/">
+          <span class="eyebrow">Featured · 2026-04-29</span>
+          <h3>ETF 2배의 함정 — 레버리지가 절반이 되는 이유</h3>
+          <div class="metric-num neg"><strong>+2.56%</strong><span>레버리지 10년 누적 (KODEX 200 +4.6%)</span></div>
+          <p>일별 추종 구조와 변동성 손실, 운용자산 함정, 개별 종목 4% 미만 확률까지 데이터로 정리합니다.</p>
+          <div class="meta"><span>레버리지 ETF</span><span>읽는 시간 9분</span><span>유튜브 영상 포함</span></div>
         </a>
-        <div class="blog-card">
-          <span class="eyebrow">Flow</span>
-          <h3>글을 읽고 숫자를 바꿔보는 흐름</h3>
-          <p>블로그에서 개념을 이해한 뒤 계산기에서 자기 상황으로 숫자를 바꾸면 체류와 전환을 동시에 만들 수 있습니다.</p>
-          <a class="mini-cta" href="/blog/">블로그 전체 보기</a>
-        </div>
+        <a class="blog-card" href="/blog/semiconductor-etf-4-myths/">
+          <span class="eyebrow">Hot · 2026-04-28</span>
+          <h3>반도체 ETF의 4가지 거짓말 — 미국 100년 통계로 정면 반박</h3>
+          <div class="metric-num neg"><strong>51.6%</strong><span>종목 평생 마이너스</span></div>
+          <p>100개 주식 사면 51개는 평생 마이너스. AUM 1등이 진짜 좋은 ETF인지, SK하이닉스가 인센티브 10억으로 오른 게 맞는지 데이터로 검증합니다.</p>
+          <div class="meta"><span>반도체 ETF</span><span>읽는 시간 9분</span></div>
+        </a>
       </div>
+      <div class="mini-strip">
+        <a class="mini-post" href="/blog/uptrend-myth-3-fallacies-2026/">
+          <span class="tag-mini">투자 심리 · 04-27</span>
+          <h4>"숏 친 사람만 망한다"는 착각 — 우상향 신앙 3가지 논리 오류</h4>
+          <span class="num-mini">-60% SOXS</span>
+        </a>
+        <a class="mini-post" href="/blog/side-income-tax-300-rule-2026/">
+          <span class="tag-mini">종합소득세 · 04-26</span>
+          <h4>부수입 신고 안 하면 가산세 20% — 직장인 300만원 룰</h4>
+          <span class="num-mini">+20% 가산세</span>
+        </a>
+        <a class="mini-post" href="/blog/health-insurance-settlement-2026-april/">
+          <span class="tag-mini">건보료 · 04-25</span>
+          <h4>4월 월급 21만 9,000원 빠진 이유 — 건보료 정산 완전 분석</h4>
+          <span class="num-mini">21.9만원</span>
+        </a>
+      </div>
+      <a class="mini-cta" href="/blog/" style="margin-top:18px;">블로그 전체 19개 글 보기 →</a>
     </section>
 
     <section class="section" id="tools">
