@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ETF의 절반이 두 종목으로 흘러갑니다 — 진짜 분산 ETF 5축 — 5축 분산 ETF 5종목 정리 | 데이터머니</title>
+<meta name="description" content="코스피 ETF 절반이 삼성전자·SK하이닉스로 흘러가는 시가총액 가중 구조의 함정과, 100만 원으로 진짜 분산되는 ETF 5축(동일가중·캡 적용·미국 분산·배당 팩터·종합채권)을 2026년 4월 말 기준 공개 데이터로 정리합니다.">
+<link rel="canonical" href="https://datamoney.kr/blog/balanced-etf-5-axis-2026/">
+<style>
+  :root { --bg:#f3f7fd; --panel:#ffffff; --navy:#0b1628; --text:#111827; --sub:#475569; --line:rgba(15,23,42,.08); --blue:#2563eb; --blue-soft:#eff6ff; --green-soft:#ecfdf5; --red-soft:#fef2f2; }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:"Pretendard Variable","Pretendard","Apple SD Gothic Neo",sans-serif;color:var(--text);background:radial-gradient(circle at top left,rgba(37,99,235,.08),transparent 18%),linear-gradient(180deg,#f9fbff 0%,var(--bg) 100%);}
+  a{color:inherit;text-decoration:none;}
+  .wrap{width:min(1120px,calc(100% - 28px));margin:0 auto;padding:18px 0 72px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 0;}
+  .logo{font-weight:800;font-size:24px;letter-spacing:-.03em;}
+  .logo span{color:var(--blue);}
+  .nav{display:flex;gap:10px;flex-wrap:wrap;}
+  .nav a{padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.72);color:#334155;font-size:14px;}
+  .article-shell{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;margin-top:12px;}
+  .article,.aside-card{background:var(--panel);border:1px solid var(--line);border-radius:28px;box-shadow:0 12px 40px rgba(15,23,42,.05);}
+  .article{padding:34px 30px;}
+  .label{display:inline-flex;align-items:center;padding:8px 12px;border-radius:999px;background:var(--blue-soft);color:#1d4ed8;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
+  h1{margin:18px 0 14px;font-size:clamp(36px,6vw,60px);line-height:1.02;letter-spacing:-.05em;}
+  .meta{display:flex;gap:12px;flex-wrap:wrap;color:var(--sub);font-size:14px;margin-bottom:22px;}
+  .video-wrap{position:relative;padding-top:56.25%;margin:18px 0 28px;border-radius:18px;overflow:hidden;box-shadow:0 16px 40px rgba(15,23,42,.12);background:#000;}
+  .video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+  .lead{font-size:18px;color:#334155;line-height:1.85;margin-bottom:26px;}
+  h2{margin:34px 0 12px;font-size:30px;letter-spacing:-.04em;}
+  h3{margin:24px 0 10px;font-size:22px;letter-spacing:-.03em;}
+  p,li{color:#334155;line-height:1.9;font-size:16px;}
+  ul{padding-left:22px;}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;}
+  th{background:#f8fafc;font-weight:700;color:#0f172a;}
+  .highlight,.warn,.calc-box,.cta-box{border-radius:22px;padding:22px;margin:24px 0;}
+  .highlight{background:var(--blue-soft);border:1px solid rgba(37,99,235,.12);}
+  .warn{background:var(--red-soft);border:1px solid rgba(220,38,38,.15);}
+  .calc-box{background:var(--green-soft);border:1px solid rgba(4,120,87,.14);}
+  .cta-box{background:linear-gradient(135deg,var(--navy),#16345d);color:#f8fbff;}
+  .highlight strong,.warn strong,.calc-box strong,.cta-box strong{display:block;margin-bottom:8px;font-size:20px;letter-spacing:-.03em;}
+  .cta-box p{color:#cbd5e1;}
+  .button{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 18px;border-radius:14px;background:#2563eb;color:#fff;font-weight:700;margin-top:8px;}
+  .aside{display:grid;gap:16px;}
+  .aside-card{padding:22px;position:sticky;top:18px;}
+  .aside-card h3{margin:0 0 12px;font-size:24px;letter-spacing:-.03em;}
+  .aside-card p{margin:0 0 14px;}
+  .mini-list{display:grid;gap:10px;}
+  .mini-list a{display:block;padding:14px;border-radius:16px;background:#f8fbff;border:1px solid var(--line);color:#1e293b;font-size:14px;font-weight:600;}
+  footer{margin-top:24px;color:#64748b;font-size:13px;}
+  @media (max-width:880px){.article-shell{grid-template-columns:1fr;}.aside-card{position:static;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="logo" href="/">데이터머니<span>.</span></a>
+    <nav class="nav">
+      <a href="/">홈</a>
+      <a href="/blog/">블로그</a>
+      <a href="https://www.youtube.com/@datamoney_kr" target="_blank">유튜브</a>
+    </nav>
+  </header>
+
+  <main class="article-shell">
+    <article class="article">
+      <span class="label">ETF · 분산투자</span>
+      <h1>ETF의 절반이 두 종목으로 흘러갑니다 — 진짜 분산 ETF 5축</h1>
+      <div class="meta"><span>2026-05-02</span><span>읽는 시간 9분</span><span>데이터머니</span></div>
+
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/TtBZ06ZiFk8" title="ETF의 절반이 두 종목으로 흘러갑니다 — 진짜 분산 ETF 5축" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      </div>
+
+      <p class="lead">코스피 ETF 한 종목만 사도 자금의 약 48%가 자동으로 삼성전자·SK하이닉스 두 종목으로 흘러갑니다. 이름은 '분산 ETF'지만, 시가총액 가중 구조 자체가 두 종목 베팅을 가속하는 통로가 되고 있습니다. 같은 100만 원으로 진짜 분산되는 ETF 5종목을, 2026년 4월 말 공개 데이터로 정리합니다.</p>
+
+      <div class="highlight">
+        <strong>먼저 핵심 5줄</strong>
+        <ul>
+          <li>① KODEX 200 같은 시총가중 ETF는 100만 원 중 약 48만 원이 자동으로 삼성전자+SK하이닉스로 흘러갑니다.</li>
+          <li>② 코스피 전체 시총의 약 41%, 매쿼리 기준 순이익 비중 약 52%가 이 두 종목입니다 — 시장 자체가 두 종목 베팅 상태.</li>
+          <li>③ 2026년 5월 22일 단일종목 레버리지 ETF가 상장되면 쏠림은 한층 더 심해집니다.</li>
+          <li>④ 진짜 분산은 종목 수가 아닌 '분산되는 축'의 문제 — 동일가중·캡·국가·팩터·자산군 5축.</li>
+          <li>⑤ 한국 동일가중·캡, 미국 광범위·배당, 채권을 섞으면 두 종목 비중을 48%에서 한 자릿수까지 낮출 수 있습니다.</li>
+        </ul>
+      </div>
+
+      <h2>① 시가총액 가중 ETF — '분산'이 두 종목으로 흐르는 구조</h2>
+      <p>ETF에 100만 원이 들어오면, 운용사는 그 돈을 지수의 비중표 그대로 사들입니다. 삼성전자가 28%면 28만 원, SK하이닉스가 20%면 20만 원이 자동으로 두 종목으로 흘러갑니다. 사람들이 ETF를 다시 팔면, 가장 많이 담겨 있던 두 종목에 가장 큰 매도 압력이 자동으로 집중됩니다. 시총가중은 상승장에서 두 종목을 더 밀어 올리고, 하락장에서 더 끌어내리는 한 방향 증폭 장치입니다.</p>
+
+      <table>
+        <tr><th>ETF</th><th>두 종목 합산 비중</th><th>순자산</th><th>총보수</th></tr>
+        <tr><td>KODEX 200 (069500)</td><td>약 48.08% (삼전 28.33% + SK하이닉스 19.75%)</td><td>약 21조 8천억 원</td><td>연 0.15%</td></tr>
+        <tr><td>KODEX 반도체 (091160)</td><td>약 49% (SK하이닉스 25.9% + 삼전 23.4%)</td><td>—</td><td>—</td></tr>
+        <tr><td>HANARO Fn K-반도체</td><td>약 50% (삼전 25.48% + SK하이닉스 24.34%)</td><td>—</td><td>—</td></tr>
+        <tr><td>KODEX 삼성전자SK하이닉스채권혼합50</td><td>약 50.6% (각 25.3%) + 채권 49.4%</td><td>—</td><td>—</td></tr>
+      </table>
+
+      <div class="warn">
+        <strong>'200'이라는 이름에 속지 마세요</strong>
+        <p>코스피 200은 200종목을 똑같이 담는 게 아니라, 회사 크기 순서대로 비중을 더 주는 구조입니다. 이름은 200이지만 무게중심은 두 종목입니다. 반도체TOP10 같은 상한 캡 ETF도 상위 두 종목에 50% 상한선을 두는 식이라, 사실상 '두 종목 베팅 + 보너스 8종목' 형태가 됩니다.</p>
+      </div>
+
+      <h2>② 한국 시장 자체가 두 종목 베팅 — 41% / 52% / 68%</h2>
+      <p>2026년 4월 말 코스피 시가총액은 6천조 원을 넘어섰습니다. 그중 삼성전자와 SK하이닉스 두 회사 시총만 합쳐 약 2,180조 원, 코스피 전체의 약 41%입니다. 순이익으로 보면 비중은 더 큽니다. 글로벌 증권사 매쿼리의 2026년 전망은 이 두 종목이 코스피 전체 순이익의 약 52%, 이익 성장 기여도의 약 68%를 차지한다고 봤습니다.</p>
+
+      <table>
+        <tr><th>지표</th><th>2026년 4월 말</th></tr>
+        <tr><td>국내 ETF 순자산총액</td><td>360조 7천억 원</td></tr>
+        <tr><td>일평균 ETF 거래대금</td><td>5조 5천억 원</td></tr>
+        <tr><td>코스피 거래대금 중 ETF 비중</td><td>약 60% (2025년 44% → 2026년 60%)</td></tr>
+        <tr><td>코스피 시총 두 회사 비중</td><td>약 41% (시총 약 2,180조 원)</td></tr>
+        <tr><td>매쿼리 2026 순이익 비중</td><td>약 52%</td></tr>
+        <tr><td>매쿼리 2026 이익 성장 기여도</td><td>약 68%</td></tr>
+      </table>
+
+      <p>한국 증시 자체가 두 종목 위에 올라탄 상태에서, ETF까지 그 두 종목에 쏠려 있다는 뜻입니다. 시장 거래의 절반 이상이 ETF를 통하고, 그 ETF의 상당수가 두 종목에 집중돼 있으니 시장 자체가 두 종목 베팅을 거대한 단일 포지션처럼 움직일 수 있는 셈입니다.</p>
+
+      <h2>③ 2026년 5월 22일 — 단일종목 레버리지 ETF 첫 상장</h2>
+      <p>4월 21일 국무회의를 통과한 자본시장법 시행령 개정에 따라, 단 한 종목만 기초자산으로 삼는 ETF가 처음 허용됩니다. 대상은 삼성전자와 SK하이닉스 단 두 종목. 종류는 ±2배 레버리지, 인버스, 커버드콜 세 가지입니다.</p>
+
+      <ul>
+        <li><strong>±2배 레버리지 ETF</strong> — 한 종목이 1% 오르면 2% 오르고, 1% 내리면 2% 내립니다.</li>
+        <li><strong>인버스 ETF</strong> — 한 종목이 떨어지면 거꾸로 ETF가 오릅니다.</li>
+        <li><strong>커버드콜 ETF</strong> — 한 종목 주식을 보유하면서 옵션을 팔아 추가 수익을 만드는 구조입니다.</li>
+      </ul>
+
+      <p>투자 진입 장벽은 기본예탁금 1천만 원, 신규 투자자는 총 2시간, 기존 레버리지 ETF 경험자는 추가 1시간의 심화 교육이 필수입니다. 중요한 건 이 상품은 분산이 아니라 한 종목에 두 배로 거는 베팅 도구라는 점이며, '분산투자'라는 단어를 절대 붙여서는 안 되는 카테고리입니다.</p>
+
+      <h2>④ 진짜 분산되는 ETF 5축</h2>
+      <p>분산은 종목 수가 아니라 '분산되는 축이 서로 다른가'의 문제입니다. 시총가중 한 가지 축에만 의지하면 그것은 분산이 아니라 두 종목 베팅에 가깝습니다. 분산이 작동하는 다섯 가지 축을 기준으로, 각 축을 담당하는 ETF 1종목씩 정리합니다.</p>
+
+      <h3>축 1 · 동일가중 — KODEX 200동일가중 (252650)</h3>
+      <p>코스피 200을 추종하지만 200개 회사를 모두 똑같은 비중으로 담는 방식입니다. 시총가중에서 28%였던 삼성전자 비중이 약 0.5% 수준으로 줄어듭니다. 운용사 삼성자산운용, 총보수 연 0.25%. 단, 순자산이 수백억 원대로 작아 호가 차이가 클 수 있고, 상승장에서 시총가중 ETF보다 수익률이 낮을 수 있습니다(같은 기간 시총가중 +34.72% vs 동일가중 +12.31% 사례).</p>
+
+      <h3>축 2 · 단일종목 비중 캡 — TIGER 코리아밸류업 (496080)</h3>
+      <p>한 종목이 아무리 시가총액이 커도 ETF 안에서 15% 이상 차지할 수 없는 천장을 처음부터 정해 두는 방식입니다. KRX 코리아 밸류업 지수를 추종해 코스피·코스닥 100종목으로 구성, 종목 선별은 순이익·배당과 자사주 매입·PBR·ROE 4가지 기준입니다. 운용사 미래에셋자산운용, 순자산 약 4,429억 원, 총보수 연 0.008%로 매우 낮습니다.</p>
+
+      <h3>축 3 · 국가와 통화 분산 — TIGER 미국S&P500 (360750)</h3>
+      <p>미국 대표 500개 회사 지수를 원화로 환산해 추종합니다. 순자산은 약 16조 5천 9백억 원으로 국내 상장 미국 S&P500 ETF 중 가장 큰 규모. TER(총비용비율) 0.0768%, 매매 비용까지 합친 실제 부담 비용률 0.1182%로 같은 카테고리 최저 수준입니다. 한 종목 최대 비중도 약 7%라 쏠림이 적고, 삼성전자·SK하이닉스는 당연히 들어 있지 않습니다.</p>
+
+      <h3>축 4 · 배당 팩터 — SOL 미국배당다우존스 (446720)</h3>
+      <p>다우존스 미국 배당 100 지수를 추종해, 미국 우량 배당주 100개에 분산합니다. 시가총액이 아니라 '꾸준히 배당을 잘 주는 회사'를 기준으로 종목을 선별한다는 뜻입니다. 운용사 신한자산운용, 순자산 약 9,505억 원, 총보수 연 0.01%. 분배는 한 달에 한 번씩 받는 월 분배 구조입니다.</p>
+
+      <h3>축 5 · 자산군 자체 분산 — KODEX 종합채권 AA-이상 액티브 (273130)</h3>
+      <p>주식 ETF만 아무리 모아도 결국 같은 자산군에 묶여 있어 주식 시장이 흔들리면 같이 흔들립니다. 신용등급 AA마이너스 이상인 한국 채권 전반을 담는 ETF로, 주식과 다른 흐름으로 움직이는 자산군 한 축을 더해 줍니다. 운용사 삼성자산운용, 순자산 약 2조 8천 2백억 원, 총보수 연 0.045%.</p>
+
+      <div class="calc-box">
+        <strong>진짜 분산은 다섯 가지 축으로 만들어집니다</strong>
+        <ul>
+          <li>축 1 · 한국 대형주 동일가중 — KODEX 200동일가중</li>
+          <li>축 2 · 단일종목 비중 캡 — TIGER 코리아밸류업</li>
+          <li>축 3 · 국가와 통화 분산 — TIGER 미국S&P500</li>
+          <li>축 4 · 배당 팩터 분산 — SOL 미국배당다우존스</li>
+          <li>축 5 · 자산군 자체 분산 — KODEX 종합채권 AA-이상 액티브</li>
+        </ul>
+      </div>
+
+      <h2>⑤ 100만 원 5축 분산 시뮬레이션</h2>
+      <table>
+        <tr><th>축</th><th>ETF</th><th>비중</th></tr>
+        <tr><td>한국 동일가중</td><td>KODEX 200동일가중</td><td>20만 원</td></tr>
+        <tr><td>미국 광범위 분산</td><td>TIGER 미국S&P500</td><td>30만 원</td></tr>
+        <tr><td>미국 배당 분산</td><td>SOL 미국배당다우존스</td><td>20만 원</td></tr>
+        <tr><td>한국 캡 적용 분산</td><td>TIGER 코리아밸류업</td><td>15만 원</td></tr>
+        <tr><td>채권 자산군</td><td>KODEX 종합채권 AA-이상 액티브</td><td>15만 원</td></tr>
+      </table>
+
+      <p>이렇게 다섯 축으로 나누면, 100만 원 안에서 삼성전자·SK하이닉스 비중이 KODEX 200 한 종목만 매수했을 때의 약 48%보다 훨씬 낮아집니다. 한국 주식 한 축이 흔들려도 미국 주식·미국 배당·한국 캡 적용·채권이라는 다른 네 축이 받쳐 주는 구조가 만들어집니다. 위 비중은 다섯 축이 한 포트폴리오에 들어가는 모습을 보여 드리기 위한 예시일 뿐, 매매 권유가 아닙니다.</p>
+
+      <h2>마무리 — 분산은 종목 수가 아니라 축의 문제</h2>
+      <p>분산투자는 종목 수의 문제가 아니라 분산되는 축의 문제입니다. 시총가중이라는 한 가지 축에만 의지하고 있다면 그것은 분산이 아니라 두 종목 베팅에 가깝습니다. 2026년 5월 22일 단일종목 레버리지 ETF가 상장되면 쏠림은 한층 더 심해질 가능성이 높습니다. 보유 중인 포트폴리오 안에 다섯 가지 분산 축이 모두 들어 있는지 점검해 보시기 바랍니다.</p>
+
+      <p style="margin-top:24px;color:#64748b;font-size:14px;">⚠️ 본 글은 투자 권유가 아닙니다. 모든 수치는 2026년 4월 말 기준 공개된 자료(KRX, 운용사 공시, FunETF, KOSPI 정보, Macquarie 2026 전망)를 토대로 정보 제공 목적으로 작성되었으며, 투자 결정과 손익은 본인의 판단·책임에 귀속됩니다.</p>
+    </article>
+
+    <aside class="aside">
+      <div class="aside-card">
+        <h3>이 시리즈가 다룬 ETF</h3>
+        <p>본문에 언급된 6종목, 종목코드와 함께 정리.</p>
+        <div class="mini-list">
+          <a href="#">KODEX 200 (069500)</a>
+          <a href="#">KODEX 200동일가중 (252650)</a>
+          <a href="#">TIGER 코리아밸류업 (496080)</a>
+          <a href="#">TIGER 미국S&amp;P500 (360750)</a>
+          <a href="#">SOL 미국배당다우존스 (446720)</a>
+          <a href="#">KODEX 종합채권 AA-이상 액티브 (273130)</a>
+        </div>
+      </div>
+      <div class="aside-card">
+        <h3>관련 데이터 출처</h3>
+        <ul>
+          <li>한국거래소 (KRX) ETF 공시</li>
+          <li>각 운용사 ETF 공시 자료</li>
+          <li>FunETF / KOSPI 정보</li>
+          <li>매쿼리(Macquarie) 2026년 한국증시 전망</li>
+        </ul>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    © 데이터머니 · datamoney.kr
+  </footer>
+</div>
+</body>
+</html>
