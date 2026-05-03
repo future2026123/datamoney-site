@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>평균 수익률 5%인데 왜 돈이 줄었을까 | 데이터머니</title>
+<meta name="description" content="100만원이 첫해 +100%로 200만원이 됐다가 다음해 -90%로 20만원. 단순 평균 수익률은 +5%지만 통장은 절반도 안 남는다. 1956년 켈리 공식과 1952년 마코위츠 분산 투자, 그리고 변동성 끌림으로 정리한 몰빵의 수학.">
+<link rel="canonical" href="https://datamoney.kr/blog/molppang-math-2026/">
+<style>
+  :root { --bg:#f3f7fd; --panel:#ffffff; --navy:#0b1628; --text:#111827; --sub:#475569; --line:rgba(15,23,42,.08); --blue:#2563eb; --blue-soft:#eff6ff; --gold-soft:#fff7e6; --red-soft:#fef2f2; --green-soft:#ecfdf5; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Pretendard Variable","Pretendard","Apple SD Gothic Neo",sans-serif; color:var(--text); background:radial-gradient(circle at top left, rgba(37,99,235,.08), transparent 18%),linear-gradient(180deg,#f9fbff 0%, var(--bg) 100%); }
+  a { color:inherit; text-decoration:none; }
+  .wrap { width:min(1120px, calc(100% - 28px)); margin:0 auto; padding:18px 0 72px; }
+  header { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:16px 0; }
+  .logo { font-weight:800; font-size:24px; letter-spacing:-.03em; }
+  .logo span { color:#2563eb; }
+  .nav { display:flex; gap:10px; flex-wrap:wrap; }
+  .nav a { padding:10px 14px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.72); color:#334155; font-size:14px; }
+  .article-shell { display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:20px; margin-top:12px; }
+  .article,.aside-card { background:var(--panel); border:1px solid var(--line); border-radius:28px; box-shadow:0 12px 40px rgba(15,23,42,.05); }
+  .article { padding:34px 30px; }
+  .label { display:inline-flex; align-items:center; padding:8px 12px; border-radius:999px; background:var(--blue-soft); color:#1d4ed8; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+  h1 { margin:18px 0 14px; font-size:clamp(32px, 5vw, 54px); line-height:1.05; letter-spacing:-.05em; }
+  .meta { display:flex; gap:12px; flex-wrap:wrap; color:var(--sub); font-size:14px; margin-bottom:22px; }
+  .lead { font-size:18px; color:#334155; line-height:1.85; margin-bottom:26px; }
+  h2 { margin:34px 0 12px; font-size:28px; letter-spacing:-.04em; }
+  h3 { margin:22px 0 8px; font-size:20px; letter-spacing:-.03em; color:#1e293b; }
+  p,li { color:#334155; line-height:1.9; font-size:16px; }
+  ul,ol { padding-left:22px; margin:10px 0 16px; }
+  table { width:100%; border-collapse:collapse; margin:18px 0; font-size:15px; }
+  th { background:#0f172a; color:#f8fafc; padding:10px 14px; text-align:left; font-weight:700; }
+  td { padding:10px 14px; border-bottom:1px solid var(--line); color:#334155; }
+  tr:nth-child(even) td { background:#f8fafc; }
+  .highlight,.cta-box,.video-box,.warn-box,.good-box { border-radius:22px; padding:22px; margin:24px 0; }
+  .highlight { background:var(--blue-soft); border:1px solid rgba(37,99,235,.12); }
+  .warn-box { background:var(--red-soft); border:1px solid rgba(220,38,38,.15); }
+  .video-box { background:var(--gold-soft); border:1px solid rgba(245,158,11,.18); }
+  .good-box { background:var(--green-soft); border:1px solid rgba(5,150,105,.18); }
+  .cta-box { background:linear-gradient(135deg,var(--navy),#16345d); color:#f8fbff; }
+  .cta-box p { color:#cbd5e1; }
+  .highlight strong,.warn-box strong,.video-box strong,.cta-box strong,.good-box strong { display:block; margin-bottom:8px; font-size:20px; letter-spacing:-.03em; }
+  .button,.button-ghost { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:0 18px; border-radius:14px; font-weight:700; margin-top:10px; }
+  .button { background:#2563eb; color:#fff; }
+  .button-ghost { background:rgba(255,255,255,.14); color:#fff; }
+  .aside { display:grid; gap:16px; }
+  .aside-card { padding:22px; position:sticky; top:18px; }
+  .aside-card h3 { margin:0 0 12px; font-size:22px; letter-spacing:-.03em; }
+  .aside-card p { margin:0 0 14px; }
+  .mini-list { display:grid; gap:10px; }
+  .mini-list a { display:block; padding:14px; border-radius:16px; background:#f8fbff; border:1px solid var(--line); color:#1e293b; font-size:14px; font-weight:600; }
+  .video-embed { position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:18px; margin:24px 0; }
+  .video-embed iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:0; border-radius:18px; }
+  footer { margin-top:24px; color:#64748b; font-size:13px; }
+  @media (max-width:980px) { .article-shell { grid-template-columns:1fr; } .aside-card { position:static; } }
+</style>
+<link rel="stylesheet" href="/global.css">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="logo" href="/">데이터<span>머니</span></a>
+      <nav class="nav">
+        <a href="/">홈</a>
+        <a href="/blog/">블로그</a>
+        <a href="/tools/">도구</a>
+        <a href="https://www.youtube.com/@datamoneykr" target="_blank" rel="noopener noreferrer">YouTube</a>
+      </nav>
+    </header>
+
+    <div class="article-shell">
+      <article class="article">
+        <span class="label">투자 심리 · 분산 vs 몰빵</span>
+        <h1>평균 수익률 5%인데 왜 돈이 줄었을까</h1>
+        <div class="meta"><span>2026-05-04</span><span>읽는 시간 12분</span><span>데이터머니</span></div>
+        <p class="lead">100만원이 첫해 +100%로 200만원이 됐다가 다음해 -90%로 20만원. 단순 평균 수익률은 +5%지만 통장은 절반도 안 남는다. 1956년 켈리 공식과 1952년 마코위츠 분산 투자, 그리고 변동성 끌림으로 정리한 몰빵의 수학. 1956년 벨 연구소 켈리, 1952년 마코위츠 — 두 수학자가 몰빵의 함정을 어떻게 풀었는지 1차 출처 수치만으로 정리합니다.</p>
+
+        <!-- 유튜브 영상 iframe (본문 상단) -->
+        <div class="video-embed">
+          <iframe src="https://www.youtube.com/embed/94dBOfMedtk" title="평균 수익률 5%인데 왜 돈이 줄었을까" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+
+        <div class="highlight">
+          <strong>핵심 한 줄</strong>
+          <p>장기 수익률은 <strong>평균 − 흔들림²÷2</strong>. 같은 평균이라도 출렁임이 클수록 통장에 덜 남는다. 켈리 공식조차 100% 베팅이 정답인 건 승률 100%일 때뿐이고, 풀 켈리는 일반 투자자에겐 너무 위험. 절반 켈리(베팅 50%)면 결과는 50%가 아니라 <strong>75%</strong>.</p>
+        </div>
+
+        <h2>100만원 → 200만 → 20만, 평균은 +5%인데 잔고는 1/5</h2>
+        <p>100만원으로 시작해 첫해 +100%로 200만원이 됐다가, 다음해 -90%로 20만원. 단순 평균을 내면 (+100 − 90) ÷ 2 = +5%지만 잔고는 원금의 1/5. <strong>이게 몰빵의 수학</strong>입니다.</p>
+        <p>같은 평균 5%라도 출렁임에 따라 잔고는 110만 ~ 20만 사이를 오갑니다. 결과는 비스듬하게 떨어지는 게 아니라 <strong>절벽처럼 떨어집니다</strong>.</p>
+
+        <h2>4가지 시나리오 — 같은 평균 5%, 다른 잔고</h2>
+        <table>
+          <thead><tr><th>시나리오</th><th>1년차</th><th>2년차</th><th>2년 후 잔고</th></tr></thead>
+          <tbody>
+            <tr><td>A (안정)</td><td>+5%</td><td>+5%</td><td><strong>110만 원</strong></td></tr>
+            <tr><td>B</td><td>+25%</td><td>−15%</td><td>106만 원</td></tr>
+            <tr><td>C</td><td>+50%</td><td>−40%</td><td>90만 원 (원금 손실)</td></tr>
+            <tr><td>D (몰빵)</td><td>+100%</td><td>−90%</td><td><strong>20만 원</strong></td></tr>
+          </tbody>
+        </table>
+        <p>흔들림이 두 배가 되면 깎이는 양은 두 배가 아니라 <strong>네 배</strong>로 늘어납니다. 비례가 아니라 제곱입니다. 이 현상을 <strong>변동성 끌림(Volatility Drag)</strong> 또는 분산 누수라 부릅니다.</p>
+
+        <h2>손실의 비대칭 — 회복은 부드럽지 않다</h2>
+        <table>
+          <thead><tr><th>손실</th><th>회복 필요</th><th>배수</th></tr></thead>
+          <tbody>
+            <tr><td>−10%</td><td>+11.11%</td><td>거의 같음</td></tr>
+            <tr><td>−50%</td><td>+100%</td><td>두 배 (×2)</td></tr>
+            <tr><td>−90%</td><td>+900%</td><td>열 배 (×10)</td></tr>
+          </tbody>
+        </table>
+        <p>손실이 커질수록 필요한 회복은 절벽처럼 튀어 오릅니다. <strong>같은 지수를 추종하는데도</strong> KODEX 200(연 4.23%)과 KODEX 레버리지(연 1.8%, 일간 2배 추종) 10년 장기 수익률이 절반 이하로 갈리는 이유가 바로 이 변동성 끌림 때문입니다. (수치는 기준일에 따라 변동, 참고용)</p>
+
+        <h2>켈리 공식 — 1956년 벨 연구소가 정한 최적 베팅 비율</h2>
+        <p>1:1 게임에서 승률에 따른 최적 베팅 비율은 다음과 같습니다.</p>
+        <table>
+          <thead><tr><th>승률</th><th>최적 베팅 비율</th></tr></thead>
+          <tbody>
+            <tr><td>55%</td><td>10%</td></tr>
+            <tr><td>60%</td><td>20%</td></tr>
+            <tr><td><strong>70%</strong></td><td><strong>40%</strong></td></tr>
+            <tr><td>80%</td><td>60%</td></tr>
+            <tr><td>90%</td><td>80%</td></tr>
+            <tr><td>100%</td><td>100%</td></tr>
+          </tbody>
+        </table>
+        <p>분명한 한 가지: <strong>승률 70% 확신이라 해도 100% 몰빵이 아닌 40%만 거는 게 수학적 정답</strong>입니다. 100% 베팅이 정답인 경우는 승률 100%일 때뿐입니다.</p>
+
+        <h2>풀 켈리는 위험하다 — 절반 켈리 (Half Kelly)</h2>
+        <p>켈리 공식을 실전 주식·블랙잭에 적용한 수학자 <strong>에드워드 소프</strong>는, 풀 켈리(공식 비율 그대로)는 일반 투자자에게 너무 위험하다고 말했습니다. 베팅을 절반으로 줄이는 절반 켈리를 쓰면, 흥미롭게도 <strong>결과는 50%가 아니라 75%</strong>가 됩니다.</p>
+        <div class="highlight">
+          <strong>왜 50% 베팅인데 75% 결과가 나오나</strong>
+          <p>장기 수익률 = 평균 − 변동성 끌림. 베팅을 절반으로 줄이면 평균 기대수익도 절반이 되지만(50% 손해), 동시에 흔들림이 절반으로 줄면서 변동성 끌림도 같이 줄어듭니다(이득). 두 효과를 합치면 약 75%로 나옵니다.</p>
+        </div>
+        <p>현실에서는 승률을 정확히 알 수 없습니다. 추정이 조금만 빗나가도 그 오차가 결과에 곱해져, 풀 켈리는 더 위험해집니다. 그래서 보수적으로 절반만 거는 게 표준입니다.</p>
+
+        <h2>마코위츠의 분산 — 1952년의 또 다른 답</h2>
+        <p>해리 마코위츠(Markowitz, 1952)가 제시한 분산 투자의 핵심은 한 줄입니다.</p>
+        <div class="highlight">
+          <strong>같은 방향으로 안 움직이는 자산을 섞으면, 평균 수익률은 그대로 유지하면서 전체 흔들림을 줄일 수 있다.</strong>
+        </div>
+        <p>한쪽이 떨어질 때 다른 쪽이 버텨주는 자산을 함께 갖는 것. 다만 <strong>분산은 폭락 가능성과 폭발적 상승 가능성을 동시에 줄입니다</strong>. 취할 건 취하되 폭발력은 아쉬운 양면성. 이게 사람들이 끊임없이 몰빵에 끌리는 이유입니다.</p>
+
+        <h2>데이터로 본 분산 — 부의 100%는 누가 만들었나</h2>
+        <p>베센빈더(Bessembinder, 2018) 연구. 1926년부터 미국 주식 전체를 분석한 결과:</p>
+        <ul>
+          <li>전체의 약 <strong>57%(7개 중 4개)가 평생 보유 시 미국 단기 국채보다 낮은 수익</strong>을 냈다.</li>
+          <li>같은 기간 미국 주식시장이 만든 <strong>부의 100%는 상위 약 4% 종목</strong>이 다 만들었다.</li>
+        </ul>
+        <p>2023년 글로벌 주식시장 연구(1990~2020, 64,000여 종목): 상위 2.4%가 75조 7천억 달러, 즉 부의 전체를 만들어냈습니다. 분산하면 그 4% 안에 들 확률은 거의 보장되지만 폭발력은 흐려지고, 몰빵하면 들었을 때 폭발적이지만 통계적으로 절반 이상은 단기 국채에도 못 미쳤습니다. <strong>분산과 몰빵은 동전의 양면</strong>입니다.</p>
+
+        <h2>네 가지 정리</h2>
+        <ol>
+          <li><strong>흔들림이 커질수록 장기 수익률은 깎인다</strong> — 변동성 끌림.</li>
+          <li><strong>손해가 커질수록 회복은 드라마틱하게 어려워진다</strong> — −10%는 +11%, −90%는 +900%.</li>
+          <li><strong>켈리 공식조차 100% 베팅이 정답인 건 승률 100%일 때뿐</strong> — 70% 확신이면 40%, 그조차 풀 켈리는 위험하니 절반 켈리.</li>
+          <li><strong>마코위츠는 같은 방향으로 안 움직이는 자산을 섞으면 평균은 유지하면서 흔들림을 줄일 수 있다고 보여줬다.</strong></li>
+        </ol>
+
+        <h2>한국 데이터로 비춰본 현실</h2>
+        <p>자본시장연구원이 2020년 3~10월 4개 대형 증권사 개인투자자 20만 4천 명을 분석한 결과:</p>
+        <ul>
+          <li>전체의 <strong>59%(1,000명 중 590명)가 보유 종목 3개 이하</strong>.</li>
+          <li>2020년 신규 투자자만 따로 보면 <strong>73%가 3종목 이하</strong> 보유, 그중 <strong>60%가 손실</strong>.</li>
+        </ul>
+        <p>2026년 3월 1일~9일 주가 하락기 데이터(대형 증권사 두 곳, 460만 계좌):</p>
+        <ul>
+          <li>빚을 내서 주식을 산 사람의 평균 수익률 <strong>−19.0%</strong>.</li>
+          <li>빚 없이 산 사람 <strong>−8.2%</strong>. 같은 시장에서 손실이 약 두 배.</li>
+          <li>같은 시기 2025년 KOSPI는 연간 <strong>+75.6%</strong> 강세장이었는데도 결과는 갈렸습니다.</li>
+        </ul>
+        <p>강세장이든 하락장이든 결론은 같은 곳으로 갑니다: <strong>흔들림이 크면 통장에 덜 남는다</strong>.</p>
+
+        <div class="cta-box">
+          <strong>오늘의 한 줄</strong>
+          <p>몰빵은 수익을 극대화하는 전략처럼 보이지만, 수학적으로는 <strong>흔들림을 극대화하는 전략에 더 가깝습니다</strong>. 변동성 끌림 · 켈리 공식 · 마코위츠 분산 — 세 개의 수학식은 스스로 판단할 수 있는 도구입니다.</p>
+          <a class="button" href="https://youtu.be/94dBOfMedtk" target="_blank" rel="noopener">YouTube에서 보기</a>
+        </div>
+
+        <h2>출처</h2>
+        <ul>
+          <li>Kelly, J. L. (1956). A New Interpretation of Information Rate. Bell System Technical Journal.</li>
+          <li>Markowitz, H. (1952). Portfolio Selection. Journal of Finance.</li>
+          <li>Thorp, E. — Beat the Dealer / Kelly Criterion 실전 적용.</li>
+          <li>Bessembinder, H. (2018). Do Stocks Outperform Treasury Bills? Journal of Financial Economics.</li>
+          <li>자본시장연구원 (2020.3~10) 개인투자자 종목 집중도 분석 (4개 대형 증권사, 20만 4천 명).</li>
+          <li>대형 증권사 2곳 460만 계좌 분석 (2026.3.1~9 하락기) — 빚투 −19.0% / 일반 −8.2%.</li>
+          <li>KODEX 200 vs KODEX 레버리지 10년 연평균 수익률 (참고용, 기준일에 따라 변동).</li>
+        </ul>
+
+        <p style="color:#94a3b8;font-size:14px;margin-top:30px">※ 본 글은 투자 권유가 아닙니다. 모든 수치는 공식 1차 출처에서 확인된 것만 사용합니다. 투자 결정은 본인의 판단과 책임 하에 이루어져야 합니다.</p>
+      </article>
+
+      <aside class="aside">
+        <div class="aside-card">
+          <h3>관련 영상</h3>
+          <p>이번 영상은 9분 30초 분량. 켈리 공식·마코위츠 분산을 1차 출처 수치만으로 짚어드립니다.</p>
+          <a class="button" href="https://youtu.be/94dBOfMedtk" target="_blank" rel="noopener">YouTube에서 보기</a>
+        </div>
+        <div class="aside-card">
+          <h3>다른 글</h3>
+          <div class="mini-list">
+            <a href="/blog/leverage-etf-volatility-decay-2026/">레버리지 ETF의 함정 — 변동성 감쇠</a>
+            <a href="/blog/beginner-investor-148man-2026/">월급쟁이가 투자 전에 먼저 챙겨야 할 148만원</a>
+            <a href="/blog/etf-safety-illusion-2026/">ETF는 안전하다? 안전 착각 깨기</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>© 데이터머니 — 투자 권유가 아니며, 1차 출처 수치만 사용합니다.</footer>
+  </div>
+</body>
+</html>
