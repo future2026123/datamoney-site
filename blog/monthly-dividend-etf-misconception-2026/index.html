@@ -7,93 +7,115 @@
 <meta name="description" content="월배당 ETF를 볼 때 가장 먼저 눈에 들어오는 것은 분배율입니다. 하지만 분배금이 들어왔다는 사실만으로 수익이 났다고 볼 수는 없습니다. ETF 기준가격, NAV 변화, 옵션 프리미엄 구조, 세후 결과까지 함께 봐야 실제 투자 결과가 보입니다.">
 <link rel="canonical" href="https://datamoney.kr/blog/monthly-dividend-etf-misconception-2026/">
 <style>
-  :root { --bg:#f5f8fc; --panel:#fff; --text:#111827; --sub:#475569; --line:rgba(15,23,42,.1); --blue:#2563eb; --red:#dc2626; }
+  :root { --ink:#0b1220; --paper:#f4f7fb; --panel:#ffffff; --text:#111827; --sub:#536173; --line:rgba(15,23,42,.12); --blue:#2563eb; --red:#dc2626; --slate:#1f2937; }
   * { box-sizing:border-box; }
-  body { margin:0; font-family:"Pretendard Variable","Pretendard","Apple SD Gothic Neo",sans-serif; color:var(--text); background:linear-gradient(180deg,#fbfdff 0%,var(--bg) 100%); }
+  html { scroll-behavior:smooth; }
+  body { margin:0; font-family:"Pretendard Variable","Pretendard","Apple SD Gothic Neo",sans-serif; color:var(--text); background:var(--paper); }
   a { color:inherit; text-decoration:none; }
-  .wrap { width:min(1080px,calc(100% - 28px)); margin:0 auto; padding:20px 0 72px; }
-  header { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:14px 0 22px; }
-  .logo { font-weight:800; font-size:24px; letter-spacing:0; }
-  .logo span { color:var(--blue); }
-  .nav { display:flex; gap:10px; flex-wrap:wrap; }
-  .nav a { padding:10px 14px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.75); color:#334155; font-size:14px; }
-  article { background:var(--panel); border:1px solid var(--line); border-radius:28px; box-shadow:0 14px 44px rgba(15,23,42,.06); padding:34px 30px; }
-  .label { display:inline-flex; padding:8px 12px; border-radius:999px; background:#eff6ff; color:#1d4ed8; font-size:12px; font-weight:800; letter-spacing:.08em; }
-  h1 { margin:18px 0 14px; font-size:clamp(32px,5vw,54px); line-height:1.08; letter-spacing:0; }
-  h2 { margin:36px 0 12px; font-size:28px; letter-spacing:0; }
-  h3 { margin:24px 0 8px; font-size:21px; letter-spacing:0; }
-  p,li { color:#334155; line-height:1.9; font-size:16px; }
-  .meta { display:flex; gap:12px; flex-wrap:wrap; color:var(--sub); font-size:14px; margin-bottom:22px; }
-  .lead { font-size:18px; line-height:1.85; }
-  .video-embed { position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:18px; margin:24px 0; background:#0f172a; }
+  .wrap { width:min(1180px,calc(100% - 32px)); margin:0 auto; padding:20px 0 72px; }
+  header { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:14px 0 18px; }
+  .logo { font-weight:900; font-size:24px; letter-spacing:0; } .logo span { color:var(--blue); }
+  .nav { display:flex; gap:10px; flex-wrap:wrap; } .nav a { padding:10px 14px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.82); color:#334155; font-size:14px; }
+  .hero { background:#0b1220; color:#f8fafc; border-radius:30px; overflow:hidden; border:1px solid rgba(255,255,255,.12); box-shadow:0 22px 60px rgba(15,23,42,.18); }
+  .hero-grid { display:grid; grid-template-columns:1.05fr .95fr; gap:0; min-height:520px; }
+  .hero-copy { padding:42px; display:flex; flex-direction:column; justify-content:space-between; }
+  .eyebrow { display:inline-flex; align-self:flex-start; padding:8px 12px; border:1px solid rgba(148,163,184,.35); border-radius:999px; color:#cbd5e1; font-size:12px; font-weight:800; letter-spacing:.08em; }
+  h1 { margin:28px 0 18px; font-size:clamp(40px,5.8vw,76px); line-height:1.02; letter-spacing:0; max-width:760px; }
+  .lead { margin:0; color:#cbd5e1; font-size:19px; line-height:1.85; max-width:680px; }
+  .hero-note { margin-top:28px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border:1px solid rgba(148,163,184,.18); }
+  .hero-note div { padding:18px; border-right:1px solid rgba(148,163,184,.18); } .hero-note div:last-child { border-right:0; }
+  .hero-note strong { display:block; font-size:28px; color:#60a5fa; line-height:1; } .hero-note span { display:block; margin-top:8px; color:#94a3b8; font-size:13px; line-height:1.45; }
+  .video-panel { padding:28px; display:flex; align-items:center; background:linear-gradient(180deg,#111827 0%,#0b1220 100%); }
+  .video-embed { position:relative; width:100%; padding-bottom:56.25%; overflow:hidden; border-radius:20px; border:1px solid rgba(148,163,184,.22); background:#020617; box-shadow:0 20px 60px rgba(0,0,0,.38); }
   .video-embed iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
-  .box { border-radius:22px; padding:22px; margin:24px 0; border:1px solid rgba(37,99,235,.14); background:#eff6ff; }
-  .warn { background:#fff7ed; border-color:rgba(234,88,12,.18); }
-  .metric { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:24px 0; }
-  .metric div { border:1px solid var(--line); border-radius:18px; padding:18px; background:#f8fafc; }
-  .metric strong { display:block; color:#2563eb; font-size:26px; line-height:1.1; }
-  .chapters { padding-left:20px; }
-  .chapters span { display:inline-block; min-width:64px; color:#2563eb; font-weight:800; }
-  table { width:100%; border-collapse:collapse; margin:18px 0; font-size:15px; }
-  th { background:#0f172a; color:white; padding:11px 14px; text-align:left; }
-  td { padding:11px 14px; border-bottom:1px solid var(--line); color:#334155; }
-  tr:nth-child(even) td { background:#f8fafc; }
+  .content-grid { display:grid; grid-template-columns:300px minmax(0,1fr); gap:24px; margin-top:24px; align-items:start; }
+  .side { position:sticky; top:18px; display:grid; gap:16px; }
+  .toc,.callout { background:#fff; border:1px solid var(--line); border-radius:22px; padding:20px; box-shadow:0 12px 36px rgba(15,23,42,.05); }
+  .toc h2,.callout h2 { margin:0 0 14px; font-size:17px; }
+  .toc a { display:flex; gap:10px; align-items:baseline; padding:10px 0; border-top:1px solid rgba(15,23,42,.08); color:#334155; } .toc a:first-of-type { border-top:0; } .toc b { color:var(--blue); font-variant-numeric:tabular-nums; } .toc span { line-height:1.45; }
+  .callout strong { display:block; font-size:34px; color:#111827; line-height:1; } .callout p { margin:10px 0 0; color:#475569; line-height:1.75; }
+  main { display:grid; gap:18px; }
+  .formula { background:#fff; border:1px solid var(--line); border-radius:26px; padding:24px; display:grid; grid-template-columns:1fr auto 1fr; gap:18px; align-items:center; box-shadow:0 12px 36px rgba(15,23,42,.05); }
+  .formula .tile { padding:20px; background:#f8fafc; border:1px solid rgba(15,23,42,.08); border-radius:18px; } .formula .arrow { color:var(--blue); font-size:34px; font-weight:900; }
+  .tile span { color:#64748b; font-size:13px; font-weight:800; letter-spacing:.06em; } .tile strong { display:block; margin-top:10px; font-size:30px; line-height:1.1; }
+  .report-section { position:relative; display:grid; grid-template-columns:90px minmax(0,1fr); gap:20px; background:#fff; border:1px solid var(--line); border-radius:26px; padding:26px; box-shadow:0 12px 36px rgba(15,23,42,.05); }
+  .section-num { font-size:38px; font-weight:900; color:#cbd5e1; font-variant-numeric:tabular-nums; }
+  .section-kicker { margin:0 0 8px; color:var(--blue); font-weight:800; }
+  .report-section h2 { margin:0 0 14px; font-size:30px; line-height:1.2; letter-spacing:0; }
+  .report-section p { margin:13px 0; color:#334155; line-height:1.9; font-size:16px; }
+  .check-table { background:#0b1220; color:#f8fafc; border-radius:26px; padding:26px; }
+  .check-table h2 { margin:0 0 18px; font-size:28px; } table { width:100%; border-collapse:collapse; } th,td { padding:15px 12px; border-bottom:1px solid rgba(148,163,184,.25); text-align:left; } th { color:#93c5fd; font-size:13px; letter-spacing:.08em; } td { color:#e2e8f0; line-height:1.6; }
+  .warn { background:#fff7ed; border:1px solid rgba(234,88,12,.2); border-radius:22px; padding:22px; color:#7c2d12; } .warn strong { display:block; margin-bottom:8px; }
   footer { margin-top:24px; color:#64748b; font-size:13px; }
-  @media (max-width:720px) { article { padding:26px 20px; border-radius:22px; } .metric { grid-template-columns:1fr; } }
+  @media (max-width:960px) { .hero-grid,.content-grid,.formula { grid-template-columns:1fr; } .side { position:static; } .hero-copy { padding:30px; } .hero-note { grid-template-columns:1fr; } .hero-note div { border-right:0; border-bottom:1px solid rgba(148,163,184,.18); } .report-section { grid-template-columns:1fr; } .section-num { font-size:24px; } }
 </style>
 <link rel="stylesheet" href="/global.css">
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <a class="logo" href="/">Data<span>Money</span></a>
-    <nav class="nav">
-      <a href="/">Home</a>
-      <a href="/blog/">Blog</a>
-      <a href="/tools/">Tools</a>
-      <a href="https://www.youtube.com/@datamoneykr" target="_blank" rel="noopener noreferrer">YouTube</a>
-    </nav>
-  </header>
-  <article>
-    <span class="label">ETF / 월배당 / 커버드콜</span>
-    <h1>월배당 ETF, 연 18% 숫자보다 먼저 봐야 할 것</h1>
-    <div class="meta"><span>2026-05-07</span><span>DataMoney</span><span>영상 포함</span></div>
-    <div class="video-embed">
-      <iframe src="https://www.youtube.com/embed/QyWiQajBDYo" title="월배당 ETF, 연 18% 숫자보다 먼저 봐야 할 것" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  <header><a class="logo" href="/">Data<span>Money</span></a><nav class="nav"><a href="/">Home</a><a href="/blog/">Blog</a><a href="/tools/">Tools</a><a href="https://www.youtube.com/@datamoneykr" target="_blank" rel="noopener noreferrer">YouTube</a></nav></header>
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="hero-copy"><div><span class="eyebrow">ETF / 월배당 / 커버드콜</span><h1>월배당 ETF, 연 18% 숫자보다 먼저 봐야 할 것</h1><p class="lead">월배당 ETF를 볼 때 가장 먼저 눈에 들어오는 것은 분배율입니다. 하지만 분배금이 들어왔다는 사실만으로 수익이 났다고 볼 수는 없습니다. ETF 기준가격, NAV 변화, 옵션 프리미엄 구조, 세후 결과까지 함께 봐야 실제 투자 결과가 보입니다.</p></div><div class="hero-note"><div><strong>18%</strong><span>먼저 의심해야 할 분배율 숫자</span></div><div><strong>-350원</strong><span>150원 입금 후 500원 하락 예시</span></div><div><strong>NAV</strong><span>입금 문자 옆에 같이 봐야 할 값</span></div></div></div>
+      <div class="video-panel"><div class="video-embed"><iframe src="https://www.youtube.com/embed/QyWiQajBDYo" title="월배당 ETF, 연 18% 숫자보다 먼저 봐야 할 것" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div></div>
     </div>
-    <p class="lead">월배당 ETF를 볼 때 가장 먼저 눈에 들어오는 것은 분배율입니다. 하지만 분배금이 들어왔다는 사실만으로 수익이 났다고 볼 수는 없습니다. ETF 기준가격, NAV 변화, 옵션 프리미엄 구조, 세후 결과까지 함께 봐야 실제 투자 결과가 보입니다.</p>
-    <div class="metric"><div><strong>연 18%</strong><span>눈에 먼저 들어오는 분배율</span></div><div><strong>-350원</strong><span>150원 분배금과 500원 가격 하락 예시</span></div><div><strong>NAV</strong><span>분배금과 함께 볼 기준가격</span></div></div>
-    <h2>영상 타임스탬프</h2>
-    <ul class="chapters"><li><span>00:00</span><a href="https://youtu.be/QyWiQajBDYo?t=0" target="_blank" rel="noopener noreferrer">연 18% 월배당의 착각</a></li><li><span>00:09</span><a href="https://youtu.be/QyWiQajBDYo?t=9" target="_blank" rel="noopener noreferrer">분배금과 기준가격을 같이 보기</a></li><li><span>00:33</span><a href="https://youtu.be/QyWiQajBDYo?t=33" target="_blank" rel="noopener noreferrer">월배당은 월급이 아니다</a></li><li><span>01:58</span><a href="https://youtu.be/QyWiQajBDYo?t=118" target="_blank" rel="noopener noreferrer">커버드콜 ETF의 구조</a></li><li><span>02:58</span><a href="https://youtu.be/QyWiQajBDYo?t=178" target="_blank" rel="noopener noreferrer">실제 상품 예시 확인</a></li><li><span>06:17</span><a href="https://youtu.be/QyWiQajBDYo?t=377" target="_blank" rel="noopener noreferrer">확인 기준 2가지</a></li><li><span>07:10</span><a href="https://youtu.be/QyWiQajBDYo?t=430" target="_blank" rel="noopener noreferrer">입금 문자만 보면 안 되는 이유</a></li></ul>
-    <div class="box"><strong>핵심은 총수익입니다.</strong><p>월 분배금은 계좌로 들어오는 현금흐름이지만, 같은 기간 ETF 가격이 더 크게 내려가면 전체 결과는 손실일 수 있습니다.</p></div>
-    <h2>연 18% 월배당의 착각</h2>
-<p>연 18% 월배당. 숫자만 보면 좋아 보입니다. 그런데 배당을 받아도 전체 수익은 손실일 수 있습니다. 예를 들어 보겠습니다. ETF 가격이 10,000원입니다. 월 분배금으로 150원을 받았습니다. 여기까지만 보면 150원을 번 것처럼 보입니다. 그런데 같은 기간 ETF 가격이 10,000원에서 9,500원으로 내려갔습니다. 받은 돈은 150원입니다. 빠진 돈은 500원입니다. 결과는 -350원입니다. 돈은 들어왔는데 전체 돈은 줄었습니다. 이게 월배당 ETF에서 가장 많이 생기는 착각입니다.</p>
-<h2>분배금과 기준가격을 같이 보기</h2>
-<p>월배당은 월급이 아닙니다. 예금 이자도 아닙니다. 확정수익률도 아닙니다. 오늘은 연 18%라는 숫자를 볼 때 무엇을 먼저 확인해야 하는지 보겠습니다. 이 영상은 상품 추천이 아닙니다. 구조와 한계까지만 봅니다. 많은 분들이 월배당 ETF를 보면 가장 먼저 분배율을 봅니다. 연 18%입니다. 연 15%입니다. 월 1.25%입니다. 숫자가 크면 좋은 상품처럼 보입니다. 매달 돈이 들어온다고 하면 더 안정적으로 느껴집니다. 하지만 질문을 바꿔야 합니다. 얼마를 주느냐가 아니라 받고 나서 내 돈이 실제로 늘었느냐입니다. 월배당 ETF에서 받는 분배금은 내 계좌로 들어오는 돈입니다. 하지만 그 돈이 들어오는 동안 ETF 가격은 내려갈 수 있습니다. 그래서 들어온 돈만 보면 안 됩니다. 빠진 돈도 같이 봐야 합니다. 이 둘을 합쳐서 보는 것이 토탈 리턴입니다. 토탈 리턴이라는 말이 어렵다면 그냥 최종 결과라고 보면 됩니다. 분배금으로 얼마를 받았는지 봅니다. ETF 가격이 얼마나 움직였는지 봅니다. 이 둘을 합쳐서 최종적으로 돈이 늘었는지 보는 겁니다.</p>
-<h2>월배당은 월급이 아니다</h2>
-<p>지갑에 150원이 들어왔습니다. 그런데 다른 주머니에서 500원이 빠졌습니다. 그러면 기분은 잠깐 좋을 수 있지만 전체 돈은 줄었습니다. 월배당 ETF도 같습니다. 분배금은 들어올 수 있습니다. 하지만 기준가격이 더 많이 빠지면 전체 결과는 손실일 수 있습니다. 그럼 커버드콜 ETF는 왜 높은 분배율을 내세울 수 있을까요? 여기서 어려운 말이 나옵니다. 커버드콜입니다. 콜옵션입니다. 옵션 프리미엄입니다. 이걸 한 번에 이해하려고 하면 어렵습니다. 그래서 하나만 남기겠습니다. 커버드콜 ETF는 대가를 받고 상승 기회의 일부를 넘기는 구조입니다. 조금 더 쉽게 말해보겠습니다. ETF가 어떤 자산을 들고 있습니다. 그리고 그 자산이 오를 때 일부 이익을 가져갈 수 있는 권리를 다른 사람에게 팔 수 있습니다. 그 권리를 판 대가로 돈을 받습니다. 이 돈을 옵션 프리미엄이라고 합니다.</p>
-<h2>커버드콜 ETF의 구조</h2>
-<p>이 프리미엄이 월분배금의 재원이 될 수 있습니다. 여기까지만 보면 좋아 보입니다. 돈을 받았기 때문입니다. 하지만 공짜는 아닙니다. 대가가 있습니다. 그 자산이 크게 오르면 상승분 일부를 다 가져가지 못할 수 있습니다. 반대로 자산 가격이 내려가면 하락 위험은 남아 있습니다. 정리하면 이렇습니다. 받는 것은 옵션 프리미엄입니다. 포기할 수 있는 것은 큰 상승의 일부입니다. 남는 것은 기초자산 하락 위험입니다. 그래서 커버드콜 ETF를 하락 방어 상품이라고 생각하면 위험합니다. 옵션 프리미엄이 손실을 조금 줄여줄 수는 있습니다. 하지만 하락폭이 크면 ETF 가격 하락이 투자 성과에 반영될 수 있습니다. 이제 실제 상품 예시를 보겠습니다. 첫 번째는 KODEX 금융고배당TOP10타겟위클리커버드콜 ETF입니다. 종목코드는 498410입니다. 운용사는 삼성자산운용입니다. 이 상품의 기초지수는 코스피200 금융고배당 TOP10 타겟 15%분배 위클리커버드콜 지수입니다. 이름이 길지만 핵심은 두 가지입니다. 금융 고배당 주식입니다. 그리고 코스피200 위클리 옵션 매도 전략입니다. ETF의 기본 관리비인 총보수는 연 0.3900%입니다. 총보수 중 운용사가 가져가는 비용인 운용보수는 연 0.3590%입니다. ETF 비용을 비교할 때는 운용보수보다 총보수를 먼저 보는 게 좋습니다. 투자위험은 1등급입니다. 매우높은위험입니다. 상장일은 2024년 12월 17일입니다. 공식 확인 포인트는 목표 분배율 월 1.25%입니다. 연 15% 수준입니다. 여기서 중요한 건 연 18%가 아니라는 점입니다. 그리고 연 15%도 수익 보장이 아닙니다.</p>
-<h2>실제 상품 예시 확인</h2>
-<p>목표 분배율입니다. 이름 속 숫자를 실제 수익률로 읽으면 안 됩니다. 두 번째는 KODEX 200타겟위클리커버드콜 ETF입니다. 종목코드는 498400입니다. 운용사는 삼성자산운용입니다. 기초지수는 코스피200 타겟 15% 위클리커버드콜 지수입니다. 총보수는 연 0.3900%입니다. 운용보수는 연 0.3590%입니다. 투자위험은 1등급입니다. 매우높은위험입니다. 상장일은 2024년 12월 3일입니다. 이 상품의 구조도 핵심은 같습니다. 코스피200 포트폴리오를 매수합니다. 그리고 코스피200 위클리 콜옵션을 매도합니다. 목표는 연간 15% 옵션 프리미엄 창출입니다. 여기서도 15%는 수익률 보장이 아닙니다. 옵션 프리미엄을 만들겠다는 구조적 목표입니다. 콜옵션을 매도하는 구조이기 때문에 상승장에서 일부 수익이 제한될 수 있습니다. 세 번째는 TIGER 반도체TOP10커버드콜액티브 ETF입니다. 종목코드는 0177R0입니다. 운용사는 미래에셋자산운용입니다. 상장일은 2026년 4월 21일입니다. 기초지수는 FnGuide 반도체 TOP10 Capped 지수입니다. 총보수는 연 0.4500%입니다. 운용보수는 연 0.4090%입니다. 투자위험은 2등급입니다. 높은위험입니다. 순자산은 2026년 5월 4일 기준 3,122억 원입니다. 이 상품은 특히 조심해서 봐야 합니다. 2026년 5월 6일 확인 시점에서 분배금 표는 존재합니다. 하지만 분배락일은 아직 확인되지 않았습니다. 분배율도 아직 확인되지 않았습니다. 분배금액 이력도 아직 확인되지 않았습니다. 상장 초기 상품은 분배금 이력이 충분하지 않을 수 있습니다. 그래서 연 환산 분배율을 단정하면 안 됩니다. 실제 지급 이력과 NAV 변화를 같이 봐야 합니다. 여기서 자주 나오는 실패 패턴이 있습니다. 첫 번째는 분배율만 보고 판단하는 겁니다. 숫자가 크니까 수익률도 높을 거라고 생각합니다. 두 번째는 월분배금을 받는다는 사실만 보는 겁니다. 그 사이에 기준가격이 내려갈 수 있다는 점을 놓칩니다. 세 번째는 프리미엄이라는 말을 좋은 상품이라는 뜻으로 오해하는 겁니다. 하지만 여기서 프리미엄은 고급이라는 뜻이 아닙니다. 옵션을 팔고 받는 대가입니다. 대가를 받으면 반대로 내주는 것도 있습니다.</p>
-<h2>확인 기준 2가지</h2>
-<p>커버드콜에서는 상승 여력 일부가 제한될 수 있습니다. 그래서 월배당 ETF를 볼 때는 질문을 바꿔야 합니다. 얼마나 주느냐가 아닙니다. 그 돈이 어디서 나오느냐입니다. 그래서 월배당 ETF를 볼 때는 두 가지 기준이 필요합니다. 첫 번째 기준은 목표분배율과 실제 수익률을 구분하는 겁니다. 목표분배율은 이 정도를 목표로 한다는 뜻입니다. 최근 분배율은 최근 지급된 돈을 기준으로 계산한 숫자일 수 있습니다. 과거 분배금 기준 환산 수익률은 과거 돈을 연간으로 바꿔 본 숫자일 수 있습니다. 실제 투자 수익률은 분배금과 가격 변화를 함께 본 결과입니다. 이 네 가지는 서로 다릅니다. 그래서 연 18% 같은 숫자를 보면 먼저 물어야 합니다. 이게 확정수익률인지 봐야 합니다. 목표분배율인지 봐야 합니다. 최근 분배금 기준 환산인지 봐야 합니다. 실제 투자 결과인지 봐야 합니다. 이 질문을 먼저 해야 합니다. 두 번째 기준은 NAV 변화와 분배금을 함께 보는 겁니다. NAV라는 말도 어렵습니다. 쉽게 말하면 ETF의 기준가격입니다. ETF 한 주의 실제 가치에 가까운 숫자라고 보면 됩니다. 분배금은 들어올 수 있습니다. 하지만 기준가격이 내려갈 수 있습니다.</p>
-<h2>입금 문자만 보면 안 되는 이유</h2>
-<p>그래서 월배당 ETF는 입금 문자만 보면 안 됩니다. 기준가격도 같이 봐야 합니다. 분배금이 들어왔는데 기준가격이 더 많이 내려가면 전체 결과는 손실일 수 있습니다. 이익금을 초과해 분배하면 투자원금이 감소할 수 있습니다. 그리고 금융투자상품은 예금자보호법상 보호되지 않습니다. 투자원금 손실 가능성이 있습니다. 이제 적용 전과 적용 후를 비교해 보겠습니다. 적용 전 판단은 이렇습니다. 연 18%처럼 보입니다. 월배당도 줍니다. 그러면 좋아 보입니다. 이 판단은 빠릅니다. 하지만 빠진 게 있습니다. 기준가격 변화가 빠졌습니다. 분배금의 출처가 빠졌습니다. 목표인지 실제 결과인지 구분이 빠졌습니다. 적용 후 판단은 이렇습니다. 먼저 숫자의 이름을 확인합니다. 목표분배율인지 봅니다. 실제 수익률인지 봅니다. 분배금 이력이 충분한지 봅니다. NAV가 어떻게 움직였는지 봅니다. 총보수와 운용보수를 봅니다. 기초자산이 무엇인지 봅니다. 옵션 구조가 있는지 봅니다. 상승장에서 수익이 제한될 수 있는지 봅니다. 원금 손실 가능성이 적혀 있는지도 봅니다. 같은 상품을 봐도 이렇게 보면 결론이 달라집니다. 월배당 ETF가 나쁜 상품이라는 뜻은 아닙니다. 다만 숫자를 잘못 읽으면 다른 상품처럼 보일 수 있습니다. 연 18%라는 숫자는 그 자체로 답이 아닙니다. 먼저 숫자의 정체를 봐야 합니다. 확정수익률인지 봐야 합니다. 목표분배율인지 봐야 합니다. 최근 분배금 환산인지 봐야 합니다. 실제 투자 결과인지 봐야 합니다. 이걸 구분해야 합니다. 오늘 내용을 한 문장으로 정리하면 이렇습니다. 월배당 ETF의 핵심은 얼마를 받느냐가 아니라 받고 나서 전체 돈이 늘었느냐입니다. 분배금은 들어올 수 있습니다. 기준가격은 빠질 수 있습니다. 커버드콜 ETF는 상승 일부를 포기하고 옵션 프리미엄을 받는 구조입니다. 높은 분배율은 수익 보장이 아닙니다. 실제 성과는 토탈 리턴으로 봐야 합니다. 데이터머니는 추천하지 않습니다. 구조까지만 말씀드립니다. 연 18%보다 먼저 봐야 할 것은 원금의 움직임입니다.</p>
-    <h2>확인할 것</h2>
-    <table>
-      <thead><tr><th>확인 항목</th><th>봐야 하는 이유</th></tr></thead>
-      <tbody>
-        <tr><td>분배금</td><td>계좌에 들어온 현금흐름</td></tr>
-        <tr><td>NAV와 기준가격</td><td>분배금 지급 전후 실제 자산가치 변화</td></tr>
-        <tr><td>커버드콜 구조</td><td>옵션 프리미엄과 상승 제한의 대가</td></tr>
-        <tr><td>세금과 비용</td><td>세후 총수익을 바꾸는 요소</td></tr>
-      </tbody>
-    </table>
-    <div class="box warn"><strong>주의</strong><p>이 글은 특정 상품 추천이 아닙니다. 공개 자료를 바탕으로 월배당 ETF 구조를 이해하기 위한 정보 제공 목적입니다. 투자 판단과 책임은 투자자 본인에게 있습니다.</p></div>
-    <h2>Video</h2>
-    <p><a href="https://youtu.be/QyWiQajBDYo" target="_blank" rel="noopener noreferrer">https://youtu.be/QyWiQajBDYo</a></p>
-  </article>
+  </section>
+  <div class="content-grid">
+    <aside class="side"><div class="toc"><h2>영상 타임스탬프</h2><a href="https://youtu.be/QyWiQajBDYo?t=0" target="_blank" rel="noopener noreferrer"><b>00:00</b><span>연 18% 월배당의 착각</span></a><a href="https://youtu.be/QyWiQajBDYo?t=9" target="_blank" rel="noopener noreferrer"><b>00:09</b><span>분배금과 기준가격을 같이 보기</span></a><a href="https://youtu.be/QyWiQajBDYo?t=33" target="_blank" rel="noopener noreferrer"><b>00:33</b><span>월배당은 월급이 아니다</span></a><a href="https://youtu.be/QyWiQajBDYo?t=118" target="_blank" rel="noopener noreferrer"><b>01:58</b><span>커버드콜 ETF의 구조</span></a><a href="https://youtu.be/QyWiQajBDYo?t=178" target="_blank" rel="noopener noreferrer"><b>02:58</b><span>실제 상품 예시 확인</span></a><a href="https://youtu.be/QyWiQajBDYo?t=377" target="_blank" rel="noopener noreferrer"><b>06:17</b><span>확인 기준 2가지</span></a><a href="https://youtu.be/QyWiQajBDYo?t=430" target="_blank" rel="noopener noreferrer"><b>07:10</b><span>입금 문자만 보면 안 되는 이유</span></a></div><div class="callout"><strong>총수익</strong><p>분배금과 기준가격 변화를 합쳐 봐야 월배당 ETF의 실제 결과가 보입니다.</p></div></aside>
+    <main>
+      <section class="formula"><div class="tile"><span>입금</span><strong>분배금 150원</strong></div><div class="arrow">&rarr;</div><div class="tile"><span>전체 결과</span><strong>가격 -500원<br>총 -350원</strong></div></section>
+      <section class="report-section" id="s1">
+      <div class="section-num">01</div>
+      <div class="section-copy">
+        <p class="section-kicker">분배금은 입금액이지만, 수익의 전부가 아닙니다.</p>
+        <h2>연 18% 월배당의 착각</h2>
+        <p>연 18% 월배당. 숫자만 보면 좋아 보입니다. 그런데 배당을 받아도 전체 수익은 손실일 수 있습니다. 예를 들어 보겠습니다. ETF 가격이 10,000원입니다. 월 분배금으로 150원을 받았습니다. 여기까지만 보면 150원을 번 것처럼 보입니다. 그런데 같은 기간 ETF 가격이 10,000원에서 9,500원으로 내려갔습니다. 받은 돈은 150원입니다. 빠진 돈은 500원입니다. 결과는 -350원입니다. 돈은 들어왔는데 전체 돈은 줄었습니다. 이게 월배당 ETF에서 가장 많이 생기는 착각입니다.</p>
+      </div>
+    </section>
+<section class="report-section" id="s2">
+      <div class="section-num">02</div>
+      <div class="section-copy">
+        <p class="section-kicker">들어온 돈과 빠진 돈을 합친 값이 총수익입니다.</p>
+        <h2>입금액보다 먼저 볼 것</h2>
+        <p>월배당은 월급이 아닙니다. 예금 이자도 아닙니다. 확정수익률도 아닙니다. 오늘은 연 18%라는 숫자를 볼 때 무엇을 먼저 확인해야 하는지 보겠습니다. 이 영상은 상품 추천이 아닙니다. 구조와 한계까지만 봅니다. 많은 분들이 월배당 ETF를 보면 가장 먼저 분배율을 봅니다. 연 18%입니다. 연 15%입니다. 월 1.25%입니다. 숫자가 크면 좋은 상품처럼 보입니다. 매달 돈이 들어온다고 하면 더 안정적으로 느껴집니다. 하지만 질문을 바꿔야 합니다. 얼마를 주느냐가 아니라 받고 나서 내 돈이 실제로 늘었느냐입니다. 월배당 ETF에서 받는 분배금은 내 계좌로 들어오는 돈입니다. 하지만 그 돈이 들어오는 동안 ETF 가격은 내려갈 수 있습니다.</p><p>그래서 들어온 돈만 보면 안 됩니다. 빠진 돈도 같이 봐야 합니다. 이 둘을 합쳐서 보는 것이 토탈 리턴입니다. 토탈 리턴이라는 말이 어렵다면 그냥 최종 결과라고 보면 됩니다. 분배금으로 얼마를 받았는지 봅니다. ETF 가격이 얼마나 움직였는지 봅니다. 이 둘을 합쳐서 최종적으로 돈이 늘었는지 보는 겁니다.</p>
+      </div>
+    </section>
+<section class="report-section" id="s3">
+      <div class="section-num">03</div>
+      <div class="section-copy">
+        <p class="section-kicker">옵션 프리미엄은 대가가 있는 현금흐름입니다.</p>
+        <h2>커버드콜은 무료 월급이 아니다</h2>
+        <p>지갑에 150원이 들어왔습니다. 그런데 다른 주머니에서 500원이 빠졌습니다. 그러면 기분은 잠깐 좋을 수 있지만 전체 돈은 줄었습니다. 월배당 ETF도 같습니다. 분배금은 들어올 수 있습니다. 하지만 기준가격이 더 많이 빠지면 전체 결과는 손실일 수 있습니다. 그럼 커버드콜 ETF는 왜 높은 분배율을 내세울 수 있을까요? 여기서 어려운 말이 나옵니다. 커버드콜입니다. 콜옵션입니다. 옵션 프리미엄입니다. 이걸 한 번에 이해하려고 하면 어렵습니다. 그래서 하나만 남기겠습니다. 커버드콜 ETF는 대가를 받고 상승 기회의 일부를 넘기는 구조입니다. 조금 더 쉽게 말해보겠습니다. ETF가 어떤 자산을 들고 있습니다. 그리고 그 자산이 오를 때 일부 이익을 가져갈 수 있는 권리를 다른 사람에게 팔 수 있습니다.</p><p>그 권리를 판 대가로 돈을 받습니다. 이 돈을 옵션 프리미엄이라고 합니다. 이 프리미엄이 월분배금의 재원이 될 수 있습니다. 여기까지만 보면 좋아 보입니다. 돈을 받았기 때문입니다. 하지만 공짜는 아닙니다. 대가가 있습니다. 그 자산이 크게 오르면 상승분 일부를 다 가져가지 못할 수 있습니다. 반대로 자산 가격이 내려가면 하락 위험은 남아 있습니다. 정리하면 이렇습니다. 받는 것은 옵션 프리미엄입니다. 포기할 수 있는 것은 큰 상승의 일부입니다. 남는 것은 기초자산 하락 위험입니다. 그래서 커버드콜 ETF를 하락 방어 상품이라고 생각하면 위험합니다. 옵션 프리미엄이 손실을 조금 줄여줄 수는 있습니다. 하지만 하락폭이 크면 ETF 가격 하락이 투자 성과에 반영될 수 있습니다.</p><p>이제 실제 상품 예시를 보겠습니다. 첫 번째는 KODEX 금융고배당TOP10타겟위클리커버드콜 ETF입니다. 종목코드는 498410입니다. 운용사는 삼성자산운용입니다. 이 상품의 기초지수는 코스피200 금융고배당 TOP10 타겟 15%분배 위클리커버드콜 지수입니다. 이름이 길지만 핵심은 두 가지입니다. 금융 고배당 주식입니다. 그리고 코스피200 위클리 옵션 매도 전략입니다. ETF의 기본 관리비인 총보수는 연 0.3900%입니다. 총보수 중 운용사가 가져가는 비용인 운용보수는 연 0.3590%입니다. ETF 비용을 비교할 때는 운용보수보다 총보수를 먼저 보는 게 좋습니다. 투자위험은 1등급입니다. 매우높은위험입니다. 상장일은 2024년 12월 17일입니다.</p><p>공식 확인 포인트는 목표 분배율 월 1.25%입니다. 연 15% 수준입니다. 여기서 중요한 건 연 18%가 아니라는 점입니다. 그리고 연 15%도 수익 보장이 아닙니다.</p>
+      </div>
+    </section>
+<section class="report-section" id="s4">
+      <div class="section-num">04</div>
+      <div class="section-copy">
+        <p class="section-kicker">목표 분배율과 실제 수익률은 같은 숫자가 아닙니다.</p>
+        <h2>상품 예시는 이름보다 구조를 본다</h2>
+        <p>목표 분배율입니다. 이름 속 숫자를 실제 수익률로 읽으면 안 됩니다. 두 번째는 KODEX 200타겟위클리커버드콜 ETF입니다. 종목코드는 498400입니다. 운용사는 삼성자산운용입니다. 기초지수는 코스피200 타겟 15% 위클리커버드콜 지수입니다. 총보수는 연 0.3900%입니다. 운용보수는 연 0.3590%입니다. 투자위험은 1등급입니다. 매우높은위험입니다. 상장일은 2024년 12월 3일입니다. 이 상품의 구조도 핵심은 같습니다. 코스피200 포트폴리오를 매수합니다. 그리고 코스피200 위클리 콜옵션을 매도합니다. 목표는 연간 15% 옵션 프리미엄 창출입니다. 여기서도 15%는 수익률 보장이 아닙니다. 옵션 프리미엄을 만들겠다는 구조적 목표입니다.</p><p>콜옵션을 매도하는 구조이기 때문에 상승장에서 일부 수익이 제한될 수 있습니다. 세 번째는 TIGER 반도체TOP10커버드콜액티브 ETF입니다. 종목코드는 0177R0입니다. 운용사는 미래에셋자산운용입니다. 상장일은 2026년 4월 21일입니다. 기초지수는 FnGuide 반도체 TOP10 Capped 지수입니다. 총보수는 연 0.4500%입니다. 운용보수는 연 0.4090%입니다. 투자위험은 2등급입니다. 높은위험입니다. 순자산은 2026년 5월 4일 기준 3,122억 원입니다. 이 상품은 특히 조심해서 봐야 합니다. 2026년 5월 6일 확인 시점에서 분배금 표는 존재합니다. 하지만 분배락일은 아직 확인되지 않았습니다. 분배율도 아직 확인되지 않았습니다.</p><p>분배금액 이력도 아직 확인되지 않았습니다. 상장 초기 상품은 분배금 이력이 충분하지 않을 수 있습니다. 그래서 연 환산 분배율을 단정하면 안 됩니다. 실제 지급 이력과 NAV 변화를 같이 봐야 합니다. 여기서 자주 나오는 실패 패턴이 있습니다. 첫 번째는 분배율만 보고 판단하는 겁니다. 숫자가 크니까 수익률도 높을 거라고 생각합니다. 두 번째는 월분배금을 받는다는 사실만 보는 겁니다. 그 사이에 기준가격이 내려갈 수 있다는 점을 놓칩니다. 세 번째는 프리미엄이라는 말을 좋은 상품이라는 뜻으로 오해하는 겁니다. 하지만 여기서 프리미엄은 고급이라는 뜻이 아닙니다. 옵션을 팔고 받는 대가입니다. 대가를 받으면 반대로 내주는 것도 있습니다.</p>
+      </div>
+    </section>
+<section class="report-section" id="s5">
+      <div class="section-num">05</div>
+      <div class="section-copy">
+        <p class="section-kicker">NAV 변화와 분배금을 함께 봐야 합니다.</p>
+        <h2>확인 기준은 두 가지</h2>
+        <p>커버드콜에서는 상승 여력 일부가 제한될 수 있습니다. 그래서 월배당 ETF를 볼 때는 질문을 바꿔야 합니다. 얼마나 주느냐가 아닙니다. 그 돈이 어디서 나오느냐입니다. 그래서 월배당 ETF를 볼 때는 두 가지 기준이 필요합니다. 첫 번째 기준은 목표분배율과 실제 수익률을 구분하는 겁니다. 목표분배율은 이 정도를 목표로 한다는 뜻입니다. 최근 분배율은 최근 지급된 돈을 기준으로 계산한 숫자일 수 있습니다. 과거 분배금 기준 환산 수익률은 과거 돈을 연간으로 바꿔 본 숫자일 수 있습니다. 실제 투자 수익률은 분배금과 가격 변화를 함께 본 결과입니다. 이 네 가지는 서로 다릅니다. 그래서 연 18% 같은 숫자를 보면 먼저 물어야 합니다. 이게 확정수익률인지 봐야 합니다.</p><p>목표분배율인지 봐야 합니다. 최근 분배금 기준 환산인지 봐야 합니다. 실제 투자 결과인지 봐야 합니다. 이 질문을 먼저 해야 합니다. 두 번째 기준은 NAV 변화와 분배금을 함께 보는 겁니다. NAV라는 말도 어렵습니다. 쉽게 말하면 ETF의 기준가격입니다. ETF 한 주의 실제 가치에 가까운 숫자라고 보면 됩니다. 분배금은 들어올 수 있습니다. 하지만 기준가격이 내려갈 수 있습니다.</p>
+      </div>
+    </section>
+<section class="report-section" id="s6">
+      <div class="section-num">06</div>
+      <div class="section-copy">
+        <p class="section-kicker">높은 분배율은 수익 보장이 아니라 확인할 신호입니다.</p>
+        <h2>입금 문자만 보면 안 되는 이유</h2>
+        <p>그래서 월배당 ETF는 입금 문자만 보면 안 됩니다. 기준가격도 같이 봐야 합니다. 분배금이 들어왔는데 기준가격이 더 많이 내려가면 전체 결과는 손실일 수 있습니다. 이익금을 초과해 분배하면 투자원금이 감소할 수 있습니다. 그리고 금융투자상품은 예금자보호법상 보호되지 않습니다. 투자원금 손실 가능성이 있습니다. 이제 적용 전과 적용 후를 비교해 보겠습니다. 적용 전 판단은 이렇습니다. 연 18%처럼 보입니다. 월배당도 줍니다. 그러면 좋아 보입니다. 이 판단은 빠릅니다. 하지만 빠진 게 있습니다. 기준가격 변화가 빠졌습니다. 분배금의 출처가 빠졌습니다. 목표인지 실제 결과인지 구분이 빠졌습니다. 적용 후 판단은 이렇습니다. 먼저 숫자의 이름을 확인합니다.</p><p>목표분배율인지 봅니다. 실제 수익률인지 봅니다. 분배금 이력이 충분한지 봅니다. NAV가 어떻게 움직였는지 봅니다. 총보수와 운용보수를 봅니다. 기초자산이 무엇인지 봅니다. 옵션 구조가 있는지 봅니다. 상승장에서 수익이 제한될 수 있는지 봅니다. 원금 손실 가능성이 적혀 있는지도 봅니다. 같은 상품을 봐도 이렇게 보면 결론이 달라집니다. 월배당 ETF가 나쁜 상품이라는 뜻은 아닙니다. 다만 숫자를 잘못 읽으면 다른 상품처럼 보일 수 있습니다. 연 18%라는 숫자는 그 자체로 답이 아닙니다. 먼저 숫자의 정체를 봐야 합니다. 확정수익률인지 봐야 합니다. 목표분배율인지 봐야 합니다. 최근 분배금 환산인지 봐야 합니다. 실제 투자 결과인지 봐야 합니다.</p><p>이걸 구분해야 합니다. 오늘 내용을 한 문장으로 정리하면 이렇습니다. 월배당 ETF의 핵심은 얼마를 받느냐가 아니라 받고 나서 전체 돈이 늘었느냐입니다. 분배금은 들어올 수 있습니다. 기준가격은 빠질 수 있습니다. 커버드콜 ETF는 상승 일부를 포기하고 옵션 프리미엄을 받는 구조입니다. 높은 분배율은 수익 보장이 아닙니다. 실제 성과는 토탈 리턴으로 봐야 합니다. 데이터머니는 추천하지 않습니다. 구조까지만 말씀드립니다. 연 18%보다 먼저 봐야 할 것은 원금의 움직임입니다.</p>
+      </div>
+    </section>
+      <section class="check-table"><h2>확인 체크리스트</h2><table><thead><tr><th>확인 항목</th><th>읽는 방법</th></tr></thead><tbody><tr><td>분배금</td><td>계좌에 들어온 현금흐름입니다. 이것만으로 수익을 판단하지 않습니다.</td></tr><tr><td>NAV와 기준가격</td><td>분배금 지급 전후 실제 자산가치가 어떻게 움직였는지 봅니다.</td></tr><tr><td>커버드콜 구조</td><td>옵션 프리미엄을 받는 대신 상승 여력 일부를 넘길 수 있습니다.</td></tr><tr><td>세금과 비용</td><td>세후 총수익과 장기 보유 결과를 바꾸는 요소입니다.</td></tr></tbody></table></section>
+      <section class="warn"><strong>주의</strong><p>이 글은 특정 상품 추천이 아닙니다. 공개 자료를 바탕으로 월배당 ETF 구조를 이해하기 위한 정보 제공 목적입니다. 투자 판단과 책임은 투자자 본인에게 있습니다.</p></section>
+    </main>
+  </div>
   <footer>DataMoney / <a href="/blog/">Blog index</a></footer>
 </div>
 </body>
