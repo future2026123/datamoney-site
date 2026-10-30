@@ -42,11 +42,33 @@ jobs:
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy . --project-name=datamoney-tools --branch=master
 
+      - name: Restore IndexNow checkpoint
+        if: github.event_name == 'push'
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/datamoney-indexnow-last-commit
+          key: datamoney-indexnow-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            datamoney-indexnow-v1-
+
       - name: Notify IndexNow of changed pages
         if: github.event_name == 'push'
         env:
           INDEXNOW_BEFORE: ${{ github.event.before }}
-        run: python3 scripts/notify_indexnow.py --before "$INDEXNOW_BEFORE" --after HEAD
+        run: |
+          base="$INDEXNOW_BEFORE"
+          checkpoint="$RUNNER_TEMP/datamoney-indexnow-last-commit"
+          if [ -f "$checkpoint" ]; then base="$(cat "$checkpoint")"; fi
+          if ! git merge-base --is-ancestor "$base" HEAD; then base="$INDEXNOW_BEFORE"; fi
+          python3 scripts/notify_indexnow.py --before "$base" --after HEAD
+          git rev-parse HEAD > "$checkpoint"
+
+      - name: Save IndexNow checkpoint
+        if: github.event_name == 'push'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/datamoney-indexnow-last-commit
+          key: datamoney-indexnow-v1-${{ github.run_id }}-${{ github.run_attempt }}
           
   deploy-worker:
     name: Deploy Redirect Worker
