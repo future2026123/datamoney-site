@@ -1,5 +1,8 @@
 # Cloudflare Pages 리다이렉트 규칙
 
+# 첫 화면
+/ /blog/ 301
+
 # 도구 단축 경로
 /tools/etf-calculator     /tools/etf_calculator/index.html     200
 /tools/tax-simulator      /tools/tax_simulator/index.html      200
