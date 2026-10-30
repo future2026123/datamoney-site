@@ -15,7 +15,7 @@
   header { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:16px 0; }
   .logo { display:inline-flex; align-items:center; gap:8px; flex:none; white-space:nowrap; font-weight:800; font-size:24px; letter-spacing:-.03em; }
   .logo-icon { position:relative; display:block; width:28px; height:28px; overflow:hidden; flex:none; }
-  .logo-icon img { position:absolute; width:44px; height:44px; max-width:none; left:-8.7px; top:-8px; }
+  .logo-icon img { position:absolute; width:44px; height:44px; max-width:none; left:-8.7px; top:-8px; filter:url(#logo-cutout); }
   .logo-text > span { color:var(--blue); }
   .nav { display:flex; gap:10px; flex-wrap:wrap; }
   .nav a { padding:10px 14px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.72); color:#334155; font-size:14px; }
@@ -121,6 +121,14 @@
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6705155374292160" crossorigin="anonymous"></script>
 </head>
 <body>
+  <svg aria-hidden="true" focusable="false" width="0" height="0" style="position:absolute">
+    <defs>
+      <filter id="logo-cutout" color-interpolation-filters="sRGB">
+        <feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 1.5 0 -0.3" result="cutout" />
+        <feComposite in="cutout" in2="SourceGraphic" operator="in" />
+      </filter>
+    </defs>
+  </svg>
   <div class="wrap">
     <header>
       <a class="logo" href="/"><span class="logo-icon" aria-hidden="true"><img src="/blog/datamoney-logo-blue.png" width="1254" height="1254" alt=""></span><span class="logo-text">데이터<span>머니</span></span></a>
