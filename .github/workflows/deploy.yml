@@ -8,12 +8,38 @@ on:
     - cron: '17 1 * * *'
 
 concurrency:
-  group: datamoney-production
+  group: datamoney-comment-permission-probe
   cancel-in-progress: false
 
 jobs:
+  check-comment-permissions:
+    name: Check Turnstile API permissions
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read Turnstile widget permissions
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.error, urllib.request
+          url = 'https://api.cloudflare.com/client/v4/accounts/' + os.environ['CF_ACCOUNT_ID'] + '/challenges/widgets?per_page=100'
+          req = urllib.request.Request(url, headers={'Authorization': 'Bearer ' + os.environ['CF_API_TOKEN']})
+          try:
+              with urllib.request.urlopen(req, timeout=20) as response:
+                  data = json.load(response)
+                  print('Turnstile read: HTTP', response.status, 'widgets:', len(data.get('result', [])))
+                  for item in data.get('result', []):
+                      print('widget:', item.get('name'), 'domains:', ','.join(item.get('domains', [])))
+          except urllib.error.HTTPError as exc:
+              data = json.load(exc)
+              print('Turnstile read: HTTP', exc.code, 'errors:', [(item.get('code'), item.get('message')) for item in data.get('errors', [])])
+          PY
+
   deploy-pages:
     name: Deploy Static Site (Cloudflare Pages)
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -89,7 +115,7 @@ jobs:
           
   deploy-worker:
     name: Deploy Redirect Worker
-    if: github.event_name != 'schedule'
+    if: github.event_name != 'schedule' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
