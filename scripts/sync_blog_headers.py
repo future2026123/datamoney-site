@@ -9,6 +9,8 @@ HEADER_CSS = ROOT / "blog" / "header.css"
 CSS_VERSION = hashlib.sha256(HEADER_CSS.read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:8]
 STYLESHEET = f'<link rel="stylesheet" href="/blog/header.css?v={CSS_VERSION}">'
 STYLESHEET_TAG = re.compile(r'''<link\s+rel=["']stylesheet["']\s+href=["']/blog/header\.css(?:\?[^"']*)?["']\s*/?>''', re.IGNORECASE)
+ARTICLE_ACTIONS_CSS = '<link rel="stylesheet" href="/blog/article-actions.css?v=20261030-1">'
+ARTICLE_ACTIONS_JS = '<script src="/blog/article-actions.js?v=20261030-1" defer></script>'
 BODY = re.compile(r"<body\b[^>]*>", re.IGNORECASE)
 HEAD_END = re.compile(r"</head\s*>", re.IGNORECASE)
 CONTENT = re.compile(r"<(?:main|article)\b", re.IGNORECASE)
@@ -46,6 +48,14 @@ def synchronize(path: Path, fragment: str) -> bool:
     else:
         head_end = HEAD_END.search(updated)
         updated = updated[:head_end.start()] + STYLESHEET + "\n" + updated[head_end.start():]
+    is_article = path.parent.parent == ROOT / "blog" or path == ROOT / "templates" / "blog_post.html"
+    if is_article:
+        if '/blog/article-actions.css' not in updated:
+            head_end = HEAD_END.search(updated)
+            updated = updated[:head_end.start()] + ARTICLE_ACTIONS_CSS + "\n" + updated[head_end.start():]
+        if '/blog/article-actions.js' not in updated:
+            head_end = HEAD_END.search(updated)
+            updated = updated[:head_end.start()] + ARTICLE_ACTIONS_JS + "\n" + updated[head_end.start():]
     if updated == original:
         return False
     path.write_text(updated, encoding="utf-8")

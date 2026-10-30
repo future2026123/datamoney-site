@@ -44,6 +44,7 @@
   .latest-posts .post-card { display:grid; grid-template-columns:minmax(0,31%) minmax(0,1fr); align-items:center; gap:20px; padding:16px; background:transparent; border:0; border-radius:0; box-shadow:none; }
   .latest-posts .post-card:not([hidden]) ~ .post-card:not([hidden]) { border-top:1px solid var(--line); }
   .latest-posts .post-card[hidden] { display:none; }
+  .latest-posts .post-card.no-thumb { grid-template-columns:minmax(0,1fr); }
   .latest-posts .post-card:hover { background:#f8fbff; }
   .latest-posts .post-card:first-child { border-radius:0; }
   .latest-posts .post-card:focus-visible { outline-offset:-3px; }
@@ -222,6 +223,24 @@
           <div class="meta"><span>읽는 시간 10분</span><span>유튜브 영상 포함</span><span>2026-05-04</span></div>
         </div>
       </a>
+      <a class="post-card" href="/blog/molppang-math-2026/">
+        <span class="post-thumb"><img src="/blog/thumbnails/94dBOfMedtk.jpg" alt="" loading="lazy" decoding="async"></span>
+        <div class="post-copy">
+          <span class="tag">수익률 / 분산 투자</span>
+          <h3>평균 수익률 5%인데 왜 돈이 줄었을까</h3>
+          <p>100만원이 첫해 +100%로 200만원이 됐다가 다음해 -90%로 20만원. 단순 평균 수익률은 +5%지만 통장은 절반도 안 남는다. 1956년 켈리 공식과 1952년 마코위츠 분산 투자, 그리고 변동성 끌림으로 정리한 몰빵의 수학.</p>
+          <div class="meta"><span>읽는 시간 12분</span><span>2026-05-04</span></div>
+        </div>
+      </a>
+      <a class="post-card" href="/blog/beginner-investor-148man-2026/">
+        <span class="post-thumb"><img src="/blog/thumbnails/NATj2h0cdh4.jpg" alt="" loading="lazy" decoding="async"></span>
+        <div class="post-copy">
+          <span class="tag">투자 입문 / 절세</span>
+          <h3>월급쟁이가 투자 전에 먼저 챙겨야 할 148만원</h3>
+          <p>1년에 148만 5,000원. 연봉 5,000만 원 직장인이 매년 합법적으로 돌려받을 수 있는 환급금입니다. 비상금→ISA→연금저축펀드→IRP→인덱스 ETF, 다섯 단계 순서가 만드는 30년 누적 4,455만 원.</p>
+          <div class="meta"><span>읽는 시간 12분</span><span>2026-05-03</span></div>
+        </div>
+      </a>
       <a class="post-card featured" href="/blog/balanced-etf-5-axis-2026/">
         <span class="post-thumb"><img src="/blog/thumbnails/sovPQRrVCDk.jpg" width="1280" height="720" alt="" loading="lazy" decoding="async"></span>
         <div class="post-copy">
@@ -366,6 +385,15 @@
           <div class="meta"><span>읽는 시간 8분</span><span>유튜브 영상 포함</span><span>2026-04-14</span></div>
         </div>
       </a>
+      <a class="post-card" href="/blog/super-isa-youth-isa-guide/">
+        <span class="post-thumb"><img src="/blog/thumbnails/l6OWTb7__ow.jpg" alt="" loading="lazy" decoding="async"></span>
+        <div class="post-copy">
+          <span class="tag">ISA / 절세</span>
+          <h3>청년형 ISA 6월 출시 — 지금 기존 ISA 채우면 얼마 손해?</h3>
+          <p>2026년 6월 청년형 ISA 출시 예정. 지금 기존 ISA를 채우면 최대 90만원 손해가 생기는 케이스가 있습니다. 나이와 계좌 상태에 따른 전략을 케이스별로 정리합니다.</p>
+          <div class="meta"><span>읽는 시간 7분</span><span>2026-04-14</span></div>
+        </div>
+      </a>
       <a class="post-card" href="/blog/dca-etf-halakjang-2026/">
         <span class="post-thumb"><img src="/blog/thumbnails/v0sn9HD7Mz8.jpg" width="1280" height="720" alt="" loading="lazy" decoding="async"></span>
         <div class="post-copy">
@@ -375,6 +403,15 @@
           <div class="meta"><span>읽는 시간 10분</span><span>유튜브 영상 포함</span><span>2026-04-13</span></div>
         </div>
       </a>
+      <a class="post-card" href="/blog/covered-call-etf-principal/">
+        <span class="post-thumb"><img src="/blog/thumbnails/rGwarer6JzQ.jpg" alt="" loading="lazy" decoding="async"></span>
+        <div class="post-copy">
+          <span class="tag">커버드콜 / ETF</span>
+          <h3>커버드콜 ETF에 1만원 넣으면 14년 뒤 3,357원 남습니다</h3>
+          <p>커버드콜 ETF에 1만원을 넣으면 14년 뒤 3,357원이 남습니다. 원금 손실 데이터를 분석했습니다.</p>
+          <div class="meta"><span>읽는 시간 12분</span><span>2026-04-13</span></div>
+        </div>
+      </a>
       <a class="post-card" href="/blog/dca-stop-loss-54percent/">
         <span class="post-thumb"><img src="/blog/thumbnails/zSbQOVngJ8w.jpg" width="1280" height="720" alt="" loading="lazy" decoding="async"></span>
         <div class="post-copy">
@@ -382,6 +419,32 @@
           <h3>하락장에 적립식 멈추면 오히려 54% 손해입니다</h3>
           <p>2008·2020·2022 세 번 모두 중단했을 때 20년 후 자산 차이 1억 1천만원. Vanguard·NDVR 연구와 실제 코스피 데이터로 계산했습니다.</p>
           <div class="meta"><span>읽는 시간 8분</span><span>유튜브 영상 포함</span><span>2026-04-12</span></div>
+        </div>
+      </a>
+      <a class="post-card" href="/blog/ria-overseas-stock-yangdose-0won/">
+        <span class="post-thumb"><img src="/blog/thumbnails/AmyqHO3RK5w.jpg" alt="" loading="lazy" decoding="async"></span>
+        <div class="post-copy">
+          <span class="tag">해외주식 / 양도세</span>
+          <h3>RIA 계좌로 해외주식 양도세 0원 만들기 — 5월 31일까지 D-49</h3>
+          <p>해외주식 양도차익 5천만원이면 세금 1,045만원. RIA 국내시장복귀계좌 이용 시 5월 31일 전 매도로 100% 감면 가능. 4가지 조건과 3분 실행 가이드 정리.</p>
+          <div class="meta"><span>읽는 시간 7분</span><span>2026-04-12</span></div>
+        </div>
+      </a>
+      <a class="post-card" href="/blog/dividend-100manwon-roadmap/">
+        <span class="post-thumb"><img src="/blog/thumbnails/dividend-100manwon-roadmap-a4446411.png" alt="" loading="lazy" decoding="async"></span>
+        <div class="post-copy">
+          <span class="tag">배당 / 투자 전략</span>
+          <h3>그래도 배당투자 해야 하는 이유, 월 100만원까지 현실적 경로</h3>
+          <p>왜 지금도 배당투자를 봐야 하는지, 월 100만원 배당금까지 가는 현실적인 경로가 무엇인지 정리한 글입니다.</p>
+          <div class="meta"><span>읽는 시간 6분</span><span>2026-04-11</span></div>
+        </div>
+      </a>
+      <a class="post-card no-thumb" href="/blog/etf-monthly-50manwon-20years/">
+        <div class="post-copy">
+          <span class="tag">ETF / 적립식 투자</span>
+          <h3>ETF 적립식 투자, 매달 50만원이면 20년 뒤 얼마가 될까</h3>
+          <p>ETF 적립식 투자에서 매달 50만원을 20년간 넣으면 자산이 얼마나 커질지 8% 수익률 기준으로 계산합니다.</p>
+          <div class="meta"><span>읽는 시간 5분</span><span>2026-04-11</span></div>
         </div>
       </a>
     </div>

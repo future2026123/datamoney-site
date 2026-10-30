@@ -1,0 +1,16 @@
+name = "datamoney-article-engagement"
+main = "workers/article-engagement.js"
+compatibility_date = "2026-10-30"
+account_id = "be57534be2be85cb30b64abced4212fa"
+
+[[routes]]
+pattern = "datamoney.kr/api/article-engagement/*"
+zone_name = "datamoney.kr"
+
+[[durable_objects.bindings]]
+name = "ARTICLE_ENGAGEMENT"
+class_name = "ArticleEngagement"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ArticleEngagement"]
