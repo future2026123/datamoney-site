@@ -1,10 +1,14 @@
 """Keep the static blog pages' navigation in sync with the shared header."""
 from pathlib import Path
+import hashlib
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
 FRAGMENT = ROOT / "templates" / "blog_header.html"
-STYLESHEET = '<link rel="stylesheet" href="/blog/header.css">'
+HEADER_CSS = ROOT / "blog" / "header.css"
+CSS_VERSION = hashlib.sha256(HEADER_CSS.read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:8]
+STYLESHEET = f'<link rel="stylesheet" href="/blog/header.css?v={CSS_VERSION}">'
+STYLESHEET_TAG = re.compile(r'''<link\s+rel=["']stylesheet["']\s+href=["']/blog/header\.css(?:\?[^"']*)?["']\s*/?>''', re.IGNORECASE)
 BODY = re.compile(r"<body\b[^>]*>", re.IGNORECASE)
 HEAD_END = re.compile(r"</head\s*>", re.IGNORECASE)
 CONTENT = re.compile(r"<(?:main|article)\b", re.IGNORECASE)
@@ -37,7 +41,9 @@ def synchronize(path: Path, fragment: str) -> bool:
         updated = original[:body.end()] + "\n" + fragment + original[body.end():]
 
     updated = OLD_FILTER.sub("", updated)
-    if STYLESHEET not in updated:
+    if STYLESHEET_TAG.search(updated):
+        updated = STYLESHEET_TAG.sub(STYLESHEET, updated)
+    else:
         head_end = HEAD_END.search(updated)
         updated = updated[:head_end.start()] + STYLESHEET + "\n" + updated[head_end.start():]
     if updated == original:
@@ -50,6 +56,9 @@ def main() -> None:
     fragment = FRAGMENT.read_text(encoding="utf-8").strip()
     paths = [ROOT / "blog" / "index.html", *sorted((ROOT / "blog").glob("*/index.html"))]
     paths.append(ROOT / "templates" / "blog_post.html")
+    search_page = ROOT / "search" / "index.html"
+    if search_page.exists():
+        paths.append(search_page)
     changed = sum(synchronize(path, fragment) for path in paths)
     print(f"Blog navigation synchronized: {len(paths)} pages/templates, {changed} updated.")
 

@@ -27,7 +27,7 @@
 </style>
 <link rel="stylesheet" href="/global.css">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6705155374292160" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="/blog/header.css">
+<link rel="stylesheet" href="/blog/header.css?v=11c66c07">
 </head>
 <body>
 <header class="dm-site-header">
@@ -40,6 +40,11 @@
     </defs>
   </svg>
   <a class="dm-brand" href="/"><span class="dm-brand-icon" aria-hidden="true"><img src="/blog/datamoney-logo-blue.png" width="1254" height="1254" alt=""></span><span class="dm-brand-text">데이터<span>머니</span></span></a>
+  <form class="dm-header-search" action="/search/" method="get" role="search">
+    <label class="dm-visually-hidden" for="dm-header-query">블로그 검색</label>
+    <input id="dm-header-query" name="q" type="search" placeholder="블로그 글 검색" autocomplete="off" required>
+    <button type="submit" aria-label="검색"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4 4"></path></svg></button>
+  </form>
   <nav class="dm-site-nav" aria-label="주 메뉴">
     <a href="/">홈</a>
     <a href="/tools/">도구</a>

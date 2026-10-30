@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,follow">
+  <title>블로그 검색 | 데이터머니</title>
+  <link rel="icon" href="/favicon.ico?v=2">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f2f5fa; color: #172033; font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+    .search-main { width: min(1120px, calc(100% - 28px)); margin: 10px auto 80px; }
+    .search-card { max-width: 738px; padding: 30px 32px; background: #fff; border: 1px solid #e3e8ef; border-radius: 20px; box-shadow: 0 12px 40px rgba(15,23,42,.05); }
+    h1 { margin: 0; color: #101319; font-size: 24px; line-height: 1.4; letter-spacing: -.02em; }
+    .search-status { margin: 9px 0 22px; color: #64748b; font-size: 14px; line-height: 1.6; }
+    .search-results { list-style: none; padding: 0; margin: 0; }
+    .search-results li { border-top: 1px solid #edf1f6; }
+    .search-results a { display: block; padding: 19px 0; color: #172033; text-decoration: none; }
+    .search-results a:hover h2 { color: #2563eb; }
+    .search-results a:focus-visible { outline: 2px solid #2563eb; outline-offset: 3px; border-radius: 3px; }
+    .search-results h2 { margin: 0; font-size: 18px; line-height: 1.45; word-break: keep-all; overflow-wrap: anywhere; }
+    .search-results p { margin: 7px 0 0; color: #64748b; font-size: 14px; line-height: 1.65; word-break: keep-all; overflow-wrap: anywhere; }
+    @media (max-width: 560px) {
+      .search-card { padding: 24px 20px; border-radius: 16px; }
+      h1 { font-size: 21px; }
+      .search-results h2 { font-size: 17px; }
+    }
+  </style>
+<link rel="stylesheet" href="/blog/header.css?v=11c66c07">
+</head>
+<body>
+<header class="dm-site-header">
+  <svg class="dm-brand-filter" aria-hidden="true" focusable="false" width="0" height="0">
+    <defs>
+      <filter id="logo-cutout" color-interpolation-filters="sRGB">
+        <feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 1.5 0 -0.3" result="cutout" />
+        <feComposite in="cutout" in2="SourceGraphic" operator="in" />
+      </filter>
+    </defs>
+  </svg>
+  <a class="dm-brand" href="/"><span class="dm-brand-icon" aria-hidden="true"><img src="/blog/datamoney-logo-blue.png" width="1254" height="1254" alt=""></span><span class="dm-brand-text">데이터<span>머니</span></span></a>
+  <form class="dm-header-search" action="/search/" method="get" role="search">
+    <label class="dm-visually-hidden" for="dm-header-query">블로그 검색</label>
+    <input id="dm-header-query" name="q" type="search" placeholder="블로그 글 검색" autocomplete="off" required>
+    <button type="submit" aria-label="검색"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4 4"></path></svg></button>
+  </form>
+  <nav class="dm-site-nav" aria-label="주 메뉴">
+    <a href="/">홈</a>
+    <a href="/tools/">도구</a>
+    <a href="https://www.youtube.com/@datamoneykr" target="_blank" rel="noopener noreferrer">YouTube</a>
+  </nav>
+</header>
+  <main class="search-main">
+    <section class="search-card" aria-labelledby="search-heading">
+      <h1 id="search-heading">블로그 검색</h1>
+      <p id="search-status" class="search-status" role="status" aria-live="polite">검색어를 입력해 주세요.</p>
+      <ol id="search-results" class="search-results"></ol>
+      <noscript>검색하려면 브라우저에서 자바스크립트를 켜 주세요.</noscript>
+    </section>
+  </main>
+  <script src="/search/search.js" defer></script>
+</body>
+</html>
