@@ -4,6 +4,12 @@ on:
   push:
     branches: [master]
   workflow_dispatch:
+  schedule:
+    - cron: '17 1 * * *'
+
+concurrency:
+  group: datamoney-production
+  cancel-in-progress: false
 
 jobs:
   deploy-pages:
@@ -11,9 +17,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: master
 
       - name: Add AdSense code to site pages
         run: python3 scripts/ensure_adsense.py
+
+      - name: Refresh popular blog posts
+        run: python3 scripts/update-popular-posts.py
+        env:
+          CF_ANALYTICS_TOKEN: ${{ secrets.CF_ANALYTICS_TOKEN || secrets.CF_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v4
@@ -24,6 +38,7 @@ jobs:
           
   deploy-worker:
     name: Deploy Redirect Worker
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

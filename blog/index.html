@@ -90,6 +90,13 @@
   .sidebar .side-posts a.post-card .metric-num span { margin:0; font-size:10px; letter-spacing:0; }
   .sidebar .side-posts a.post-card p { font-size:12px; line-height:1.55; }
   .sidebar .side-posts a.post-card .meta { gap:6px; font-size:11px; }
+  .popular-list { list-style:none; margin:0; padding:0; display:grid; gap:8px; }
+  .popular-list a { display:grid; grid-template-columns:20px 76px minmax(0,1fr); align-items:center; gap:10px; padding:12px; background:#fff; border:1px solid var(--line); border-radius:16px; }
+  .popular-list a.no-thumbnail { grid-template-columns:20px minmax(0,1fr); }
+  .popular-list img { display:block; width:76px; aspect-ratio:16 / 9; object-fit:contain; border-radius:7px; background:#f4f7fb; }
+  .popular-rank { color:#2563eb; font-size:15px; font-weight:800; text-align:center; }
+  .popular-title { font-size:14px; font-weight:700; line-height:1.45; overflow-wrap:anywhere; }
+  .popular-empty { margin:0; padding:18px; background:#fff; border:1px solid var(--line); border-radius:16px; color:var(--sub); font-size:13px; line-height:1.6; }
   .sidebar .meta { font-size:12px; margin-top:12px; }
   .mobile-sidebar-link { display:none; color:#1d4ed8; font-size:13px; font-weight:700; }
   a:focus-visible { outline:3px solid #2563eb; outline-offset:3px; }
@@ -411,11 +418,9 @@
       <a class="all-tools" href="/tools/">계산기 전체 보기</a>
     </section>
 
-    <div class="section-head"><div><h2>콘텐츠 영역</h2><p>투자와 돈 관리에 필요한 주제를 살펴보세요.</p></div></div>
-    <section class="topic-grid">
-      <article class="topic-card"><strong>ETF</strong><p>적립식 투자와 복리, ETF의 위험과 분산을 살펴봅니다.</p></article>
-      <article class="topic-card"><strong>절세</strong><p>연금저축, IRP, ISA의 세금 혜택과 활용법을 알아봅니다.</p></article>
-      <article class="topic-card"><strong>배당</strong><p>월 배당금 목표와 배당 성장, 재투자 전략을 살펴봅니다.</p></article>
+    <div class="section-head"><div><h2 id="popular-posts-heading">조회수 높은 글</h2><p id="popular-posts-note">최근 28일 페이지 요청 기준 · 자동 접속 포함 가능</p></div></div>
+    <section id="popular-posts" aria-labelledby="popular-posts-heading" aria-live="polite">
+      <p class="popular-empty">조회수 통계를 집계 중입니다.</p>
     </section>
 
     <div class="section-head"><div><h2>투자 메모</h2></div></div>
@@ -467,6 +472,7 @@
 
     <footer>© 2026 데이터머니 · datamoney.kr</footer>
   </div>
+<script src="/scripts/popular-posts.js" defer></script>
 </body>
 </html>
 
