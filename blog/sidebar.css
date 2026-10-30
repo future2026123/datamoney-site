@@ -45,6 +45,12 @@
 .dm-shared-sidebar .quote-meta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; color: #334155; font-size: 13px; font-weight: 700; }
 .dm-shared-sidebar .quote-card button { display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; min-height: 42px; margin-top: 18px; padding: 0; border: 0; border-radius: 12px; background: #2563eb; color: #fff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .dm-shared-sidebar .quote-card button:hover { background: #1d4ed8; }
+.dm-shared-sidebar .dm-channel-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
+.dm-shared-sidebar .dm-channel-links a { display: flex; align-items: center; gap: 9px; min-height: 44px; padding: 10px 12px; border: 1px solid rgba(15,23,42,.08); border-radius: 10px; background: #f8fafc; color: #1e293b; font-size: 14px; font-weight: 600; }
+.dm-shared-sidebar .dm-channel-links a:only-child { grid-column: 1 / -1; }
+.dm-shared-sidebar .dm-channel-links a:hover { background: #eff6ff; }
+.dm-shared-sidebar .dm-channel-youtube { display: block; flex: none; width: 22px; height: 22px; color: #f03; }
+.dm-shared-sidebar .dm-channel-arrow { margin-left: auto; color: #64748b; font-size: 14px; }
 .dm-shared-sidebar a:focus-visible, .dm-shared-sidebar button:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
 
 /* Older article layouts without a right column get the same 2:1 shell. */
