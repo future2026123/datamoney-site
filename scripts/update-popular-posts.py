@@ -1,5 +1,6 @@
 """Build the public popular-post list from Cloudflare's page-request analytics."""
 import json
+import ipaddress
 import os
 import re
 import sys
@@ -109,7 +110,16 @@ def cloudflare_json(url, token, body=None):
     return data
 
 
+def internal_ips():
+    """Read the owner's and work browser's public IPs from a private setting."""
+    raw = os.environ.get("DATAMONEY_INTERNAL_IPS", "").strip()
+    if not raw:
+        raise ValueError("Internal IP exclusions are not configured.")
+    return list(dict.fromkeys(str(ipaddress.ip_address(item)) for item in re.split(r"[\s,]+", raw)))
+
+
 def refresh(token, titles):
+    excluded_ips = internal_ips()
     zones = cloudflare_json("https://api.cloudflare.com/client/v4/zones?name=datamoney.kr", token)
     account_id = os.environ.get("CF_ACCOUNT_ID", "")
     zone = next(
@@ -134,6 +144,7 @@ def refresh(token, titles):
               requestSource: "eyeball"
               clientRequestHTTPHost: "datamoney.kr"
               clientRequestPath_like: "/blog/%"
+              clientIP_notin: {json.dumps(excluded_ips)}
               edgeResponseStatus_geq: 200
               edgeResponseStatus_lt: 300
             }}

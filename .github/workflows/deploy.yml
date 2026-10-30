@@ -42,6 +42,7 @@ jobs:
         env:
           CF_ANALYTICS_TOKEN: ${{ secrets.CF_ANALYTICS_TOKEN || secrets.CF_API_TOKEN }}
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          DATAMONEY_INTERNAL_IPS: ${{ secrets.DATAMONEY_INTERNAL_IPS }}
 
       - name: Deploy Article Reactions and Comments
         if: github.event_name != 'schedule'
