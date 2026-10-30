@@ -605,9 +605,8 @@
 ];
   const text = document.getElementById("investment-quote-text");
   const author = document.getElementById("investment-quote-author");
-  const source = document.getElementById("investment-quote-source");
   const button = document.getElementById("investment-quote-next");
-  if (!text || !author || !source || !button || quotes.length < 2) return;
+  if (!text || !author || !button || quotes.length < 2) return;
 
   let current = -1;
   function showAnotherQuote() {
@@ -618,8 +617,6 @@
     const quote = quotes[index];
     text.textContent = quote.text;
     author.textContent = quote.author;
-    source.href = quote.source;
-    source.title = quote.work;
   }
 
   button.addEventListener("click", showAnotherQuote);
