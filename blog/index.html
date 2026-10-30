@@ -78,7 +78,6 @@
   .popular-list a.no-thumbnail .popular-title { margin-top:0; }
   .popular-empty { margin:0; padding:18px; background:#fff; border:1px solid var(--line); border-radius:16px; color:var(--sub); font-size:13px; line-height:1.6; }
   .sidebar .meta { font-size:12px; margin-top:12px; }
-  .mobile-sidebar-link { display:none; color:#1d4ed8; font-size:13px; font-weight:700; }
   .quote-card { padding:22px; border:1px solid var(--line); border-radius:20px; background:linear-gradient(145deg,#fff,#eff6ff); box-shadow:0 12px 40px rgba(15,23,42,.05); }
   .quote-mark { display:block; height:34px; color:#2563eb; font-family:Georgia,serif; font-size:48px; font-weight:700; line-height:1; }
   .quote-card blockquote { margin:4px 0 18px; color:#0f172a; font-size:17px; font-weight:700; line-height:1.65; word-break:keep-all; overflow-wrap:anywhere; }
@@ -102,7 +101,6 @@
     .blog-layout { grid-template-columns:minmax(0,1fr); grid-template-areas:"latest" "sidebar"; gap:0; }
     .posts,.topic-grid { grid-template-columns:1fr; }
     .sidebar { padding-top:28px; }
-    .mobile-sidebar-link { display:inline-block; padding:8px 0; }
   }
   @media (max-width:560px) {
     .latest-posts .post-card { display:flex; flex-direction:column; align-items:stretch; gap:0; padding:12px; }
@@ -143,7 +141,7 @@
 </header>
     <main class="blog-layout">
       <section class="latest-column" aria-labelledby="latest-heading">
-        <div class="latest-heading"><h2 id="latest-heading">최신 글</h2><a class="mobile-sidebar-link" href="#blog-sidebar">계산기·다른 글 보기</a></div>
+        <div class="latest-heading"><h2 id="latest-heading">최신 글</h2></div>
     <div class="posts latest-posts">
       <a class="post-card featured" href="/blog/trading-loss-investor-psychology/">
         <span class="post-thumb"><img src="/blog/thumbnails/trading-loss-investor-psychology-d8ee1b08.png" width="3840" height="2160" alt="" loading="eager" decoding="async"></span>
