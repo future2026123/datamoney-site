@@ -15,6 +15,9 @@ ARTICLE_ACTIONS_CSS = f'<link rel="stylesheet" href="/blog/article-actions.css?v
 ARTICLE_ACTIONS_JS = f'<script src="/blog/article-actions.js?v={ARTICLE_ACTIONS_JS_VERSION}" defer></script>'
 ARTICLE_ACTIONS_CSS_TAG = re.compile(r'''<link\s+rel=["']stylesheet["']\s+href=["']/blog/article-actions\.css(?:\?[^"']*)?["']\s*/?>''', re.IGNORECASE)
 ARTICLE_ACTIONS_JS_TAG = re.compile(r'''<script\s+src=["']/blog/article-actions\.js(?:\?[^"']*)?["']\s+defer\s*></script\s*>''', re.IGNORECASE)
+ARTICLE_TITLE_CSS_VERSION = hashlib.sha256((ROOT / "blog" / "article-title.css").read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:8]
+ARTICLE_TITLE_CSS = f'<link rel="stylesheet" href="/blog/article-title.css?v={ARTICLE_TITLE_CSS_VERSION}">'
+ARTICLE_TITLE_CSS_TAG = re.compile(r'''<link\s+rel=["']stylesheet["']\s+href=["']/blog/article-title\.css(?:\?[^"']*)?["']\s*/?>''', re.IGNORECASE)
 BODY = re.compile(r"<body\b[^>]*>", re.IGNORECASE)
 HEAD_END = re.compile(r"</head\s*>", re.IGNORECASE)
 CONTENT = re.compile(r"<(?:main|article)\b", re.IGNORECASE)
@@ -54,6 +57,11 @@ def synchronize(path: Path, fragment: str) -> bool:
         updated = updated[:head_end.start()] + STYLESHEET + "\n" + updated[head_end.start():]
     is_article = path.parent.parent == ROOT / "blog" or path == ROOT / "templates" / "blog_post.html"
     if is_article:
+        if ARTICLE_TITLE_CSS_TAG.search(updated):
+            updated = ARTICLE_TITLE_CSS_TAG.sub(ARTICLE_TITLE_CSS, updated)
+        else:
+            head_end = HEAD_END.search(updated)
+            updated = updated[:head_end.start()] + ARTICLE_TITLE_CSS + "\n" + updated[head_end.start():]
         if ARTICLE_ACTIONS_CSS_TAG.search(updated):
             updated = ARTICLE_ACTIONS_CSS_TAG.sub(ARTICLE_ACTIONS_CSS, updated)
         else:

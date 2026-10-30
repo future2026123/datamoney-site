@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title">
+  <title id="title">ETF 적립식 투자, 매달 50만 원이면 20년 뒤 얼마가 될까</title>
+  <rect width="1280" height="720" fill="#06152f"/>
+  <path d="M0 548h1280v172H0z" fill="#030e23"/>
+  <rect x="72" y="64" width="8" height="38" rx="4" fill="#1dbdd9"/>
+  <text x="96" y="95" fill="#e6edf7" font-family="Pretendard,Malgun Gothic,Apple SD Gothic Neo,sans-serif" font-size="30" font-weight="700">데이터머니</text>
+  <text x="72" y="255" fill="#1fc4dc" font-family="Pretendard,Malgun Gothic,Apple SD Gothic Neo,sans-serif" font-size="100" font-weight="800">매달 50만 원 ETF</text>
+  <text x="72" y="394" fill="#fff" font-family="Pretendard,Malgun Gothic,Apple SD Gothic Neo,sans-serif" font-size="94" font-weight="800">20년 뒤 얼마가 될까</text>
+  <text x="76" y="621" fill="#a8bdd9" font-family="Pretendard,Malgun Gothic,Apple SD Gothic Neo,sans-serif" font-size="32" font-weight="600">적립식 투자</text>
+</svg>
