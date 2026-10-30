@@ -46,10 +46,14 @@
 .dm-shared-sidebar .quote-card button { display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; min-height: 42px; margin-top: 18px; padding: 0; border: 0; border-radius: 12px; background: #2563eb; color: #fff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .dm-shared-sidebar .quote-card button:hover { background: #1d4ed8; }
 .dm-shared-sidebar .dm-channel-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
-.dm-shared-sidebar .dm-channel-links a { display: flex; align-items: center; gap: 9px; min-height: 44px; padding: 10px 12px; border: 1px solid rgba(15,23,42,.08); border-radius: 10px; background: #f8fafc; color: #1e293b; font-size: 14px; font-weight: 600; }
-.dm-shared-sidebar .dm-channel-links a:only-child { grid-column: 1 / -1; }
+.dm-shared-sidebar .dm-channel-links :is(a, button) { display: flex; align-items: center; gap: 9px; width: 100%; min-width: 0; min-height: 44px; padding: 10px 12px; border: 1px solid rgba(15,23,42,.08); border-radius: 10px; background: #f8fafc; color: #1e293b; font: inherit; font-size: 14px; font-weight: 600; text-align: left; }
 .dm-shared-sidebar .dm-channel-links a:hover { background: #eff6ff; }
 .dm-shared-sidebar .dm-channel-youtube { display: block; flex: none; width: 22px; height: 22px; color: #f03; }
+.dm-shared-sidebar .dm-channel-icon { display: grid; place-items: center; flex: none; width: 22px; height: 22px; font-size: 20px; font-weight: 800; line-height: 1; }
+.dm-shared-sidebar .dm-channel-instagram { color: #d13f87; }
+.dm-shared-sidebar .dm-channel-threads, .dm-shared-sidebar .dm-channel-x, .dm-shared-sidebar .dm-channel-tiktok { color: #111827; }
+.dm-shared-sidebar .dm-channel-naver { color: #03c75a; font-size: 19px; }
+.dm-shared-sidebar .dm-channel-links button:disabled { opacity: 1; cursor: default; }
 .dm-shared-sidebar .dm-channel-arrow { margin-left: auto; color: #64748b; font-size: 14px; }
 .dm-shared-sidebar a:focus-visible, .dm-shared-sidebar button:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
 
@@ -70,6 +74,9 @@ body:has(.dm-article-heading, article.dm-post) > .dm-sidebar-shell { margin-top:
 .dm-original-sidebar > aside { position: static; width: auto; max-width: none; max-height: none; overflow: visible; margin: 16px 0 0; }
 @media (max-width: 900px) {
   .dm-sidebar-shell { grid-template-columns: minmax(0,1fr); gap: 20px; }
+}
+@media (max-width: 380px) {
+  .dm-shared-sidebar .dm-channel-links :is(a, button) { gap: 6px; padding: 9px 8px; font-size: 12px; }
 }
 @media print {
   .dm-shared-sidebar, .dm-original-sidebar { display: none !important; }
