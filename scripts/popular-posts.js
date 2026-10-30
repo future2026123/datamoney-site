@@ -20,7 +20,7 @@
       );
       const otherThumbnails = {
         "/blog/ria-overseas-stock-yangdose-0won/": "/blog/thumbnails/AmyqHO3RK5w.jpg",
-        "/blog/dividend-100manwon-roadmap/": "/blog/thumbnails/7GT3FNVbtyk.jpg",
+        "/blog/dividend-100manwon-roadmap/": "/blog/thumbnails/dividend-100manwon-roadmap-a4446411.png",
       };
       const list = document.createElement("ol");
       list.className = "popular-list";
