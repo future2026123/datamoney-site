@@ -169,7 +169,7 @@ body.dm-header-flush .dm-site-header::before {
   .article-shell,
   body.dm-header-flush .layout {
     grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-    column-gap: 28px;
+    column-gap: 20px;
   }
 }
 

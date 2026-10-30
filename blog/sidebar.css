@@ -4,7 +4,7 @@
   grid-area: auto;
   align-self: start;
   position: static;
-  gap: 18px;
+  gap: 20px;
   min-width: 0;
   width: auto;
   max-width: none;
@@ -48,7 +48,7 @@
 .dm-shared-sidebar a:focus-visible, .dm-shared-sidebar button:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
 
 /* Older article layouts without a right column get the same 2:1 shell. */
-.dm-sidebar-shell { display: grid; grid-template-columns: minmax(0,2fr) minmax(0,1fr); gap: 28px; align-items: start; }
+.dm-sidebar-shell { display: grid; grid-template-columns: minmax(0,2fr) minmax(0,1fr); gap: 20px; align-items: start; }
 body > .dm-sidebar-shell { width: min(1120px, calc(100% - 28px)); margin: 12px auto 20px; }
 .dm-sidebar-shell > :is(article, .dm-article-page) { min-width: 0; width: auto; max-width: none; margin: 0; }
 body.dm-dark-theme .dm-sidebar-shell > main.dm-article-page { margin: 0; }

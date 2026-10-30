@@ -36,7 +36,7 @@
   .topic-card strong { display:block; margin-bottom:10px; font-size:22px; letter-spacing:-.03em; }
   footer { margin-top:24px; color:#64748b; font-size:13px; }
   /* 최신 글과 안내 영역을 2:1로 배치합니다. */
-  .blog-layout { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); grid-template-areas:"latest sidebar"; gap:28px; align-items:start; margin-top:24px; }
+  .blog-layout { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); grid-template-areas:"latest sidebar"; gap:20px; align-items:start; margin-top:24px; }
   .latest-heading { display:flex; justify-content:flex-start; align-items:center; gap:12px; padding:22px 20px 16px; border-bottom:1px solid var(--line); }
   .latest-heading h2 { flex:none; white-space:nowrap; }
   .latest-column { grid-area:latest; background:#fff; border:1px solid var(--line); border-radius:20px; box-shadow:0 12px 40px rgba(15,23,42,.05); }
@@ -63,7 +63,7 @@
   .latest-posts .post-copy h3 { margin:0 0 7px; font-size:clamp(18px,1.7vw,22px); line-height:1.32; overflow-wrap:anywhere; }
   .latest-posts .post-copy p { font-size:14px; line-height:1.55; }
   .latest-posts .post-copy .meta { gap:8px; margin-top:10px; font-size:12px; }
-  .sidebar { grid-area:sidebar; display:grid; gap:18px; padding-top:0; }
+  .sidebar { grid-area:sidebar; display:grid; gap:20px; padding-top:0; }
   .tool-links { list-style:none; padding:0; margin:0 0 16px; display:grid; gap:8px; }
   .sidebar .topic-grid { grid-template-columns:minmax(0,1fr); gap:10px; }
   .sidebar .topic-card,.sidebar .post-card { padding:18px; border-radius:18px; }
@@ -107,7 +107,7 @@
   a:focus-visible { outline:3px solid #2563eb; outline-offset:3px; }
   @media (max-width:900px) {
     .blog-layout { grid-template-columns:minmax(0,1fr); grid-template-areas:"latest" "sidebar"; gap:0; }
-    .blog-layout > .sidebar { margin-top:28px; }
+    .blog-layout > .sidebar { margin-top:20px; }
     .posts,.topic-grid { grid-template-columns:1fr; }
   }
   @media (max-width:560px) {
@@ -129,7 +129,7 @@
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6705155374292160" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="/blog/header.css?v=11c66c07">
-<link rel="stylesheet" href="/blog/sidebar.css?v=51e58521">
+<link rel="stylesheet" href="/blog/sidebar.css?v=7c7f0682">
 </head>
 <body>
   <div class="wrap">
