@@ -102,11 +102,13 @@
     .mobile-sidebar-link { display:inline-block; padding:8px 0; }
   }
   @media (max-width:560px) {
-    .latest-posts .post-card { grid-template-columns:minmax(90px,34%) minmax(0,1fr); align-items:start; gap:12px; padding:12px; }
-    .latest-posts .post-copy .tag { font-size:10px; }
-    .latest-posts .post-copy h3 { font-size:16px; }
-    .latest-posts .post-copy p { font-size:13px; }
-    .latest-posts .post-copy .meta { gap:6px; font-size:11px; }
+    .latest-posts .post-card { display:flex; flex-direction:column; align-items:stretch; gap:0; padding:12px; }
+    .latest-posts .post-thumb { width:100%; }
+    .latest-posts .post-copy { display:flex; flex-direction:column; }
+    .latest-posts .post-copy h3 { order:1; margin:12px 0 7px; font-size:16px; }
+    .latest-posts .post-copy p { order:2; font-size:13px; }
+    .latest-posts .post-copy .tag { order:3; align-self:flex-start; margin-top:10px; font-size:10px; }
+    .latest-posts .post-copy .meta { order:4; gap:6px; font-size:11px; }
   }
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6705155374292160" crossorigin="anonymous"></script>
