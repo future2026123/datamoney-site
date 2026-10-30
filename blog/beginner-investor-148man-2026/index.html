@@ -62,6 +62,9 @@
 <link rel="stylesheet" href="/blog/article-title.css?v=ac9f86c0">
 <link rel="stylesheet" href="/blog/article-actions.css?v=df164123">
 <script src="/blog/article-actions.js?v=7d4acff0" defer></script>
+<link rel="stylesheet" href="/blog/sidebar.css?v=545f2ad2">
+<script src="/scripts/popular-posts.js?v=f2e9082d" defer></script>
+<script src="/scripts/investment-quotes.js?v=504bb17e" defer></script>
 </head>
 <body>
   <div class="wrap">
@@ -204,9 +207,8 @@
         <p class="lead">매년 148만 5,000원, 30년이면 4,455만 원. 이 돈은 종목이 만드는 게 아닙니다. 순서가 만듭니다. 순서만 지키면, 시작은 절대 흔들리지 않습니다.</p>
 
         <footer>본 글의 모든 수치는 2026-05-02 기준 공식 1차 출처(한국은행·금융위·금감원·국세청·예금보험공사·은행연합회·한국거래소·자산운용사 공식)에서 확인된 것만 사용. 본 글은 투자 권유가 아니며 정보 제공 목적입니다. 투자 결정은 본인의 판단과 책임 하에 이루어져야 합니다.</footer>
-      </article>
 
-      <aside class="aside">
+<details class="dm-original-sidebar"><summary>이 글의 참고 정보</summary><aside class="aside">
         <div class="aside-card">
           <h3>🎯 5단계 요약</h3>
           <p>비상금 → ISA → 연금저축펀드 → IRP → 인덱스 ETF. 환급 148만 5,000원이 만들어지는 단 하나의 순서.</p>
@@ -219,7 +221,47 @@
             <a href="/tools/">계산기·도구</a>
           </div>
         </div>
+      </aside></details>
+</article>
+
+      <!-- dm-shared-sidebar:start -->
+<aside class="sidebar dm-shared-sidebar" id="blog-sidebar" aria-label="블로그 둘러보기">
+    <section class="home-card tools-card" aria-labelledby="tools-heading">
+      <h2 id="tools-heading">투자 계산기</h2>
+      <p class="card-note">복리, 절세, 배당을 내 숫자로 확인해 보세요.</p>
+      <ul class="tool-links">
+        <li><a href="/tools/etf-calculator">ETF 수익률 계산기</a></li>
+        <li><a href="/tools/tax-simulator">절세 시뮬레이터</a></li>
+        <li><a href="/tools/dividend-calculator">배당 포트폴리오 계산기</a></li>
+      </ul>
+      <a class="all-tools" href="/tools/">계산기 전체 보기</a>
+    </section>
+
+    <section class="home-card popular-card" aria-labelledby="popular-posts-heading">
+      <h2 id="popular-posts-heading">조회수 높은 글</h2>
+      <p class="card-note" id="popular-posts-note">최근 28일 페이지 요청 기준 · 자동 접속 포함 가능</p>
+      <div id="popular-posts" aria-live="polite">
+        <p class="popular-empty">조회수 통계를 집계 중입니다.</p>
+      </div>
+    </section>
+
+    <section class="home-card quote-panel" aria-labelledby="investment-quote-heading">
+      <h2 id="investment-quote-heading">투자 명언</h2>
+      <div class="quote-card">
+        <span class="quote-mark" aria-hidden="true">“</span>
+        <div class="quote-current" aria-live="polite" aria-atomic="true">
+          <blockquote id="investment-quote-text">가격은 내가 내는 돈이고 가치는 그 돈으로 얻는 것이다.</blockquote>
+          <p class="quote-original" id="investment-quote-original" lang="en"></p>
+          <p class="quote-review-note" id="investment-quote-review-note" hidden>영문 원출처 확인 중</p>
+          <div class="quote-meta">
+            <span id="investment-quote-author">워런 버핏</span>
+          </div>
+        </div>
+        <button type="button" id="investment-quote-next">새로운 명언 <span aria-hidden="true">↻</span></button>
+      </div>
+    </section>
       </aside>
+<!-- dm-shared-sidebar:end -->
     </div>
   </div>
 </body>

@@ -51,29 +51,7 @@ body {
 .sample-paper th, .sample-paper td { padding: 12px 14px; border-bottom: 1px solid #e5eaf1; text-align: left; vertical-align: top; }
 .sample-paper th { background: #f5f7fa; font-weight: 700; }
 .sample-paper td:first-child { min-width: 90px; font-weight: 700; }
-.sidebar { display: grid; gap: 18px; min-width: 0; }
-.sidebar a { color: inherit; text-decoration: none; }
-.sidebar .home-card { padding: 22px; background: #fff; border: 1px solid rgba(15,23,42,.08); border-radius: 20px; box-shadow: 0 12px 40px rgba(15,23,42,.05); }
-.sidebar .home-card h2 { margin: 0; color: #111827; font-size: 18px; font-weight: 800; line-height: 1.35; letter-spacing: -.02em; }
-.sidebar .card-note { margin: 8px 0 16px; color: #64748b; font-size: 13px; line-height: 1.6; }
-.sidebar .tool-links { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 8px; }
-.sidebar .tool-links a { display: flex; align-items: center; width: 100%; min-height: 42px; padding: 10px 12px; border: 1px solid rgba(15,23,42,.08); border-radius: 10px; background: #f8fafc; color: #1e293b; font-size: 14px; font-weight: 600; line-height: 1.35; }
-.sidebar .all-tools { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; padding: 0 14px; border-radius: 10px; background: #2563eb; color: #fff; font-size: 14px; font-weight: 700; }
-.sidebar .popular-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 20px; }
-.sidebar .popular-list a { display: block; }
-.sidebar .popular-list img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: contain; border-radius: 8px; background: #f4f7fb; }
-.sidebar .popular-title { display: block; margin-top: 10px; font-size: 15px; font-weight: 700; line-height: 1.45; overflow-wrap: anywhere; }
-.sidebar .popular-list a.no-thumbnail .popular-title { margin-top: 0; }
-.sidebar .popular-empty { margin: 0; color: #475569; font-size: 13px; line-height: 1.6; }
-.sidebar .quote-card { margin-top: 16px; }
-.sidebar .quote-mark { display: block; height: 34px; color: #2563eb; font-family: Georgia,serif; font-size: 48px; font-weight: 700; line-height: 1; }
-.sidebar .quote-card blockquote { margin: 4px 0 18px; color: #0f172a; font-size: 17px; font-weight: 700; line-height: 1.65; word-break: keep-all; overflow-wrap: anywhere; }
-.sidebar .quote-original { margin: 0 0 12px; color: #64748b; font-size: 13px; line-height: 1.65; overflow-wrap: anywhere; }
-.sidebar .quote-review-note { margin: -4px 0 10px; color: #64748b; font-size: 11px; line-height: 1.4; }
-.sidebar .quote-meta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; color: #334155; font-size: 13px; font-weight: 700; }
-.sidebar .quote-card button { display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; min-height: 42px; margin-top: 18px; border: 0; border-radius: 12px; background: #2563eb; color: #fff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
-.sidebar .quote-card button:hover { background: #1d4ed8; }
-.sidebar a:focus-visible, .sidebar button:focus-visible, .sample-bar a:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+.sample-bar a:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
 .sample-footer { padding: 30px 0 60px; color: #768397; font-size: 13px; }
 .sample-footer a { color: inherit; }
 @media (max-width: 900px) {

@@ -1,0 +1,65 @@
+/* The sidebar is shared by the blog home, articles, and the article preview. */
+.dm-shared-sidebar {
+  display: grid;
+  grid-area: auto;
+  align-self: start;
+  position: static;
+  gap: 18px;
+  min-width: 0;
+  width: auto;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: visible;
+  background: transparent;
+  color: #0f172a;
+  font-family: "Pretendard Variable", "Pretendard", "Apple SD Gothic Neo", sans-serif;
+  word-break: keep-all;
+}
+.blog-layout > .dm-shared-sidebar { grid-area: sidebar; }
+.layout.dm-heading-layout > .dm-shared-sidebar { grid-area: side; }
+.dm-shared-sidebar * { box-sizing: border-box; }
+.dm-shared-sidebar a { color: inherit; text-decoration: none; }
+.dm-shared-sidebar .home-card { padding: 22px; background: #fff; border: 1px solid rgba(15,23,42,.08); border-radius: 20px; box-shadow: 0 12px 40px rgba(15,23,42,.05); }
+.dm-shared-sidebar .home-card h2 { margin: 0; padding: 0; color: #111827; font-size: 18px; font-weight: 800; line-height: 1.35; letter-spacing: -.02em; border: 0; }
+.dm-shared-sidebar .card-note { margin: 8px 0 16px; color: #64748b; font-size: 13px; font-weight: 400; line-height: 1.6; }
+.dm-shared-sidebar .tool-links { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 8px; }
+.dm-shared-sidebar .tool-links li { margin: 0; padding: 0; }
+.dm-shared-sidebar .tool-links a { display: flex; align-items: center; width: 100%; min-height: 42px; padding: 10px 12px; border: 1px solid rgba(15,23,42,.08); border-radius: 10px; background: #f8fafc; color: #1e293b; font-size: 14px; font-weight: 600; line-height: 1.35; }
+.dm-shared-sidebar .all-tools { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; padding: 0 14px; border-radius: 10px; background: #2563eb; color: #fff; font-size: 14px; font-weight: 700; }
+.dm-shared-sidebar .popular-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 20px; border: 0; background: transparent; }
+.dm-shared-sidebar .popular-list li { margin: 0; padding: 0; }
+.dm-shared-sidebar .popular-list a { display: block; }
+.dm-shared-sidebar .popular-list img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: contain; border-radius: 8px; background: #f4f7fb; }
+.dm-shared-sidebar .popular-title { display: block; margin-top: 10px; color: #0f172a; font-size: 15px; font-weight: 700; line-height: 1.45; overflow-wrap: anywhere; }
+.dm-shared-sidebar .popular-list a.no-thumbnail .popular-title { margin-top: 0; }
+.dm-shared-sidebar .popular-empty { margin: 0; padding: 0; border: 0; background: transparent; color: #475569; font-size: 13px; line-height: 1.6; }
+.dm-shared-sidebar .quote-card { margin-top: 16px; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.dm-shared-sidebar .quote-mark { display: block; height: 34px; color: #2563eb; font-family: Georgia,serif; font-size: 48px; font-weight: 700; line-height: 1; }
+.dm-shared-sidebar .quote-card blockquote { margin: 4px 0 18px; padding: 0; border: 0; background: transparent; color: #0f172a; font-size: 17px; font-weight: 700; line-height: 1.65; word-break: keep-all; overflow-wrap: anywhere; }
+.dm-shared-sidebar .quote-original { margin: 0 0 12px; color: #64748b; font-size: 13px; line-height: 1.65; overflow-wrap: anywhere; }
+.dm-shared-sidebar .quote-review-note { margin: -4px 0 10px; color: #64748b; font-size: 11px; line-height: 1.4; }
+.dm-shared-sidebar .quote-review-note[hidden] { display: none; }
+.dm-shared-sidebar .quote-meta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; color: #334155; font-size: 13px; font-weight: 700; }
+.dm-shared-sidebar .quote-card button { display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; min-height: 42px; margin-top: 18px; padding: 0; border: 0; border-radius: 12px; background: #2563eb; color: #fff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.dm-shared-sidebar .quote-card button:hover { background: #1d4ed8; }
+.dm-shared-sidebar a:focus-visible, .dm-shared-sidebar button:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+
+/* Older article layouts without a right column get the same 2:1 shell. */
+.dm-sidebar-shell { display: grid; grid-template-columns: minmax(0,2fr) minmax(0,1fr); gap: 28px; align-items: start; }
+body > .dm-sidebar-shell { width: min(1120px, calc(100% - 28px)); margin: 12px auto 20px; }
+.dm-sidebar-shell > :is(article, .dm-article-page) { min-width: 0; width: auto; max-width: none; margin: 0; }
+body.dm-dark-theme .dm-sidebar-shell > main.dm-article-page { margin: 0; }
+.dm-sidebar-shell .dm-article-page .content-grid { display: block; }
+.dm-sidebar-shell .dm-article-page .hero-grid { grid-template-columns: minmax(0, 1fr); }
+.dm-original-sidebar { margin: 36px 0 0; padding: 18px 0 0; border-top: 1px solid #e3e8ef; }
+.dm-original-sidebar > summary { color: #526581; font-size: 14px; font-weight: 700; line-height: 1.5; cursor: pointer; }
+.dm-original-sidebar > aside { position: static; width: auto; max-width: none; max-height: none; overflow: visible; margin: 16px 0 0; }
+@media (max-width: 900px) {
+  .dm-sidebar-shell { grid-template-columns: minmax(0,1fr); gap: 20px; }
+}
+@media print {
+  .dm-shared-sidebar, .dm-original-sidebar { display: none !important; }
+}

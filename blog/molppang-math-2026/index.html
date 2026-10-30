@@ -62,6 +62,9 @@
 <link rel="stylesheet" href="/blog/article-title.css?v=ac9f86c0">
 <link rel="stylesheet" href="/blog/article-actions.css?v=df164123">
 <script src="/blog/article-actions.js?v=7d4acff0" defer></script>
+<link rel="stylesheet" href="/blog/sidebar.css?v=545f2ad2">
+<script src="/scripts/popular-posts.js?v=f2e9082d" defer></script>
+<script src="/scripts/investment-quotes.js?v=504bb17e" defer></script>
 </head>
 <body>
   <div class="wrap">
@@ -213,9 +216,8 @@
         </ul>
 
         <p style="color:#94a3b8;font-size:14px;margin-top:30px">※ 본 글은 투자 권유가 아닙니다. 모든 수치는 공식 1차 출처에서 확인된 것만 사용합니다. 투자 결정은 본인의 판단과 책임 하에 이루어져야 합니다.</p>
-      </article>
 
-      <aside class="aside">
+<details class="dm-original-sidebar"><summary>이 글의 참고 정보</summary><aside class="aside">
         <div class="aside-card">
           <h3>관련 영상</h3>
           <p>이번 영상은 9분 30초 분량. 켈리 공식·마코위츠 분산을 1차 출처 수치만으로 짚어드립니다.</p>
@@ -229,7 +231,47 @@
             <a href="/blog/etf-safety-illusion-2026/">ETF는 안전하다? 안전 착각 깨기</a>
           </div>
         </div>
+      </aside></details>
+</article>
+
+      <!-- dm-shared-sidebar:start -->
+<aside class="sidebar dm-shared-sidebar" id="blog-sidebar" aria-label="블로그 둘러보기">
+    <section class="home-card tools-card" aria-labelledby="tools-heading">
+      <h2 id="tools-heading">투자 계산기</h2>
+      <p class="card-note">복리, 절세, 배당을 내 숫자로 확인해 보세요.</p>
+      <ul class="tool-links">
+        <li><a href="/tools/etf-calculator">ETF 수익률 계산기</a></li>
+        <li><a href="/tools/tax-simulator">절세 시뮬레이터</a></li>
+        <li><a href="/tools/dividend-calculator">배당 포트폴리오 계산기</a></li>
+      </ul>
+      <a class="all-tools" href="/tools/">계산기 전체 보기</a>
+    </section>
+
+    <section class="home-card popular-card" aria-labelledby="popular-posts-heading">
+      <h2 id="popular-posts-heading">조회수 높은 글</h2>
+      <p class="card-note" id="popular-posts-note">최근 28일 페이지 요청 기준 · 자동 접속 포함 가능</p>
+      <div id="popular-posts" aria-live="polite">
+        <p class="popular-empty">조회수 통계를 집계 중입니다.</p>
+      </div>
+    </section>
+
+    <section class="home-card quote-panel" aria-labelledby="investment-quote-heading">
+      <h2 id="investment-quote-heading">투자 명언</h2>
+      <div class="quote-card">
+        <span class="quote-mark" aria-hidden="true">“</span>
+        <div class="quote-current" aria-live="polite" aria-atomic="true">
+          <blockquote id="investment-quote-text">가격은 내가 내는 돈이고 가치는 그 돈으로 얻는 것이다.</blockquote>
+          <p class="quote-original" id="investment-quote-original" lang="en"></p>
+          <p class="quote-review-note" id="investment-quote-review-note" hidden>영문 원출처 확인 중</p>
+          <div class="quote-meta">
+            <span id="investment-quote-author">워런 버핏</span>
+          </div>
+        </div>
+        <button type="button" id="investment-quote-next">새로운 명언 <span aria-hidden="true">↻</span></button>
+      </div>
+    </section>
       </aside>
+<!-- dm-shared-sidebar:end -->
     </div>
 
     <footer>© 데이터머니 — 투자 권유가 아니며, 1차 출처 수치만 사용합니다.</footer>

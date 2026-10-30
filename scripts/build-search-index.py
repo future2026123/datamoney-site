@@ -36,7 +36,7 @@ class ArticleParser(HTMLParser):
             if self.skip_depth:
                 if tag not in VOID_TAGS:
                     self.skip_depth += 1
-            elif tag in SKIP_TAGS or "hidden" in attrs:
+            elif tag in SKIP_TAGS or "hidden" in attrs or "dm-original-sidebar" in attrs.get("class", "").split():
                 if tag not in VOID_TAGS:
                     self.skip_depth = 1
 

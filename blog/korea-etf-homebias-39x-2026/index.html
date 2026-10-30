@@ -63,6 +63,9 @@
 <link rel="stylesheet" href="/blog/article-title.css?v=ac9f86c0">
 <link rel="stylesheet" href="/blog/article-actions.css?v=df164123">
 <script src="/blog/article-actions.js?v=7d4acff0" defer></script>
+<link rel="stylesheet" href="/blog/sidebar.css?v=545f2ad2">
+<script src="/scripts/popular-posts.js?v=f2e9082d" defer></script>
+<script src="/scripts/investment-quotes.js?v=504bb17e" defer></script>
 </head>
 <body>
   <div class="wrap">
@@ -216,9 +219,8 @@
         <p>한국이 다음 일본이 될 수도, 다음 그리스가 될 수도, 다음 이탈리아가 될 수도 있습니다. 미래는 모릅니다. 확실한 건 "모른다는 것" 자체입니다. 모를 때의 합리적 행동은 한 곳에 39배 베팅하는 것이 아닙니다.</p>
 
         <p class="source">자료 출처: FTSE Russell 공식 팩트시트, MSCI 공식, Vanguard 팩트시트, Federal Reserve History, Tokyo Stock Exchange / Bloomberg, Markowitz H. (1952) "Portfolio Selection" (Journal of Finance), Solnik B. (1974) "Why Not Diversify Internationally" (FAJ), French K. &amp; Poterba J. (1991) (AER), Dimson·Marsh·Staunton "DMS Global Investment Returns Yearbook 2025" (UBS), Bessembinder H. (2018) "Do Stocks Outperform Treasury Bills?" (JFE), 한국은행 BOK 블로그 2025-10, 국민연금 기금운용본부 2026-01, 한국거래소 ETF 정보 2026-04. 본 글은 정보 제공이며 투자 권유가 아닙니다.</p>
-      </article>
 
-      <aside class="aside">
+<details class="dm-original-sidebar"><summary>이 글의 참고 정보</summary><aside class="aside">
         <div class="aside-card">
           <h3>관련 분석</h3>
           <p>같은 데이터로 다른 각도에서 살펴본 글들.</p>
@@ -238,7 +240,47 @@
           <p style="font-size:14px">국민연금 국내주식 목표 <b>14.9%</b></p>
           <p style="font-size:14px">Bessembinder T-bill 미달 <b>57.4%</b></p>
         </div>
+      </aside></details>
+</article>
+
+      <!-- dm-shared-sidebar:start -->
+<aside class="sidebar dm-shared-sidebar" id="blog-sidebar" aria-label="블로그 둘러보기">
+    <section class="home-card tools-card" aria-labelledby="tools-heading">
+      <h2 id="tools-heading">투자 계산기</h2>
+      <p class="card-note">복리, 절세, 배당을 내 숫자로 확인해 보세요.</p>
+      <ul class="tool-links">
+        <li><a href="/tools/etf-calculator">ETF 수익률 계산기</a></li>
+        <li><a href="/tools/tax-simulator">절세 시뮬레이터</a></li>
+        <li><a href="/tools/dividend-calculator">배당 포트폴리오 계산기</a></li>
+      </ul>
+      <a class="all-tools" href="/tools/">계산기 전체 보기</a>
+    </section>
+
+    <section class="home-card popular-card" aria-labelledby="popular-posts-heading">
+      <h2 id="popular-posts-heading">조회수 높은 글</h2>
+      <p class="card-note" id="popular-posts-note">최근 28일 페이지 요청 기준 · 자동 접속 포함 가능</p>
+      <div id="popular-posts" aria-live="polite">
+        <p class="popular-empty">조회수 통계를 집계 중입니다.</p>
+      </div>
+    </section>
+
+    <section class="home-card quote-panel" aria-labelledby="investment-quote-heading">
+      <h2 id="investment-quote-heading">투자 명언</h2>
+      <div class="quote-card">
+        <span class="quote-mark" aria-hidden="true">“</span>
+        <div class="quote-current" aria-live="polite" aria-atomic="true">
+          <blockquote id="investment-quote-text">가격은 내가 내는 돈이고 가치는 그 돈으로 얻는 것이다.</blockquote>
+          <p class="quote-original" id="investment-quote-original" lang="en"></p>
+          <p class="quote-review-note" id="investment-quote-review-note" hidden>영문 원출처 확인 중</p>
+          <div class="quote-meta">
+            <span id="investment-quote-author">워런 버핏</span>
+          </div>
+        </div>
+        <button type="button" id="investment-quote-next">새로운 명언 <span aria-hidden="true">↻</span></button>
+      </div>
+    </section>
       </aside>
+<!-- dm-shared-sidebar:end -->
     </div>
 
     <footer>© 데이터머니 — 데이터로 답하는 투자·세금·배당 콘텐츠.</footer>

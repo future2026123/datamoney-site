@@ -24,6 +24,9 @@ jobs:
       - name: Synchronize blog navigation
         run: python3 scripts/sync_blog_headers.py
 
+      - name: Synchronize blog sidebars
+        run: python3 scripts/sync_blog_sidebars.py
+
       - name: Build blog search index
         run: python3 scripts/build-search-index.py
 
