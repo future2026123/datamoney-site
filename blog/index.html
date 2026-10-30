@@ -86,12 +86,11 @@
   .sidebar .topic-card p,.sidebar .post-card p { font-size:13px; line-height:1.65; }
   .sidebar .post-card h3,.sidebar .post-card h3[style] { margin:12px 0; font-size:19px !important; line-height:1.35; overflow-wrap:anywhere; }
   .sidebar .metric-num strong { font-size:22px; }
-  .popular-list { list-style:none; margin:0; padding:0; display:grid; gap:8px; }
-  .popular-list a { display:grid; grid-template-columns:20px 76px minmax(0,1fr); align-items:center; gap:10px; padding:12px; background:#fff; border:1px solid var(--line); border-radius:16px; }
-  .popular-list a.no-thumbnail { grid-template-columns:20px minmax(0,1fr); }
-  .popular-list img { display:block; width:76px; aspect-ratio:16 / 9; object-fit:contain; border-radius:7px; background:#f4f7fb; }
-  .popular-rank { color:#2563eb; font-size:15px; font-weight:800; text-align:center; }
-  .popular-title { font-size:14px; font-weight:700; line-height:1.45; overflow-wrap:anywhere; }
+  .popular-list { list-style:none; margin:0; padding:0; display:grid; gap:14px; }
+  .popular-list a { display:block; padding:12px; background:#fff; border:1px solid var(--line); border-radius:16px; }
+  .popular-list img { display:block; width:100%; aspect-ratio:16 / 9; object-fit:contain; border-radius:8px; background:#f4f7fb; }
+  .popular-title { display:block; margin-top:10px; font-size:15px; font-weight:700; line-height:1.45; overflow-wrap:anywhere; }
+  .popular-list a.no-thumbnail .popular-title { margin-top:0; }
   .popular-empty { margin:0; padding:18px; background:#fff; border:1px solid var(--line); border-radius:16px; color:var(--sub); font-size:13px; line-height:1.6; }
   .sidebar .meta { font-size:12px; margin-top:12px; }
   .mobile-sidebar-link { display:none; color:#1d4ed8; font-size:13px; font-weight:700; }
@@ -414,7 +413,7 @@
 
     <footer>© 2026 데이터머니 · datamoney.kr</footer>
   </div>
-<script src="/scripts/popular-posts.js?v=a4446411" defer></script>
+<script src="/scripts/popular-posts.js?v=69ac9c78" defer></script>
 </body>
 </html>
 

@@ -30,12 +30,12 @@
   .field { margin-bottom: 18px; }
   label { display: block; font-size: 13px; color: var(--sub); margin-bottom: 6px; font-weight: 500; }
   .input-wrap { position: relative; }
-  input[type=number], select {
+  input[type=number], input[data-amount], select {
     width: 100%; padding: 11px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px;
     font-size: 15px; outline: none; transition: border-color .2s;
     background: #fff; color: var(--navy);
   }
-  input[type=number]:focus, select:focus { border-color: var(--blue); }
+  input[type=number]:focus, input[data-amount]:focus, select:focus { border-color: var(--blue); }
   .unit { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--sub); font-size: 13px; pointer-events: none; }
 
   .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -93,14 +93,14 @@
       <div class="field">
         <label>초기 투자금</label>
         <div class="input-wrap">
-          <input type="number" id="initial" value="10000000" min="0" step="100000">
+          <input type="text" id="initial" value="10,000,000" inputmode="decimal" spellcheck="false" data-amount>
           <span class="unit">원</span>
         </div>
       </div>
       <div class="field">
         <label>월 적립금</label>
         <div class="input-wrap">
-          <input type="number" id="monthly" value="500000" min="0" step="10000">
+          <input type="text" id="monthly" value="500,000" inputmode="decimal" spellcheck="false" data-amount>
           <span class="unit">원</span>
         </div>
       </div>
@@ -173,14 +173,14 @@
 let chartInstance = null;
 
 function fmt(n) {
-  if (n >= 1e8) return (n / 1e8).toFixed(1) + "억";
-  if (n >= 1e4) return Math.round(n / 1e4) + "만";
+  if (n >= 1e8) return (n / 1e8).toLocaleString("ko-KR", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + "억";
+  if (n >= 1e4) return Math.round(n / 1e4).toLocaleString("ko-KR") + "만";
   return n.toLocaleString();
 }
 
 function calculate() {
-  const initial = Number(document.getElementById("initial").value) || 0;
-  const monthly = Number(document.getElementById("monthly").value) || 0;
+  const initial = Number(document.getElementById("initial").value.replace(/,/g, "")) || 0;
+  const monthly = Number(document.getElementById("monthly").value.replace(/,/g, "")) || 0;
   const rate    = Number(document.getElementById("rate").value) / 100;
   const years   = Number(document.getElementById("years").value) || 1;
 
@@ -298,5 +298,6 @@ function buildTable(data) {
   `;
 }
 </script>
+<script src="/scripts/format-amount.js?v=7384d129"></script>
 </body>
 </html>

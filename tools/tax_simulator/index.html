@@ -22,7 +22,7 @@
   .field { margin-bottom: 18px; }
   label { display: block; font-size: 13px; color: var(--sub); margin-bottom: 6px; font-weight: 500; }
   .input-wrap { position: relative; }
-  input[type=number], select { width: 100%; padding: 11px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 15px; outline: none; }
+  input[type=number], input[data-amount], select { width: 100%; padding: 11px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 15px; outline: none; }
   input:focus, select:focus { border-color: var(--blue); }
   .unit { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--sub); font-size: 13px; pointer-events: none; }
   .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -62,7 +62,7 @@
       <div class="field">
         <label id="incomeLabel" for="salary">총급여 (연간)</label>
         <div class="input-wrap">
-          <input type="number" id="salary" value="60000000" step="1000000">
+          <input type="text" id="salary" value="60,000,000" inputmode="decimal" spellcheck="false" data-amount>
           <span class="unit">원</span>
         </div>
       </div>
@@ -78,14 +78,14 @@
       <div class="field">
         <label>연금저축 납입액 (연간)</label>
         <div class="input-wrap">
-          <input type="number" id="pension" value="6000000" step="100000">
+          <input type="text" id="pension" value="6,000,000" inputmode="decimal" spellcheck="false" data-amount>
           <span class="unit">원</span>
         </div>
       </div>
       <div class="field">
         <label>IRP 추가 납입액 (연간)</label>
         <div class="input-wrap">
-          <input type="number" id="irp" value="3000000" step="100000">
+          <input type="text" id="irp" value="3,000,000" inputmode="decimal" spellcheck="false" data-amount>
           <span class="unit">원</span>
         </div>
       </div>
@@ -93,7 +93,7 @@
     <div class="field">
       <label>ISA 납입액 (연간)</label>
       <div class="input-wrap">
-        <input type="number" id="isa" value="20000000" step="1000000">
+        <input type="text" id="isa" value="20,000,000" inputmode="decimal" spellcheck="false" data-amount>
         <span class="unit">원</span>
       </div>
     </div>
@@ -151,10 +151,10 @@ function updateIncomeLabel() {
 document.getElementById("incomeType").addEventListener("change", updateIncomeLabel);
 
 function calculate() {
-  const salary = Math.max(0, Number(document.getElementById("salary").value) || 0);
-  const pensionInput = Math.max(0, Number(document.getElementById("pension").value) || 0);
-  const irpInput = Math.max(0, Number(document.getElementById("irp").value) || 0);
-  const isaInput = Math.max(0, Number(document.getElementById("isa").value) || 0);
+  const salary = Math.max(0, Number(document.getElementById("salary").value.replace(/,/g, "")) || 0);
+  const pensionInput = Math.max(0, Number(document.getElementById("pension").value.replace(/,/g, "")) || 0);
+  const irpInput = Math.max(0, Number(document.getElementById("irp").value.replace(/,/g, "")) || 0);
+  const isaInput = Math.max(0, Number(document.getElementById("isa").value.replace(/,/g, "")) || 0);
 
   const selfEmployed = document.getElementById("incomeType").value === "self";
   const threshold = selfEmployed ? 45000000 : 55000000;
@@ -240,5 +240,6 @@ function buildLongTerm(annualSaving) {
   });
 }
 </script>
+<script src="/scripts/format-amount.js?v=7384d129"></script>
 </body>
 </html>

@@ -22,7 +22,7 @@
   .field { margin-bottom: 18px; }
   label { display: block; font-size: 13px; color: var(--sub); margin-bottom: 6px; font-weight: 500; }
   .input-wrap { position: relative; }
-  input[type=number], select { width: 100%; padding: 11px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 15px; outline: none; }
+  input[type=number], input[data-amount], select { width: 100%; padding: 11px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 15px; outline: none; }
   input:focus, select:focus { border-color: var(--blue); }
   .unit { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--sub); font-size: 13px; pointer-events: none; }
   .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -63,7 +63,7 @@
       <div class="field">
         <label>초기 투자금</label>
         <div class="input-wrap">
-          <input type="number" id="principal" value="50000000" step="1000000">
+          <input type="text" id="principal" value="50,000,000" inputmode="decimal" spellcheck="false" data-amount>
           <span class="unit">원</span>
         </div>
       </div>
@@ -102,7 +102,7 @@
       <div class="field">
         <label>목표 월 배당금</label>
         <div class="input-wrap">
-          <input type="number" id="targetMonthly" value="1000000" step="100000">
+          <input type="text" id="targetMonthly" value="1,000,000" inputmode="decimal" spellcheck="false" data-amount>
           <span class="unit">원</span>
         </div>
       </div>
@@ -145,20 +145,20 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script>
 function fmt(n) {
-  if (n >= 1e8) return (n / 1e8).toFixed(1) + "억";
-  if (n >= 1e4) return Math.round(n / 1e4) + "만";
+  if (n >= 1e8) return (n / 1e8).toLocaleString("ko-KR", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + "억";
+  if (n >= 1e4) return Math.round(n / 1e4).toLocaleString("ko-KR") + "만";
   return Math.round(n).toLocaleString();
 }
 
 let chartInstance = null;
 
 function calculate() {
-  const principal = Number(document.getElementById("principal").value);
+  const principal = Number(document.getElementById("principal").value.replace(/,/g, ""));
   const yieldRate = Number(document.getElementById("dividendYield").value) / 100;
   const growthRate = Number(document.getElementById("growth").value) / 100;
   const years = Number(document.getElementById("years").value);
   const drip = document.getElementById("drip").value === "yes";
-  const targetMonthly = Number(document.getElementById("targetMonthly").value);
+  const targetMonthly = Number(document.getElementById("targetMonthly").value.replace(/,/g, ""));
 
   const labels = ["시작"];
   const portfolioValues = [principal];
@@ -256,5 +256,6 @@ function buildTable(data) {
   `;
 }
 </script>
+<script src="/scripts/format-amount.js?v=7384d129"></script>
 </body>
 </html>

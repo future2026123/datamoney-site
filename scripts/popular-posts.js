@@ -19,21 +19,21 @@
           .map(card => [new URL(card.href).pathname.replace(/\/?$/, "/"), card])
       );
       const otherThumbnails = {
+        "/blog/super-isa-youth-isa-guide/": "/blog/thumbnails/l6OWTb7__ow.jpg",
+        "/blog/beginner-investor-148man-2026/": "/blog/thumbnails/NATj2h0cdh4.jpg",
+        "/blog/covered-call-etf-principal/": "/blog/thumbnails/rGwarer6JzQ.jpg",
+        "/blog/molppang-math-2026/": "/blog/thumbnails/94dBOfMedtk.jpg",
         "/blog/ria-overseas-stock-yangdose-0won/": "/blog/thumbnails/AmyqHO3RK5w.jpg",
         "/blog/dividend-100manwon-roadmap/": "/blog/thumbnails/dividend-100manwon-roadmap-a4446411.png",
       };
       const list = document.createElement("ol");
       list.className = "popular-list";
-      data.posts.slice(0, 5).forEach((post, index) => {
+      data.posts.slice(0, 5).forEach(post => {
         if (typeof post.path !== "string" || !/^\/blog\/[a-z0-9][a-z0-9-]*\/$/.test(post.path) ||
             typeof post.title !== "string" || !post.title.trim()) return;
         const item = document.createElement("li");
         const link = document.createElement("a");
         link.href = post.path;
-        const rank = document.createElement("span");
-        rank.className = "popular-rank";
-        rank.textContent = String(index + 1);
-        link.appendChild(rank);
         const image = cards.get(post.path)?.querySelector(".post-thumb img");
         const imageSrc = image?.getAttribute("src") || otherThumbnails[post.path];
         if (imageSrc) {
