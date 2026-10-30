@@ -14,14 +14,10 @@
   body { margin:0; font-family:"Pretendard Variable","Pretendard","Apple SD Gothic Neo",sans-serif; color:var(--text); background:radial-gradient(circle at top left, rgba(37,99,235,.08), transparent 18%),linear-gradient(180deg,#f8fbff 0%, var(--bg) 100%); }
   a { color:inherit; text-decoration:none; }
   .wrap { width:min(1120px, calc(100% - 28px)); margin:0 auto; padding:18px 0 64px; }
-  .post-card,.topic-card,.cta { background:var(--panel); border:1px solid var(--line); border-radius:28px; box-shadow:0 12px 40px rgba(15,23,42,.05); }
+  .post-card,.topic-card { background:var(--panel); border:1px solid var(--line); border-radius:28px; box-shadow:0 12px 40px rgba(15,23,42,.05); }
   .tag { display:inline-flex; align-items:center; padding:8px 12px; border-radius:999px; background:var(--blue-soft); color:#1d4ed8; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
-  .post-card p,.topic-card p,.cta p { margin:0; color:var(--sub); line-height:1.8; }
+  .post-card p,.topic-card p { margin:0; color:var(--sub); line-height:1.8; }
   a.post-card p { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-  .section-head { display:flex; justify-content:space-between; align-items:end; gap:16px; margin:36px 0 18px; }
-  .section-head > div:first-child::before { content:""; display:block; width:36px; height:4px; background:var(--blue); border-radius:2px; margin-bottom:12px; }
-  .section-head h2 { margin:0 0 8px; font-size:32px; letter-spacing:-.04em; }
-  .section-head p { margin:0; color:var(--sub); }
   .posts { display:grid; grid-template-columns:1.3fr .7fr; gap:18px; }
   .post-card { padding:24px; display:block; }
   .post-card.featured { background:radial-gradient(circle at top right, rgba(37,99,235,.28), transparent 42%), var(--panel); border-color:rgba(37,99,235,.32); box-shadow:inset 4px 0 0 var(--blue), 0 14px 44px rgba(37,99,235,.12); }
@@ -38,23 +34,19 @@
   .topic-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
   .topic-card { padding:22px; }
   .topic-card strong { display:block; margin-bottom:10px; font-size:22px; letter-spacing:-.03em; }
-  .cta { margin-top:22px; padding:26px 28px; background:linear-gradient(135deg,#0b1628,#16345d); color:#f8fbff; }
-  .cta h2 { margin:0 0 10px; font-size:30px; letter-spacing:-.04em; }
-  .cta p { color:#cbd5e1; margin-bottom:18px; }
-  .cta a { display:inline-flex; align-items:center; justify-content:center; min-height:46px; padding:0 18px; border-radius:14px; background:#2563eb; color:#fff; font-weight:700; }
   footer { margin-top:24px; color:#64748b; font-size:13px; }
   /* 최신 글과 안내 영역을 2:1로 배치합니다. */
-  .blog-layout { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); grid-template-areas:"heading ." "latest sidebar"; column-gap:28px; row-gap:0; align-items:start; }
-  .latest-heading { grid-area:heading; }
-  .latest-column { grid-area:latest; }
+  .blog-layout { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); grid-template-areas:"latest sidebar"; gap:28px; align-items:start; margin-top:24px; }
+  .latest-heading { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:22px 20px 16px; border-bottom:1px solid var(--line); }
+  .latest-column { grid-area:latest; background:#fff; border:1px solid var(--line); border-radius:20px; box-shadow:0 12px 40px rgba(15,23,42,.05); }
   .latest-column,.sidebar { min-width:0; }
-  .latest-posts { grid-template-columns:minmax(0,1fr); gap:0; background:var(--panel); border:1px solid var(--line); border-radius:20px; box-shadow:0 12px 40px rgba(15,23,42,.05); }
+  .latest-posts { grid-template-columns:minmax(0,1fr); gap:0; background:transparent; border:0; border-radius:0 0 20px 20px; box-shadow:none; }
   .latest-posts .post-card { display:grid; grid-template-columns:minmax(0,31%) minmax(0,1fr); align-items:center; gap:20px; padding:16px; background:transparent; border:0; border-radius:0; box-shadow:none; }
   .latest-posts .post-card + .post-card { border-top:1px solid var(--line); }
   .latest-posts .post-card:hover { background:#f8fbff; }
-  .latest-posts .post-card:first-child { border-radius:19px 19px 0 0; }
+  .latest-posts .post-card:first-child { border-radius:0; }
   .latest-posts .post-card:last-child { border-radius:0 0 19px 19px; }
-  .latest-posts .post-card:only-child { border-radius:19px; }
+  .latest-posts .post-card:only-child { border-radius:0 0 19px 19px; }
   .latest-posts .post-card:focus-visible { outline-offset:-3px; }
   .post-thumb { display:block; aspect-ratio:16 / 9; min-width:0; overflow:hidden; border-radius:12px; background:#f4f7fb; }
   .post-thumb img { display:block; width:100%; height:100%; object-fit:contain; }
@@ -63,16 +55,8 @@
   .latest-posts .post-copy h3 { margin:9px 0 7px; font-size:clamp(18px,1.7vw,22px); line-height:1.32; overflow-wrap:anywhere; }
   .latest-posts .post-copy p { font-size:14px; line-height:1.55; }
   .latest-posts .post-copy .meta { gap:8px; margin-top:10px; font-size:12px; }
-  .sidebar { grid-area:sidebar; padding-top:0; }
-  .sidebar .cta { margin-top:0; padding:24px; border-radius:22px; }
-  .sidebar .cta h2 { font-size:24px; }
-  .sidebar .cta p { font-size:14px; line-height:1.7; }
+  .sidebar { grid-area:sidebar; display:grid; gap:18px; padding-top:0; }
   .tool-links { list-style:none; padding:0; margin:0 0 16px; display:grid; gap:8px; }
-  .cta .tool-links a { display:flex; justify-content:flex-start; width:100%; padding:12px 14px; border:1px solid rgba(255,255,255,.18); border-radius:12px; background:rgba(255,255,255,.08); font-size:14px; line-height:1.35; }
-  .cta .all-tools { width:100%; font-size:14px; }
-  .sidebar .section-head { margin:30px 0 14px; }
-  .sidebar .section-head h2 { font-size:23px; }
-  .sidebar .section-head p { font-size:13px; line-height:1.6; }
   .sidebar .topic-grid { grid-template-columns:minmax(0,1fr); gap:10px; }
   .sidebar .topic-card,.sidebar .post-card { padding:18px; border-radius:18px; }
   .sidebar .topic-card strong { font-size:18px; margin-bottom:6px; }
@@ -95,9 +79,18 @@
   .quote-card button { display:flex; justify-content:center; align-items:center; gap:8px; width:100%; min-height:42px; border:0; border-radius:12px; background:#2563eb; color:#fff; font:inherit; font-size:13px; font-weight:700; cursor:pointer; }
   .quote-card button:hover { background:#1d4ed8; }
   .quote-card button:focus-visible { outline:3px solid #2563eb; outline-offset:3px; }
+  /* Card headings follow the compact, left-aligned news-card reference. */
+  .latest-heading h2,.home-card h2 { margin:0; color:#111827; font-size:18px; font-weight:800; line-height:1.35; letter-spacing:-.02em; }
+  .home-card { padding:22px; background:#fff; border:1px solid var(--line); border-radius:20px; box-shadow:0 12px 40px rgba(15,23,42,.05); }
+  .home-card .card-note { margin:8px 0 16px; color:#64748b; font-size:13px; line-height:1.6; }
+  .tools-card .tool-links a { display:flex; align-items:center; width:100%; min-height:42px; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#f8fafc; color:#1e293b; font-size:14px; font-weight:600; line-height:1.35; }
+  .tools-card .all-tools { display:flex; align-items:center; justify-content:center; width:100%; min-height:44px; padding:0 14px; border-radius:10px; background:#2563eb; color:#fff; font-size:14px; font-weight:700; }
+  .popular-card .popular-list { padding:0; border:0; border-radius:0; background:transparent; }
+  .popular-card .popular-empty { padding:0; border:0; border-radius:0; background:transparent; }
+  .quote-panel .quote-card { margin-top:16px; padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; }
   a:focus-visible { outline:3px solid #2563eb; outline-offset:3px; }
   @media (max-width:900px) {
-    .blog-layout { grid-template-columns:minmax(0,1fr); grid-template-areas:"heading" "latest" "sidebar"; gap:0; }
+    .blog-layout { grid-template-columns:minmax(0,1fr); grid-template-areas:"latest" "sidebar"; gap:0; }
     .posts,.topic-grid { grid-template-columns:1fr; }
     .sidebar { padding-top:28px; }
     .mobile-sidebar-link { display:inline-block; padding:8px 0; }
@@ -132,8 +125,8 @@
   </nav>
 </header>
     <main class="blog-layout">
-    <div class="section-head latest-heading"><div><h2 id="latest-heading">최신 글</h2></div><a class="mobile-sidebar-link" href="#blog-sidebar">계산기·다른 글 보기</a></div>
       <section class="latest-column" aria-labelledby="latest-heading">
+        <div class="latest-heading"><h2 id="latest-heading">최신 글</h2><a class="mobile-sidebar-link" href="#blog-sidebar">계산기·다른 글 보기</a></div>
     <div class="posts latest-posts">
       <a class="post-card featured" href="/blog/trading-loss-investor-psychology/">
         <span class="post-thumb"><img src="/blog/thumbnails/trading-loss-investor-psychology-d8ee1b08.png" width="3840" height="2160" alt="" loading="eager" decoding="async"></span>
@@ -382,9 +375,9 @@
 
       </section>
       <aside class="sidebar" id="blog-sidebar" aria-label="블로그 둘러보기">
-    <section class="cta" aria-labelledby="tools-heading">
+    <section class="home-card tools-card" aria-labelledby="tools-heading">
       <h2 id="tools-heading">투자 계산기</h2>
-      <p>복리, 절세, 배당을 내 숫자로 확인해 보세요.</p>
+      <p class="card-note">복리, 절세, 배당을 내 숫자로 확인해 보세요.</p>
       <ul class="tool-links">
         <li><a href="/tools/etf-calculator">ETF 수익률 계산기</a></li>
         <li><a href="/tools/tax-simulator">절세 시뮬레이터</a></li>
@@ -393,24 +386,28 @@
       <a class="all-tools" href="/tools/">계산기 전체 보기</a>
     </section>
 
-    <div class="section-head"><div><h2 id="popular-posts-heading">조회수 높은 글</h2><p id="popular-posts-note">최근 28일 페이지 요청 기준 · 자동 접속 포함 가능</p></div></div>
-    <section id="popular-posts" aria-labelledby="popular-posts-heading" aria-live="polite">
-      <p class="popular-empty">조회수 통계를 집계 중입니다.</p>
-    </section>
-
-    <div class="section-head"><div><h2 id="investment-quote-heading">투자 명언</h2></div></div>
-    <section class="quote-card" aria-labelledby="investment-quote-heading">
-      <span class="quote-mark" aria-hidden="true">“</span>
-      <div class="quote-current" aria-live="polite" aria-atomic="true">
-        <blockquote id="investment-quote-text">가격은 내가 내는 돈이고 가치는 그 돈으로 얻는 것이다.</blockquote>
-        <div class="quote-meta">
-          <span id="investment-quote-author">워런 버핏</span>
-        </div>
-        <p class="quote-note">원문의 뜻을 읽기 쉽게 풀어썼습니다.</p>
+    <section class="home-card popular-card" aria-labelledby="popular-posts-heading">
+      <h2 id="popular-posts-heading">조회수 높은 글</h2>
+      <p class="card-note" id="popular-posts-note">최근 28일 페이지 요청 기준 · 자동 접속 포함 가능</p>
+      <div id="popular-posts" aria-live="polite">
+        <p class="popular-empty">조회수 통계를 집계 중입니다.</p>
       </div>
-      <button type="button" id="investment-quote-next">새로운 명언 <span aria-hidden="true">↻</span></button>
     </section>
 
+    <section class="home-card quote-panel" aria-labelledby="investment-quote-heading">
+      <h2 id="investment-quote-heading">투자 명언</h2>
+      <div class="quote-card">
+        <span class="quote-mark" aria-hidden="true">“</span>
+        <div class="quote-current" aria-live="polite" aria-atomic="true">
+          <blockquote id="investment-quote-text">가격은 내가 내는 돈이고 가치는 그 돈으로 얻는 것이다.</blockquote>
+          <div class="quote-meta">
+            <span id="investment-quote-author">워런 버핏</span>
+          </div>
+          <p class="quote-note">원문의 뜻을 읽기 쉽게 풀어썼습니다.</p>
+        </div>
+        <button type="button" id="investment-quote-next">새로운 명언 <span aria-hidden="true">↻</span></button>
+      </div>
+    </section>
       </aside>
     </main>
 
