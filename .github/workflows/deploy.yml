@@ -13,39 +13,31 @@ concurrency:
 
 jobs:
   check-comment-permissions:
-    name: Check Turnstile API permissions
+    name: Set up comment administrator access
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
-      - name: Create comment protection widget
+      - name: Store administrator key securely
         env:
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          DM_COMMENT_ADMIN_KEY: ${{ secrets.DM_COMMENT_ADMIN_KEY }}
         run: |
           python3 - <<'PY'
           import json, os, sys, urllib.error, urllib.request
           prefix = 'https://api.cloudflare.com/client/v4/accounts/' + os.environ['CF_ACCOUNT_ID']
           headers = {'Authorization': 'Bearer ' + os.environ['CF_API_TOKEN'], 'Content-Type': 'application/json'}
-          body = json.dumps({'name': 'DataMoney blog comment protection', 'domains': ['datamoney.kr'], 'mode': 'managed'}).encode()
-          req = urllib.request.Request(prefix + '/challenges/widgets', data=body, headers=headers, method='POST')
+          body = json.dumps({'name': 'DM_COMMENT_ADMIN_KEY', 'text': os.environ['DM_COMMENT_ADMIN_KEY'], 'type': 'secret_text'}).encode()
+          req = urllib.request.Request(prefix + '/workers/scripts/datamoney-article-engagement/secrets', data=body, headers=headers, method='PUT')
           try:
               with urllib.request.urlopen(req, timeout=20) as response:
                   data = json.load(response)
-                  result = data['result']
-                  secret, sitekey = result['secret'], result['sitekey']
-                  print('::add-mask::' + secret)
-                  print('Turnstile widget created for datamoney.kr; public sitekey:', sitekey)
-                  for name, value in [('TURNSTILE_SECRET', secret), ('TURNSTILE_SITEKEY', sitekey)]:
-                      payload = json.dumps({'name': name, 'text': value, 'type': 'secret_text'}).encode()
-                      put = urllib.request.Request(prefix + '/workers/scripts/datamoney-article-engagement/secrets', data=payload, headers=headers, method='PUT')
-                      with urllib.request.urlopen(put, timeout=20) as stored:
-                          result = json.load(stored)
-                          if not result.get('success'):
-                              raise RuntimeError('Failed to store ' + name)
-                      print('Worker binding stored:', name)
+                  if not data.get('success'):
+                      raise RuntimeError('Administrator key was not saved')
+                  print('Administrator key stored as a Worker secret.')
           except urllib.error.HTTPError as exc:
               data = json.load(exc)
-              print('Turnstile setup: HTTP', exc.code, 'errors:', [(item.get('code'), item.get('message')) for item in data.get('errors', [])])
+              print('Administrator key setup: HTTP', exc.code, 'errors:', [(item.get('code'), item.get('message')) for item in data.get('errors', [])])
               sys.exit(1)
           PY
 
