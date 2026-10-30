@@ -54,6 +54,11 @@ body > .dm-sidebar-shell { width: min(1120px, calc(100% - 28px)); margin: 12px a
 body.dm-dark-theme .dm-sidebar-shell > main.dm-article-page { margin: 0; }
 .dm-sidebar-shell .dm-article-page .content-grid { display: block; }
 .dm-sidebar-shell .dm-article-page .hero-grid { grid-template-columns: minmax(0, 1fr); }
+/* Keep the article and home cards at the same starting height. */
+body:has(.dm-article-heading) > .wrap { margin-top: 0; padding-top: 18px; }
+body.dm-header-flush > .wrap > .dm-site-header { margin-top: 0; border-bottom: 0; }
+body:has(.dm-article-heading) > .wrap > :is(.article-shell, .dm-heading-layout, .dm-sidebar-shell) { margin-top: 24px; }
+body:has(.dm-article-heading, article.dm-post) > .dm-sidebar-shell { margin-top: 24px; }
 .dm-original-sidebar { margin: 36px 0 0; padding: 18px 0 0; border-top: 1px solid #e3e8ef; }
 .dm-original-sidebar > summary { color: #526581; font-size: 14px; font-weight: 700; line-height: 1.5; cursor: pointer; }
 .dm-original-sidebar > aside { position: static; width: auto; max-width: none; max-height: none; overflow: visible; margin: 16px 0 0; }
