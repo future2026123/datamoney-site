@@ -13,8 +13,10 @@
   a { color:inherit; text-decoration:none; }
   .wrap { width:min(1120px, calc(100% - 28px)); margin:0 auto; padding:18px 0 64px; }
   header { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:16px 0; }
-  .logo { font-weight:800; font-size:24px; letter-spacing:-.03em; }
-  .logo span { color:var(--blue); }
+  .logo { display:inline-flex; align-items:center; gap:8px; flex:none; white-space:nowrap; font-weight:800; font-size:24px; letter-spacing:-.03em; }
+  .logo-icon { position:relative; display:block; width:28px; height:28px; overflow:hidden; flex:none; }
+  .logo-icon img { position:absolute; width:44px; height:44px; max-width:none; left:-8.7px; top:-8px; }
+  .logo-text > span { color:var(--blue); }
   .nav { display:flex; gap:10px; flex-wrap:wrap; }
   .nav a { padding:10px 14px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.72); color:#334155; font-size:14px; }
   .post-card,.topic-card,.cta { background:var(--panel); border:1px solid var(--line); border-radius:28px; box-shadow:0 12px 40px rgba(15,23,42,.05); }
@@ -98,6 +100,10 @@
     .mobile-sidebar-link { display:inline-block; padding:8px 0; }
   }
   @media (max-width:560px) {
+    header { flex-wrap:wrap; }
+    .logo { font-size:22px; }
+    .nav { gap:6px; }
+    .nav a { padding:8px 10px; font-size:13px; }
     .latest-posts .post-card { grid-template-columns:minmax(90px,34%) minmax(0,1fr); align-items:start; gap:12px; padding:12px; }
     .latest-posts .post-copy .tag { font-size:10px; }
     .latest-posts .post-copy h3 { font-size:17px; }
@@ -110,7 +116,7 @@
 <body>
   <div class="wrap">
     <header>
-      <a class="logo" href="/">데이터<span>머니</span></a>
+      <a class="logo" href="/"><span class="logo-icon" aria-hidden="true"><img src="/blog/datamoney-logo-blue.png" width="1254" height="1254" alt=""></span><span class="logo-text">데이터<span>머니</span></span></a>
       <nav class="nav">
         <a href="/">홈</a>
         <a href="/tools/">도구</a>
