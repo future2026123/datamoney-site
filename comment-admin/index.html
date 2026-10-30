@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>댓글 관리 | 데이터머니</title>
+  <link rel="icon" href="/favicon.ico?v=2">
+  <style>
+    * { box-sizing:border-box; }
+    body { margin:0; background:#f2f5fa; color:#0f172a; font-family:"Pretendard Variable","Pretendard","Apple SD Gothic Neo",sans-serif; }
+    .wrap { width:min(900px,calc(100% - 28px)); margin:0 auto; padding:28px 0 60px; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:26px; }
+    header a { color:#0f172a; font-size:22px; font-weight:800; text-decoration:none; letter-spacing:-.03em; }
+    header a span { color:#2563eb; }
+    header .home { color:#475569; font-size:14px; font-weight:600; }
+    main { background:#fff; border:1px solid #e2e8f0; border-radius:20px; padding:28px; box-shadow:0 12px 40px rgba(15,23,42,.05); }
+    h1 { margin:0 0 8px; font-size:24px; letter-spacing:-.03em; }
+    .intro { margin:0 0 24px; color:#64748b; line-height:1.6; font-size:14px; }
+    form { display:flex; align-items:end; flex-wrap:wrap; gap:10px; }
+    .key-field { display:grid; gap:7px; flex:1 1 260px; }
+    label { font-size:14px; font-weight:700; }
+    input { width:100%; min-height:44px; padding:10px 12px; border:1px solid #cbd5e1; border-radius:10px; font:inherit; }
+    button { min-height:42px; padding:9px 15px; border:1px solid #dbe3ed; border-radius:10px; background:#fff; color:#334155; font:inherit; font-size:14px; font-weight:700; cursor:pointer; }
+    button.primary { border-color:#2563eb; background:#2563eb; color:#fff; }
+    button:hover { filter:brightness(.97); }
+    button:disabled { opacity:.55; cursor:wait; }
+    button:focus-visible,input:focus-visible,a:focus-visible { outline:3px solid #2563eb; outline-offset:2px; }
+    .status { margin:14px 0 0; color:#64748b; font-size:13px; line-height:1.6; }
+    .status:empty { display:none; }
+    .tabs { display:flex; flex-wrap:wrap; gap:8px; margin:25px 0 8px; }
+    .tabs button[aria-pressed="true"] { border-color:#2563eb; background:#eff6ff; color:#1d4ed8; }
+    .comments { list-style:none; margin:0; padding:0; }
+    .comment { padding:20px 0; border-bottom:1px solid #e9edf3; }
+    .comment-header { display:flex; flex-wrap:wrap; align-items:baseline; gap:8px; color:#64748b; font-size:13px; }
+    .comment-header strong { color:#1d4ed8; font-size:15px; }
+    .comment-header a { color:#475569; overflow-wrap:anywhere; }
+    .comment-body { margin:10px 0 14px; line-height:1.65; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .comment-actions { display:flex; flex-wrap:wrap; gap:8px; }
+    .comment-actions .delete { color:#b42318; }
+    .more { margin-top:18px; }
+    [hidden] { display:none !important; }
+    @media (max-width:560px) { main { padding:20px 16px; } header a { font-size:20px; } form .primary { width:100%; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header><a href="/blog/">데이터<span>머니</span></a><a class="home" href="/blog/">블로그로 돌아가기</a></header>
+    <main>
+      <h1>댓글 관리</h1>
+      <p class="intro">검토가 필요한 댓글을 확인하고 승인하거나 삭제할 수 있습니다.</p>
+      <form id="admin-login">
+        <div class="key-field"><label for="admin-key">관리자 접속키</label><input id="admin-key" type="password" autocomplete="off" required></div>
+        <button class="primary" type="submit">열기</button>
+      </form>
+      <p class="status" id="admin-status" role="status" aria-live="polite"></p>
+      <section id="admin-panel" aria-label="댓글 목록" hidden>
+        <div class="tabs" role="group" aria-label="댓글 상태">
+          <button type="button" data-status="pending" aria-pressed="true">검토 대기</button>
+          <button type="button" data-status="published" aria-pressed="false">공개 댓글</button>
+        </div>
+        <p class="status" id="admin-empty" hidden></p>
+        <ul class="comments" id="admin-comments"></ul>
+        <button class="more" id="admin-more" type="button" hidden>더 보기</button>
+      </section>
+    </main>
+  </div>
+  <script src="/comment-admin/admin.js?v=20261030-1" defer></script>
+</body>
+</html>

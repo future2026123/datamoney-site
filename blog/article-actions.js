@@ -267,10 +267,13 @@
           <div class="dm-comment-reply-context" hidden><span></span><button class="dm-comment-cancel" type="button">답글 취소</button></div>
           <label for="dm-comment-body">댓글 남기기</label>
           <textarea id="dm-comment-body" name="body" maxlength="600" placeholder="의견을 남겨 주세요." required></textarea>
+          <p class="dm-comment-policy">링크나 연락처가 포함된 댓글은 검토 후 공개될 수 있습니다.</p>
           <div class="dm-comment-input-row">
             <div class="dm-comment-name-field"><label for="dm-comment-name">닉네임</label><input id="dm-comment-name" name="nickname" maxlength="20" autocomplete="nickname" required></div>
             <button class="dm-comment-submit" type="submit">댓글 등록</button>
           </div>
+          <div class="dm-comment-verification" hidden></div>
+          <p class="dm-comment-verification-notice" role="status" aria-live="polite"></p>
           <p class="dm-comment-notice" role="status" aria-live="polite"></p>
         </form>
       </div>`;
@@ -286,11 +289,47 @@
     const notice = section.querySelector('.dm-comment-notice');
     const submit = section.querySelector('.dm-comment-submit');
     const replyContext = section.querySelector('.dm-comment-reply-context');
+    const verification = section.querySelector('.dm-comment-verification');
+    const verificationNotice = section.querySelector('.dm-comment-verification-notice');
     let parentId = null;
+    let verificationRequired = false;
+    let verificationToken = '';
+    let widgetId = null;
+    submit.disabled = true;
+
+    const verificationError = () => {
+      verificationToken = '';
+      submit.disabled = true;
+      verificationNotice.textContent = '로봇 확인을 불러오지 못했습니다. 페이지를 새로고침해 주세요.';
+    };
+    fetch('/api/article-engagement/_config', {cache: 'no-store', credentials: 'same-origin'})
+      .then(response => { if (!response.ok) throw new Error('Verification unavailable'); return response.json(); })
+      .then(config => {
+        if (!config.turnstileSiteKey) { submit.disabled = false; return; }
+        verificationRequired = true;
+        verification.hidden = false;
+        window.dmCommentTurnstileReady = () => {
+          try {
+            widgetId = window.turnstile.render(verification, {
+              sitekey: config.turnstileSiteKey,
+              action: 'comment',
+              size: verification.clientWidth < 300 ? 'compact' : 'flexible',
+              callback: token => { verificationToken = token; verificationNotice.textContent = ''; submit.disabled = false; },
+              'expired-callback': () => { verificationToken = ''; submit.disabled = true; verificationNotice.textContent = '인증 시간이 만료됐습니다. 다시 확인해 주세요.'; },
+              'error-callback': verificationError
+            });
+          } catch (_) { verificationError(); }
+        };
+        const script = document.createElement('script');
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=dmCommentTurnstileReady';
+        script.async = true;
+        script.onerror = verificationError;
+        document.head.append(script);
+      })
+      .catch(verificationError);
 
     const resetReply = () => {
       parentId = null;
-      formSlot.append(form);
       replyContext.hidden = true;
       submit.textContent = '댓글 등록';
     };
@@ -375,7 +414,7 @@
             replyContext.querySelector('span').textContent = `${comment.nickname}님께 답글 작성 중`;
             replyContext.hidden = false;
             submit.textContent = '답글 등록';
-            box.append(form);
+            formSlot.scrollIntoView({block: 'center', behavior: 'auto'});
             body.focus();
           });
           controls.append(reply);
@@ -414,17 +453,23 @@
       submit.disabled = true;
       notice.textContent = '';
       try {
-        updateCounts(await request('/comments', {
+        const result = await request('/comments', {
           method: 'POST', headers: {'content-type': 'application/json'},
-          body: JSON.stringify({nickname: name.value, body: body.value, parentId})
-        }));
+          body: JSON.stringify({nickname: name.value, body: body.value, parentId, turnstileToken: verificationToken})
+        });
+        updateCounts(result);
         body.value = '';
         resetReply();
         await loadComments(false);
-        notice.textContent = '댓글을 등록했어요.';
+        notice.textContent = result.status === 'pending' ? '댓글이 접수됐어요. 검토 후 공개됩니다.' : '댓글을 등록했어요.';
       } catch (error) {
-        notice.textContent = error.status === 429 ? '잠시 후 다시 댓글을 등록해 주세요.' : '댓글을 등록하지 못했어요. 다시 시도해 주세요.';
-      } finally { submit.disabled = false; }
+        notice.textContent = error.status === 429 ? '잠시 후 다시 댓글을 등록해 주세요.' : error.status === 403 && verificationRequired ? '로봇 확인을 다시 진행해 주세요.' : '댓글을 등록하지 못했어요. 다시 시도해 주세요.';
+      } finally {
+        if (verificationRequired && widgetId !== null) {
+          verificationToken = '';
+          try { window.turnstile.reset(widgetId); } catch (_) { verificationError(); }
+        } else submit.disabled = false;
+      }
     });
     section.loadComments = loadComments;
     return section;

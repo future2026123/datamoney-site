@@ -3,6 +3,9 @@ main = "workers/article-engagement.js"
 compatibility_date = "2026-10-30"
 account_id = "be57534be2be85cb30b64abced4212fa"
 
+[secrets]
+required = ["DM_COMMENT_ADMIN_KEY"]
+
 [[routes]]
 pattern = "datamoney.kr/api/article-engagement/*"
 zone_name = "datamoney.kr"

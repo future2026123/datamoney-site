@@ -89,6 +89,9 @@
 .dm-comment-more[hidden], .dm-comment-retry[hidden], .dm-comment-reply-context[hidden] { display: none; }
 .dm-comment-reply-context { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #2563eb; font-size: 13px; }
 .dm-comment-notice { margin: 0; color: #667386; font-size: 12px; }
+.dm-comments .dm-comment-policy { margin: 0; color: #667386; font-size: 12px; line-height: 1.5; }
+.dm-comment-verification[hidden] { display: none; }
+.dm-comment-verification-notice { margin: 0; color: #667386; font-size: 12px; }
 @media (max-width: 560px) {
   .dm-article-actions { gap: 8px; margin-top: 20px; padding-top: 14px; }
   .dm-actions-group, .dm-actions-group:last-of-type { gap: 9px; }
