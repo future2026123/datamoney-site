@@ -1,0 +1,20 @@
+:root { color-scheme: light; font-family: Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; color: #182338; background: #f2f5fa; }
+* { box-sizing: border-box; }
+body { margin: 0; line-height: 1.75; }
+a { color: #245fca; text-underline-offset: 3px; }
+a:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+.site-wrap { width: min(100% - 32px, 800px); margin: 0 auto; }
+.site-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 26px 0; }
+.site-brand { color: #13213a; font-size: 21px; font-weight: 800; text-decoration: none; }
+.site-nav { display: flex; flex-wrap: wrap; gap: 16px; font-size: 14px; }
+.site-nav a { text-decoration: none; }
+main { background: #fff; border: 1px solid #e2e9f3; border-radius: 22px; padding: clamp(24px, 5vw, 48px); }
+h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.3; margin: 0 0 12px; }
+h2 { font-size: 20px; margin: 32px 0 10px; }
+p, ul { margin: 0 0 16px; }
+li + li { margin-top: 8px; }
+.lead { color: #53627b; font-size: 17px; }
+.updated { color: #68768d; font-size: 14px; }
+.site-footer { color: #53627b; font-size: 14px; padding: 24px 0 48px; }
+.site-footer a { margin-right: 14px; }
+@media (max-width: 520px) { .site-header { align-items: flex-start; flex-direction: column; gap: 8px; } main { border-radius: 16px; } }

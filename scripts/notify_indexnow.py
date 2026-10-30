@@ -29,6 +29,8 @@ def page_url(path):
         return ORIGIN + "/blog/"
     if path == "tools/index.html":
         return ORIGIN + "/tools/"
+    if path in ("about/index.html", "privacy/index.html"):
+        return ORIGIN + "/" + parts[0] + "/"
     if len(parts) == 3 and parts[2] == "index.html":
         if parts[0] == "blog" and parts[1] not in (".", ".."):
             return ORIGIN + "/blog/" + quote(parts[1], safe="-._~") + "/"
