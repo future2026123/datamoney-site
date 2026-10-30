@@ -37,7 +37,7 @@
   footer { margin-top:24px; color:#64748b; font-size:13px; }
   /* 최신 글과 안내 영역을 2:1로 배치합니다. */
   .blog-layout { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); grid-template-areas:"latest sidebar"; gap:28px; align-items:start; margin-top:24px; }
-  .latest-heading { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:22px 20px 16px; border-bottom:1px solid var(--line); }
+  .latest-heading { display:flex; justify-content:flex-start; align-items:center; gap:12px; padding:22px 20px 16px; border-bottom:1px solid var(--line); }
   .latest-heading h2 { flex:none; white-space:nowrap; }
   .latest-column { grid-area:latest; background:#fff; border:1px solid var(--line); border-radius:20px; box-shadow:0 12px 40px rgba(15,23,42,.05); }
   .latest-column,.sidebar { min-width:0; }
@@ -90,11 +90,11 @@
   /* Card headings follow the compact, left-aligned news-card reference. */
   .latest-heading h2,.home-card h2 { margin:0; color:#111827; font-size:18px; font-weight:800; line-height:1.35; letter-spacing:-.02em; }
   .home-card { padding:22px; background:#fff; border:1px solid var(--line); border-radius:20px; box-shadow:0 12px 40px rgba(15,23,42,.05); }
-  .category-bar { display:flex; align-items:center; flex:0 1 auto; min-width:0; margin-left:auto; overflow-x:auto; scrollbar-width:none; overscroll-behavior-x:contain; }
+  .category-bar { display:flex; align-items:center; flex:0 1 auto; gap:6px; min-width:0; overflow-x:auto; scrollbar-width:none; overscroll-behavior-x:contain; }
   .category-bar::-webkit-scrollbar { display:none; }
-  .category-bar a { display:flex; align-items:center; flex:none; min-height:36px; padding:8px 9px; border-radius:999px; color:#526176; font-size:13px; font-weight:650; line-height:1.2; white-space:nowrap; }
-  .category-bar a:hover { background:#f5f8ff; color:#1d4ed8; }
-  .category-bar a[aria-current="page"] { background:#eff6ff; color:#1d4ed8; }
+  .category-bar a { display:flex; align-items:center; flex:none; min-height:36px; padding:7px 11px; border:1px solid #e2e7ee; border-radius:999px; background:#fff; color:#526176; font-size:13px; font-weight:600; line-height:1.2; white-space:nowrap; }
+  .category-bar a:hover { border-color:#bed3ff; background:#f5f8ff; color:#1d4ed8; }
+  .category-bar a[aria-current="page"] { border-color:#cbdcff; background:#e9f1ff; color:#1d4ed8; font-weight:700; }
   .category-bar a[hidden] { display:none; }
   .category-count { display:none; }
   .category-status { position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
@@ -112,7 +112,8 @@
   }
   @media (max-width:560px) {
     .latest-heading { gap:4px; padding:16px 12px; }
-    .category-bar a { padding:7px 5px; font-size:12px; }
+    .category-bar { gap:2px; }
+    .category-bar a { padding:7px 5px; font-size:11px; }
     .latest-posts .post-card { display:flex; flex-direction:column; align-items:stretch; gap:0; padding:12px; }
     .latest-posts .post-thumb { width:100%; }
     .latest-posts .post-copy { display:flex; flex-direction:column; }
@@ -122,7 +123,8 @@
   }
   @media (max-width:350px) {
     .latest-heading h2 { font-size:16px; }
-    .category-bar a { padding:7px 1.5px; font-size:11px; }
+    .category-bar { gap:1px; }
+    .category-bar a { padding:7px 3px; }
   }
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6705155374292160" crossorigin="anonymous"></script>
