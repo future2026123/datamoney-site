@@ -42,12 +42,18 @@
   .latest-column,.sidebar { min-width:0; }
   .latest-posts { grid-template-columns:minmax(0,1fr); gap:0; background:transparent; border:0; border-radius:0 0 20px 20px; box-shadow:none; }
   .latest-posts .post-card { display:grid; grid-template-columns:minmax(0,31%) minmax(0,1fr); align-items:center; gap:20px; padding:16px; background:transparent; border:0; border-radius:0; box-shadow:none; }
-  .latest-posts .post-card + .post-card { border-top:1px solid var(--line); }
+  .latest-posts .post-card:not([hidden]) ~ .post-card:not([hidden]) { border-top:1px solid var(--line); }
+  .latest-posts .post-card[hidden] { display:none; }
   .latest-posts .post-card:hover { background:#f8fbff; }
   .latest-posts .post-card:first-child { border-radius:0; }
-  .latest-posts .post-card:last-child { border-radius:0 0 19px 19px; }
-  .latest-posts .post-card:only-child { border-radius:0 0 19px 19px; }
   .latest-posts .post-card:focus-visible { outline-offset:-3px; }
+  .post-pagination { display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:6px; padding:18px 12px 22px; border-top:1px solid var(--line); }
+  .post-pagination[hidden] { display:none; }
+  .post-pagination a,.post-pagination span { display:inline-flex; align-items:center; justify-content:center; min-width:36px; height:36px; padding:0 10px; border:1px solid var(--line); border-radius:10px; color:#334155; font-size:14px; font-weight:700; }
+  .post-pagination a:hover { background:#eff6ff; color:#1d4ed8; }
+  .post-pagination a[aria-current="page"] { border-color:#2563eb; background:#2563eb; color:#fff; }
+  .post-pagination .pagination-disabled { color:#a1aab8; }
+  .post-pagination .pagination-ellipsis { min-width:22px; padding:0; border:0; }
   .post-thumb { display:block; aspect-ratio:16 / 9; min-width:0; overflow:hidden; border-radius:12px; background:#f4f7fb; }
   .post-thumb img { display:block; width:100%; height:100%; object-fit:contain; }
   .post-copy { min-width:0; }
@@ -372,7 +378,7 @@
         </div>
       </a>
     </div>
-
+        <nav class="post-pagination" id="post-pagination" aria-label="글 목록 페이지" hidden></nav>
       </section>
       <aside class="sidebar" id="blog-sidebar" aria-label="블로그 둘러보기">
     <section class="home-card tools-card" aria-labelledby="tools-heading">
@@ -415,6 +421,7 @@
   </div>
 <script src="/scripts/popular-posts.js?v=69ac9c78" defer></script>
 <script src="/scripts/investment-quotes.js?v=ko-refined-20261030" defer></script>
+<script src="/scripts/blog-pagination.js?v=20261030" defer></script>
 </body>
 </html>
 
