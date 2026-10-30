@@ -12,6 +12,46 @@
     document.querySelector('article') ||
     document.querySelector('main.paper');
 
+  // Mark both the title and body: on some older pages they are in separate columns.
+  // This also lets the print stylesheet exclude overlays inserted outside the article.
+  if (content) {
+    const candidates = [heading || fallbackTitle, content].filter(Boolean);
+    const roots = candidates.filter((root, index) =>
+      !candidates.some((other, otherIndex) => index !== otherIndex && other.contains(root))
+    );
+    roots.forEach(root => {
+      root.setAttribute('data-dm-print-content', '');
+      for (let parent = root.parentElement; parent; parent = parent.parentElement) {
+        parent.setAttribute('data-dm-print-path', '');
+      }
+    });
+
+    // An injected element may have an inline !important display rule, which a
+    // print stylesheet cannot override. Hide those siblings only while printing.
+    let hiddenForPrint = [];
+    window.addEventListener('beforeprint', () => {
+      if (hiddenForPrint.length) return;
+      document.querySelectorAll('[data-dm-print-path]').forEach(parent => {
+        Array.from(parent.children).forEach(child => {
+          if (child.hasAttribute('data-dm-print-path') || child.hasAttribute('data-dm-print-content')) return;
+          hiddenForPrint.push({
+            element: child,
+            value: child.style.getPropertyValue('display'),
+            priority: child.style.getPropertyPriority('display')
+          });
+          child.style.setProperty('display', 'none', 'important');
+        });
+      });
+    });
+    window.addEventListener('afterprint', () => {
+      hiddenForPrint.forEach(({element, value, priority}) => {
+        if (value) element.style.setProperty('display', value, priority);
+        else element.style.removeProperty('display');
+      });
+      hiddenForPrint = [];
+    });
+  }
+
   const toolbar = document.createElement('div');
   toolbar.className = 'dm-article-actions';
   toolbar.setAttribute('role', 'group');

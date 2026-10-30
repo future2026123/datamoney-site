@@ -9,8 +9,12 @@ HEADER_CSS = ROOT / "blog" / "header.css"
 CSS_VERSION = hashlib.sha256(HEADER_CSS.read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:8]
 STYLESHEET = f'<link rel="stylesheet" href="/blog/header.css?v={CSS_VERSION}">'
 STYLESHEET_TAG = re.compile(r'''<link\s+rel=["']stylesheet["']\s+href=["']/blog/header\.css(?:\?[^"']*)?["']\s*/?>''', re.IGNORECASE)
-ARTICLE_ACTIONS_CSS = '<link rel="stylesheet" href="/blog/article-actions.css?v=20261030-1">'
-ARTICLE_ACTIONS_JS = '<script src="/blog/article-actions.js?v=20261030-1" defer></script>'
+ARTICLE_ACTIONS_CSS_VERSION = hashlib.sha256((ROOT / "blog" / "article-actions.css").read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:8]
+ARTICLE_ACTIONS_JS_VERSION = hashlib.sha256((ROOT / "blog" / "article-actions.js").read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:8]
+ARTICLE_ACTIONS_CSS = f'<link rel="stylesheet" href="/blog/article-actions.css?v={ARTICLE_ACTIONS_CSS_VERSION}">'
+ARTICLE_ACTIONS_JS = f'<script src="/blog/article-actions.js?v={ARTICLE_ACTIONS_JS_VERSION}" defer></script>'
+ARTICLE_ACTIONS_CSS_TAG = re.compile(r'''<link\s+rel=["']stylesheet["']\s+href=["']/blog/article-actions\.css(?:\?[^"']*)?["']\s*/?>''', re.IGNORECASE)
+ARTICLE_ACTIONS_JS_TAG = re.compile(r'''<script\s+src=["']/blog/article-actions\.js(?:\?[^"']*)?["']\s+defer\s*></script\s*>''', re.IGNORECASE)
 BODY = re.compile(r"<body\b[^>]*>", re.IGNORECASE)
 HEAD_END = re.compile(r"</head\s*>", re.IGNORECASE)
 CONTENT = re.compile(r"<(?:main|article)\b", re.IGNORECASE)
@@ -50,10 +54,14 @@ def synchronize(path: Path, fragment: str) -> bool:
         updated = updated[:head_end.start()] + STYLESHEET + "\n" + updated[head_end.start():]
     is_article = path.parent.parent == ROOT / "blog" or path == ROOT / "templates" / "blog_post.html"
     if is_article:
-        if '/blog/article-actions.css' not in updated:
+        if ARTICLE_ACTIONS_CSS_TAG.search(updated):
+            updated = ARTICLE_ACTIONS_CSS_TAG.sub(ARTICLE_ACTIONS_CSS, updated)
+        else:
             head_end = HEAD_END.search(updated)
             updated = updated[:head_end.start()] + ARTICLE_ACTIONS_CSS + "\n" + updated[head_end.start():]
-        if '/blog/article-actions.js' not in updated:
+        if ARTICLE_ACTIONS_JS_TAG.search(updated):
+            updated = ARTICLE_ACTIONS_JS_TAG.sub(ARTICLE_ACTIONS_JS, updated)
+        else:
             head_end = HEAD_END.search(updated)
             updated = updated[:head_end.start()] + ARTICLE_ACTIONS_JS + "\n" + updated[head_end.start():]
     if updated == original:
