@@ -19,6 +19,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: master
+          fetch-depth: 0
 
       - name: Synchronize blog navigation
         run: python3 scripts/sync_blog_headers.py
@@ -40,6 +41,12 @@ jobs:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy . --project-name=datamoney-tools --branch=master
+
+      - name: Notify IndexNow of changed pages
+        if: github.event_name == 'push'
+        env:
+          INDEXNOW_BEFORE: ${{ github.event.before }}
+        run: python3 scripts/notify_indexnow.py --before "$INDEXNOW_BEFORE" --after HEAD
           
   deploy-worker:
     name: Deploy Redirect Worker
