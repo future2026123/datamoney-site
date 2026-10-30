@@ -8,15 +8,26 @@
       if (!response.ok) throw new Error("Popular posts unavailable");
       return response.json();
     })
-    .then(data => {
+    .then(async data => {
       if (!Array.isArray(data.posts)) return;
       if (!data.posts.length) {
         if (data.generatedAt) container.querySelector(".popular-empty").textContent = "아직 집계된 조회수가 없습니다.";
         return;
       }
+      let cardRoot = document;
+      if (!document.querySelector(".latest-posts > a.post-card")) {
+        try {
+          const response = await fetch("/blog/", { cache: "no-cache" });
+          if (response.ok) {
+            const page = document.createElement("template");
+            page.innerHTML = await response.text();
+            cardRoot = page.content;
+          }
+        } catch (_) { /* Keep the fallback thumbnail map when the home page is unavailable. */ }
+      }
       const cards = new Map(
-        [...document.querySelectorAll(".latest-posts > a.post-card")]
-          .map(card => [new URL(card.href).pathname.replace(/\/?$/, "/"), card])
+        [...cardRoot.querySelectorAll(".latest-posts > a.post-card")]
+          .map(card => [new URL(card.getAttribute("href"), location.origin).pathname.replace(/\/?$/, "/"), card])
       );
       const otherThumbnails = {
         "/blog/super-isa-youth-isa-guide/": "/blog/thumbnails/l6OWTb7__ow.jpg",
