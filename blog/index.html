@@ -46,7 +46,46 @@
   .cta p { color:#cbd5e1; margin-bottom:18px; }
   .cta a { display:inline-flex; align-items:center; justify-content:center; min-height:46px; padding:0 18px; border-radius:14px; background:#2563eb; color:#fff; font-weight:700; }
   footer { margin-top:24px; color:#64748b; font-size:13px; }
-  @media (max-width:900px) { .posts,.topic-grid { grid-template-columns:1fr; } }
+  /* 최신 글과 안내 영역을 2:1로 배치합니다. */
+  .blog-layout { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); gap:28px; align-items:start; }
+  .latest-column,.sidebar { min-width:0; }
+  .latest-posts { grid-template-columns:minmax(0,1fr); gap:14px; }
+  .latest-posts .post-card { display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:22px; padding:22px 24px; border-radius:20px; }
+  .latest-posts .post-card > .tag { grid-column:1; justify-self:start; }
+  .latest-posts .post-card > h3 { grid-column:1; margin:12px 0; font-size:clamp(22px,2.15vw,27px); line-height:1.32; overflow-wrap:anywhere; }
+  .latest-posts .post-card > .metric-num { grid-column:2; grid-row:1 / span 3; align-self:center; max-width:180px; margin:0; }
+  .latest-posts .post-card > p { grid-column:1; }
+  .latest-posts .post-card > .meta { grid-column:1 / -1; margin-top:14px; }
+  .latest-posts .post-card.featured:not(:first-child) { background:var(--panel); border-color:var(--line); box-shadow:0 12px 40px rgba(15,23,42,.05); }
+  .sidebar { padding-top:36px; }
+  .sidebar .cta { margin-top:0; padding:24px; border-radius:22px; }
+  .sidebar .cta h2 { font-size:24px; }
+  .sidebar .cta p { font-size:14px; line-height:1.7; }
+  .tool-links { list-style:none; padding:0; margin:0 0 16px; display:grid; gap:8px; }
+  .cta .tool-links a { display:flex; justify-content:flex-start; width:100%; padding:12px 14px; border:1px solid rgba(255,255,255,.18); border-radius:12px; background:rgba(255,255,255,.08); font-size:14px; line-height:1.35; }
+  .cta .all-tools { width:100%; font-size:14px; }
+  .sidebar .section-head { margin:30px 0 14px; }
+  .sidebar .section-head h2 { font-size:23px; }
+  .sidebar .section-head p { font-size:13px; line-height:1.6; }
+  .sidebar .topic-grid,.sidebar .side-posts { grid-template-columns:minmax(0,1fr); gap:10px; }
+  .sidebar .topic-card,.sidebar .post-card { padding:18px; border-radius:18px; }
+  .sidebar .topic-card strong { font-size:18px; margin-bottom:6px; }
+  .sidebar .topic-card p,.sidebar .post-card p { font-size:13px; line-height:1.65; }
+  .sidebar .post-card h3,.sidebar .post-card h3[style] { margin:12px 0; font-size:19px !important; line-height:1.35; overflow-wrap:anywhere; }
+  .sidebar .metric-num strong { font-size:22px; }
+  .sidebar .meta { font-size:12px; margin-top:12px; }
+  .mobile-sidebar-link { display:none; color:#1d4ed8; font-size:13px; font-weight:700; }
+  a:focus-visible { outline:3px solid #2563eb; outline-offset:3px; }
+  @media (max-width:900px) {
+    .blog-layout { grid-template-columns:minmax(0,1fr); gap:0; }
+    .posts,.topic-grid { grid-template-columns:1fr; }
+    .sidebar { padding-top:28px; }
+    .mobile-sidebar-link { display:inline-block; padding:8px 0; }
+  }
+  @media (max-width:560px) {
+    .latest-posts .post-card { grid-template-columns:minmax(0,1fr); padding:20px; }
+    .latest-posts .post-card > .metric-num { grid-column:1; grid-row:auto; justify-self:start; max-width:100%; margin:0 0 12px; }
+  }
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6705155374292160" crossorigin="anonymous"></script>
 </head>
@@ -60,8 +99,10 @@
         <a href="https://www.youtube.com/@datamoneykr" target="_blank" rel="noopener noreferrer">YouTube</a>
       </nav>
     </header>
-    <div class="section-head"><div><h2>최신 글</h2></div></div>
-    <section class="posts">
+    <main class="blog-layout">
+      <section class="latest-column" aria-labelledby="latest-heading">
+    <div class="section-head"><div><h2 id="latest-heading">최신 글</h2></div><a class="mobile-sidebar-link" href="#blog-sidebar">계산기·다른 글 보기</a></div>
+    <div class="posts latest-posts">
       <a class="post-card featured" href="/blog/trading-loss-investor-psychology/">
         <span class="tag">단타 / 손실 / 투자심리</span>
         <h3>계좌는 계속 마이너스인데, 사람들은 왜 단타를 멈추지 못할까?</h3>
@@ -250,16 +291,38 @@
         <p>2008·2020·2022 세 번 모두 중단했을 때 20년 후 자산 차이 1억 1천만원. Vanguard·NDVR 연구와 실제 코스피 데이터로 계산했습니다.</p>
         <div class="meta"><span>읽는 시간 8분</span><span>유튜브 영상 포함</span><span>2026-04-12</span></div>
       </a>
+    </div>
+
+      </section>
+      <aside class="sidebar" id="blog-sidebar" aria-label="블로그 둘러보기">
+    <section class="cta" aria-labelledby="tools-heading">
+      <h2 id="tools-heading">투자 계산기</h2>
+      <p>복리, 절세, 배당을 내 숫자로 확인해 보세요.</p>
+      <ul class="tool-links">
+        <li><a href="/tools/etf-calculator">ETF 수익률 계산기</a></li>
+        <li><a href="/tools/tax-simulator">절세 시뮬레이터</a></li>
+        <li><a href="/tools/dividend-calculator">배당 포트폴리오 계산기</a></li>
+      </ul>
+      <a class="all-tools" href="/tools/">계산기 전체 보기</a>
+    </section>
+
+    <div class="section-head"><div><h2>콘텐츠 영역</h2><p>투자와 돈 관리에 필요한 주제를 살펴보세요.</p></div></div>
+    <section class="topic-grid">
+      <article class="topic-card"><strong>ETF</strong><p>적립식 투자와 복리, ETF의 위험과 분산을 살펴봅니다.</p></article>
+      <article class="topic-card"><strong>절세</strong><p>연금저축, IRP, ISA의 세금 혜택과 활용법을 알아봅니다.</p></article>
+      <article class="topic-card"><strong>배당</strong><p>월 배당금 목표와 배당 성장, 재투자 전략을 살펴봅니다.</p></article>
+    </section>
+
+    <div class="section-head"><div><h2>투자 메모</h2></div></div>
       <div class="post-card">
         <span class="tag">DCA 핵심</span>
         <h3 style="font-size:26px">25일의 법칙</h3>
         <p>연간 최고 수익일 상위 25일만 놓쳐도 20년 복리가 절반으로 줄어듭니다.<br>중단의 비용은 하락의 비용보다 큽니다.</p>
         <div class="meta"><span><a href="/blog/dca-stop-loss-54percent/">전체 분석 보기</a></span></div>
       </div>
-    </section>
 
-    <div class="section-head"><div><h2>이전 글</h2></div></div>
-    <section class="posts">
+    <div class="section-head"><div><h2>이전 글</h2><p>일정과 수치는 글을 발행한 당시 기준입니다.</p></div></div>
+    <section class="posts side-posts">
       <a class="post-card" href="/blog/ria-overseas-stock-yangdose-0won/">
         <span class="tag">해외주식 절세</span>
         <h3>RIA 계좌로 해외주식 양도세 0원 만들기 — 5월 31일까지 D-49</h3>
@@ -288,18 +351,8 @@
       </div>
     </section>
 
-    <div class="section-head"><div><h2>콘텐츠 영역</h2><p>ETF·절세·배당 — 계산기 유입과 연결되는 3개 핵심 영역으로 운영합니다.</p></div></div>
-    <section class="topic-grid">
-      <article class="topic-card"><strong>ETF</strong><p>적립식 투자, 수익률 가정, 복리 결과처럼 검색량이 높고 계산기로 이어지기 쉬운 주제를 다룹니다.</p></article>
-      <article class="topic-card"><strong>절세</strong><p>연금저축, IRP, ISA 조합과 세액공제 효과를 실제 숫자 기준으로 설명하고 시뮬레이터로 연결합니다.</p></article>
-      <article class="topic-card"><strong>배당</strong><p>월 배당금 목표, DRIP, 배당 성장률 같은 주제를 배당 계산기와 묶어 운영합니다.</p></article>
-    </section>
-
-    <section class="cta">
-      <h2>숫자는 계산기로 확인하세요</h2>
-      <p>글에서 개념을 보고, 도구에서 자신의 숫자로 바꾸는 흐름이 데이터머니 블로그의 핵심입니다.</p>
-      <a href="/tools/">계산기 보러 가기</a>
-    </section>
+      </aside>
+    </main>
 
     <footer>© 2026 데이터머니 · datamoney.kr</footer>
   </div>
