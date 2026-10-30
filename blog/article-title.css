@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap");
+
 .dm-article-heading {
   box-sizing: border-box;
   margin: 0 0 28px;
@@ -6,17 +8,18 @@
   background: transparent;
   color: #101319;
   box-shadow: none;
+  font-family: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
 }
 
 .dm-article-heading h1 {
   margin: 0;
   max-width: none;
   color: #101319;
-  font-size: clamp(28px, 3.1vw, 40px);
-  font-weight: 800;
-  line-height: 1.32;
-  letter-spacing: -.035em;
-  word-break: keep-all;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 52px;
+  letter-spacing: -.02em;
+  word-break: normal;
   overflow-wrap: anywhere;
 }
 
@@ -28,7 +31,7 @@
   gap: 6px 10px;
   margin-top: 22px;
   color: #777e88;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 400;
   line-height: 1.5;
 }
@@ -45,6 +48,25 @@
   color: #5c6674;
   font-size: 17px;
   line-height: 1.6;
+}
+
+:is(.article, article:has(> .dm-article-heading), main.dm-article-page,
+    .dm-article-page .content-grid main, .dm-article-page .hero-copy) {
+  font-family: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+}
+
+:is(.article, article:has(> .dm-article-heading), main.dm-article-page,
+    .dm-article-page .content-grid main, .dm-article-page .hero-copy)
+    :is(p, li):not(.section-kicker, .source, .source-citation, .note, .eyebrow, .subtitle, .source-scroll-hint) {
+  font-size: 20px;
+  line-height: 34px;
+  letter-spacing: 0;
+  word-break: normal;
+}
+
+:is(.article, article:has(> .dm-article-heading), main.dm-article-page) > p:not(.note, .source, .source-citation, .eyebrow),
+:is(.article, article:has(> .dm-article-heading), main.dm-article-page) > :is(ul, ol) > li {
+  color: #111;
 }
 
 .dm-article-page {
@@ -76,7 +98,7 @@
 
 @media (max-width: 560px) {
   .dm-article-heading { margin-bottom: 24px; }
-  .dm-article-heading h1 { font-size: 28px; }
+  .dm-article-heading h1 { font-size: 28px; line-height: 1.45; }
   .dm-article-byline { margin-top: 18px; font-size: 14px; }
   .dm-article-page { padding: 26px 22px; border-radius: 16px; }
 }
