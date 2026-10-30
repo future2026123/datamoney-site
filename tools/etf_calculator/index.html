@@ -59,23 +59,6 @@
   /* 차트 */
   canvas { width: 100% !important; border-radius: 8px; }
 
-  /* 프리미엄 잠금 */
-  .premium-lock { background: linear-gradient(135deg, #1e3a8a 0%, #0F172A 100%); border-radius: 12px; padding: 32px 24px; text-align: center; margin-top: 20px; }
-  .premium-lock .lock-icon { font-size: 36px; margin-bottom: 12px; }
-  .premium-lock h3 { color: var(--text); font-size: 18px; margin-bottom: 8px; }
-  .premium-lock p { color: var(--sub); font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
-  .premium-lock ul { text-align: left; display: inline-block; color: #94A3B8; font-size: 13px; margin-bottom: 20px; }
-  .premium-lock ul li { margin-bottom: 6px; }
-  .btn-pay {
-    display: inline-block; background: var(--yellow); color: var(--navy);
-    padding: 13px 32px; border-radius: 8px; font-weight: 700; font-size: 15px;
-    text-decoration: none; cursor: pointer; border: none;
-  }
-  .btn-pay:hover { background: #eab308; }
-
-  .premium-features { display: none; }
-  .premium-features.unlocked { display: block; }
-
   .table-wrap { overflow-x: auto; margin-top: 16px; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th { background: #1e293b; color: var(--sub); padding: 10px 12px; text-align: right; }
@@ -169,22 +152,9 @@
     <canvas id="chart"></canvas>
   </div>
 
-  <!-- 프리미엄: 연도별 상세 테이블 -->
-  <div id="premiumSection">
-    <div class="premium-lock" id="lockBox">
-      <div class="lock-icon">🔒</div>
-      <h3>고급 기능 잠금 해제</h3>
-      <p>연도별 상세 자산 변화 표, 세후 수익률 시뮬레이션,<br>인플레이션 반영 실질 수익률을 확인하세요.</p>
-      <ul>
-        <li>✅ 연도별 자산 변화 테이블</li>
-        <li>✅ 배당소득세 적용 세후 수익</li>
-        <li>✅ 인플레이션 반영 실질 가치</li>
-        <li>✅ 여러 시나리오 비교 (낙관/기본/비관)</li>
-      </ul>
-      <button class="btn-pay" onclick="openPayment()">9,900원으로 잠금 해제</button>
-    </div>
-
-    <div class="premium-features" id="premiumFeatures">
+  <!-- 연도별 상세 테이블 -->
+  <div id="detailsSection" hidden>
+    <div>
       <div class="card" style="background:#0F172A">
         <h2 style="color:#94A3B8">연도별 자산 변화</h2>
         <div class="table-wrap">
@@ -198,28 +168,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script>
-// Lemon Squeezy 결제
-const LS_CHECKOUT_URL = "https://datamoney.lemonsqueezy.com/checkout/buy/etf-calculator";
-
-function openPayment() {
-  // Lemon Squeezy overlay
-  window.open(LS_CHECKOUT_URL + "?embed=1", "_blank", "width=500,height=700");
-}
-
-// 결제 완료 콜백 (Lemon Squeezy webhook 또는 URL 파라미터로 처리)
-(function checkPaid() {
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get("paid") === "1" || localStorage.getItem("dm_etf_paid") === "true") {
-    unlock();
-  }
-})();
-
-function unlock() {
-  localStorage.setItem("dm_etf_paid", "true");
-  document.getElementById("lockBox").style.display = "none";
-  document.getElementById("premiumFeatures").classList.add("unlocked");
-}
-
 let chartInstance = null;
 
 function fmt(n) {
@@ -273,7 +221,16 @@ function calculate() {
   const rc = document.getElementById("resultCard");
   rc.classList.add("show");
 
-  // 차트
+  document.getElementById("detailsSection").hidden = false;
+  buildTable(yearlyData);
+
+  // 차트 라이브러리를 불러오지 못해도 결과와 표는 사용할 수 있습니다.
+  if (typeof Chart !== "function") {
+    document.getElementById("chart").hidden = true;
+    rc.scrollIntoView({ behavior: "smooth" });
+    return;
+  }
+  document.getElementById("chart").hidden = false;
   if (chartInstance) chartInstance.destroy();
   const ctx = document.getElementById("chart").getContext("2d");
   chartInstance = new Chart(ctx, {
@@ -314,11 +271,6 @@ function calculate() {
       },
     },
   });
-
-  // 프리미엄 테이블
-  if (localStorage.getItem("dm_etf_paid") === "true") {
-    buildTable(yearlyData);
-  }
 
   rc.scrollIntoView({ behavior: "smooth" });
 }

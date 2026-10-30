@@ -47,7 +47,9 @@
   .cta a { display:inline-flex; align-items:center; justify-content:center; min-height:46px; padding:0 18px; border-radius:14px; background:#2563eb; color:#fff; font-weight:700; }
   footer { margin-top:24px; color:#64748b; font-size:13px; }
   /* 최신 글과 안내 영역을 2:1로 배치합니다. */
-  .blog-layout { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); gap:28px; align-items:start; }
+  .blog-layout { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); grid-template-areas:"heading ." "latest sidebar"; column-gap:28px; row-gap:0; align-items:start; }
+  .latest-heading { grid-area:heading; }
+  .latest-column { grid-area:latest; }
   .latest-column,.sidebar { min-width:0; }
   .latest-posts { grid-template-columns:minmax(0,1fr); gap:14px; }
   .latest-posts .post-card { display:grid; grid-template-columns:minmax(0,31%) minmax(0,1fr); align-items:center; gap:20px; padding:16px; border-radius:20px; }
@@ -62,7 +64,7 @@
   .latest-posts .post-copy p { font-size:14px; line-height:1.55; }
   .latest-posts .post-copy .meta { gap:8px; margin-top:10px; font-size:12px; }
   .latest-posts .post-card.featured:not(:first-child) { background:var(--panel); border-color:var(--line); box-shadow:0 12px 40px rgba(15,23,42,.05); }
-  .sidebar { padding-top:36px; }
+  .sidebar { grid-area:sidebar; padding-top:0; }
   .sidebar .cta { margin-top:0; padding:24px; border-radius:22px; }
   .sidebar .cta h2 { font-size:24px; }
   .sidebar .cta p { font-size:14px; line-height:1.7; }
@@ -90,7 +92,7 @@
   .mobile-sidebar-link { display:none; color:#1d4ed8; font-size:13px; font-weight:700; }
   a:focus-visible { outline:3px solid #2563eb; outline-offset:3px; }
   @media (max-width:900px) {
-    .blog-layout { grid-template-columns:minmax(0,1fr); gap:0; }
+    .blog-layout { grid-template-columns:minmax(0,1fr); grid-template-areas:"heading" "latest" "sidebar"; gap:0; }
     .posts,.topic-grid { grid-template-columns:1fr; }
     .sidebar { padding-top:28px; }
     .mobile-sidebar-link { display:inline-block; padding:8px 0; }
@@ -116,8 +118,8 @@
       </nav>
     </header>
     <main class="blog-layout">
+    <div class="section-head latest-heading"><div><h2 id="latest-heading">최신 글</h2></div><a class="mobile-sidebar-link" href="#blog-sidebar">계산기·다른 글 보기</a></div>
       <section class="latest-column" aria-labelledby="latest-heading">
-    <div class="section-head"><div><h2 id="latest-heading">최신 글</h2></div><a class="mobile-sidebar-link" href="#blog-sidebar">계산기·다른 글 보기</a></div>
     <div class="posts latest-posts">
       <a class="post-card featured" href="/blog/trading-loss-investor-psychology/">
         <span class="post-thumb"><img src="/blog/trading-loss-investor-psychology/taiwan-underlined.png" width="1344" height="684" alt="" loading="eager" decoding="async"></span>

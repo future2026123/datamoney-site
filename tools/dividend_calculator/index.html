@@ -38,14 +38,6 @@
   .goal-box { background: #1e3a8a; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
   .goal-box h4 { color: #93C5FD; font-size: 14px; margin-bottom: 8px; }
   .goal-box p { color: var(--text); font-size: 13px; line-height: 1.7; }
-  .premium-lock { background: linear-gradient(135deg,#1e3a8a,var(--navy)); border-radius: 12px; padding: 32px 24px; text-align: center; margin-top: 20px; }
-  .premium-lock h3 { color: var(--text); font-size: 18px; margin-bottom: 8px; }
-  .premium-lock p { color: var(--sub); font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
-  .premium-lock ul { text-align: left; display: inline-block; color: #94A3B8; font-size: 13px; margin-bottom: 20px; }
-  .premium-lock ul li { margin-bottom: 6px; }
-  .btn-pay { display: inline-block; background: var(--yellow); color: var(--navy); padding: 13px 32px; border-radius: 8px; font-weight: 700; font-size: 15px; text-decoration: none; cursor: pointer; border: none; }
-  .premium-features { display: none; }
-  .premium-features.unlocked { display: block; }
   .table-wrap { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 12px; }
   th { background: #1e293b; color: var(--sub); padding: 9px 10px; }
@@ -135,21 +127,11 @@
     <canvas id="chart"></canvas>
   </div>
 
-  <div id="premiumSection">
-    <div class="premium-lock" id="lockBox">
-      <h3>🔒 고급 배당 분석</h3>
-      <p>배당소득세 적용 세후 배당금, 연도별 상세 내역, 인플레이션 반영 실질 가치를 확인하세요.</p>
-      <ul>
-        <li>✅ 배당소득세 (15.4%) 세후 실수령액</li>
-        <li>✅ 연도별 배당금·포트폴리오 상세 표</li>
-        <li>✅ 인플레이션 반영 실질 배당금</li>
-        <li>✅ DRIP vs 현금수령 비교</li>
-      </ul>
-      <button class="btn-pay" onclick="openPayment()">9,900원으로 잠금 해제</button>
-    </div>
-    <div class="premium-features" id="premiumFeatures">
+  <div id="detailsSection" hidden>
+    <div>
       <div class="card" style="background:#0F172A;color:#F8FAFC">
         <h2 style="color:#94A3B8">연도별 배당 상세</h2>
+        <p style="color:#94A3B8;font-size:12px;line-height:1.6">세후 배당금은 15.4% 원천징수를 가정한 예시입니다. 실제 세금은 계좌와 소득에 따라 달라질 수 있습니다.</p>
         <div class="table-wrap">
           <table id="yearlyTable"></table>
         </div>
@@ -160,20 +142,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script>
-const LS_URL = "https://datamoney.lemonsqueezy.com/checkout/buy/dividend-calculator";
-
-(function() {
-  if (new URLSearchParams(location.search).get("paid") === "1" || localStorage.getItem("dm_div_paid") === "true") unlock();
-})();
-
-function unlock() {
-  localStorage.setItem("dm_div_paid", "true");
-  document.getElementById("lockBox").style.display = "none";
-  document.getElementById("premiumFeatures").classList.add("unlocked");
-}
-
-function openPayment() { window.open(LS_URL + "?embed=1", "_blank", "width=500,height=700"); }
-
 function fmt(n) {
   if (n >= 1e8) return (n / 1e8).toFixed(1) + "억";
   if (n >= 1e4) return Math.round(n / 1e4) + "만";
@@ -236,6 +204,15 @@ function calculate() {
 
   document.getElementById("resultCard").classList.add("show");
 
+  document.getElementById("detailsSection").hidden = false;
+  buildTable(yearlyData);
+
+  if (typeof Chart !== "function") {
+    document.getElementById("chart").hidden = true;
+    document.getElementById("resultCard").scrollIntoView({ behavior: "smooth" });
+    return;
+  }
+  document.getElementById("chart").hidden = false;
   if (chartInstance) chartInstance.destroy();
   const ctx = document.getElementById("chart").getContext("2d");
   chartInstance = new Chart(ctx, {
@@ -257,8 +234,6 @@ function calculate() {
       },
     },
   });
-
-  if (localStorage.getItem("dm_div_paid") === "true") buildTable(yearlyData);
 
   document.getElementById("resultCard").scrollIntoView({ behavior: "smooth" });
 }
