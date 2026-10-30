@@ -81,8 +81,10 @@
   .quote-card { padding:22px; border:1px solid var(--line); border-radius:20px; background:linear-gradient(145deg,#fff,#eff6ff); box-shadow:0 12px 40px rgba(15,23,42,.05); }
   .quote-mark { display:block; height:34px; color:#2563eb; font-family:Georgia,serif; font-size:48px; font-weight:700; line-height:1; }
   .quote-card blockquote { margin:4px 0 18px; color:#0f172a; font-size:17px; font-weight:700; line-height:1.65; word-break:keep-all; overflow-wrap:anywhere; }
+  .quote-original { margin:0 0 12px; color:#64748b; font-size:13px; line-height:1.65; overflow-wrap:anywhere; }
+  .quote-review-note { margin:-4px 0 10px; color:#64748b; font-size:11px; line-height:1.4; }
   .quote-meta { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; color:#334155; font-size:13px; font-weight:700; }
-  .quote-card button { display:flex; justify-content:center; align-items:center; gap:8px; width:100%; min-height:42px; border:0; border-radius:12px; background:#2563eb; color:#fff; font:inherit; font-size:13px; font-weight:700; cursor:pointer; }
+  .quote-card button { display:flex; justify-content:center; align-items:center; gap:8px; width:100%; min-height:42px; margin-top:18px; border:0; border-radius:12px; background:#2563eb; color:#fff; font:inherit; font-size:13px; font-weight:700; cursor:pointer; }
   .quote-card button:hover { background:#1d4ed8; }
   .quote-card button:focus-visible { outline:3px solid #2563eb; outline-offset:3px; }
   /* Card headings follow the compact, left-aligned news-card reference. */
@@ -475,6 +477,8 @@
         <span class="quote-mark" aria-hidden="true">“</span>
         <div class="quote-current" aria-live="polite" aria-atomic="true">
           <blockquote id="investment-quote-text">가격은 내가 내는 돈이고 가치는 그 돈으로 얻는 것이다.</blockquote>
+          <p class="quote-original" id="investment-quote-original" lang="en"></p>
+          <p class="quote-review-note" id="investment-quote-review-note" hidden>영문 원출처 확인 중</p>
           <div class="quote-meta">
             <span id="investment-quote-author">워런 버핏</span>
           </div>
@@ -488,7 +492,7 @@
     <footer>© 2026 데이터머니 · datamoney.kr</footer>
   </div>
 <script src="/scripts/popular-posts.js?v=69ac9c78" defer></script>
-<script src="/scripts/investment-quotes.js?v=ko-refined-20261030" defer></script>
+<script src="/scripts/investment-quotes.js?v=en-reviewed-20261030" defer></script>
 <script src="/scripts/blog-pagination.js?v=20261030" defer></script>
 </body>
 </html>
