@@ -54,17 +54,26 @@
   @media (max-width:880px){.article-shell{grid-template-columns:1fr;}.aside-card{position:static;}}
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6705155374292160" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="/blog/header.css">
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <a class="logo" href="/">데이터머니<span>.</span></a>
-    <nav class="nav">
-      <a href="/">홈</a>
-      <a href="/blog/">블로그</a>
-      <a href="https://www.youtube.com/@datamoney_kr" target="_blank">유튜브</a>
-    </nav>
-  </header>
+  <header class="dm-site-header">
+  <svg class="dm-brand-filter" aria-hidden="true" focusable="false" width="0" height="0">
+    <defs>
+      <filter id="logo-cutout" color-interpolation-filters="sRGB">
+        <feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 1.5 0 -0.3" result="cutout" />
+        <feComposite in="cutout" in2="SourceGraphic" operator="in" />
+      </filter>
+    </defs>
+  </svg>
+  <a class="dm-brand" href="/"><span class="dm-brand-icon" aria-hidden="true"><img src="/blog/datamoney-logo-blue.png" width="1254" height="1254" alt=""></span><span class="dm-brand-text">데이터<span>머니</span></span></a>
+  <nav class="dm-site-nav" aria-label="주 메뉴">
+    <a href="/">홈</a>
+    <a href="/tools/">도구</a>
+    <a href="https://www.youtube.com/@datamoneykr" target="_blank" rel="noopener noreferrer">YouTube</a>
+  </nav>
+</header>
 
   <main class="article-shell">
     <article class="article">

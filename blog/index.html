@@ -14,13 +14,6 @@
   body { margin:0; font-family:"Pretendard Variable","Pretendard","Apple SD Gothic Neo",sans-serif; color:var(--text); background:radial-gradient(circle at top left, rgba(37,99,235,.08), transparent 18%),linear-gradient(180deg,#f8fbff 0%, var(--bg) 100%); }
   a { color:inherit; text-decoration:none; }
   .wrap { width:min(1120px, calc(100% - 28px)); margin:0 auto; padding:18px 0 64px; }
-  header { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:16px 0; }
-  .logo { display:inline-flex; align-items:center; gap:8px; flex:none; white-space:nowrap; font-weight:800; font-size:24px; letter-spacing:-.03em; }
-  .logo-icon { position:relative; top:2px; display:block; width:28px; height:28px; overflow:hidden; flex:none; }
-  .logo-icon img { position:absolute; width:44px; height:44px; max-width:none; left:-8.7px; top:-8px; filter:url(#logo-cutout); }
-  .logo-text > span { color:var(--blue); }
-  .nav { display:flex; gap:10px; flex-wrap:wrap; }
-  .nav a { padding:10px 14px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.72); color:#334155; font-size:14px; }
   .post-card,.topic-card,.cta { background:var(--panel); border:1px solid var(--line); border-radius:28px; box-shadow:0 12px 40px rgba(15,23,42,.05); }
   .tag { display:inline-flex; align-items:center; padding:8px 12px; border-radius:999px; background:var(--blue-soft); color:#1d4ed8; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
   .post-card p,.topic-card p,.cta p { margin:0; color:var(--sub); line-height:1.8; }
@@ -67,7 +60,7 @@
   .post-thumb img { display:block; width:100%; height:100%; object-fit:contain; }
   .post-copy { min-width:0; }
   .latest-posts .post-copy .tag { padding:6px 10px; font-size:11px; }
-  .latest-posts .post-copy h3 { margin:9px 0 7px; font-size:clamp(19px,1.8vw,24px); line-height:1.32; overflow-wrap:anywhere; }
+  .latest-posts .post-copy h3 { margin:9px 0 7px; font-size:clamp(18px,1.7vw,22px); line-height:1.32; overflow-wrap:anywhere; }
   .latest-posts .post-copy p { font-size:14px; line-height:1.55; }
   .latest-posts .post-copy .meta { gap:8px; margin-top:10px; font-size:12px; }
   .sidebar { grid-area:sidebar; padding-top:0; }
@@ -94,6 +87,15 @@
   .popular-empty { margin:0; padding:18px; background:#fff; border:1px solid var(--line); border-radius:16px; color:var(--sub); font-size:13px; line-height:1.6; }
   .sidebar .meta { font-size:12px; margin-top:12px; }
   .mobile-sidebar-link { display:none; color:#1d4ed8; font-size:13px; font-weight:700; }
+  .quote-card { padding:22px; border:1px solid var(--line); border-radius:20px; background:linear-gradient(145deg,#fff,#eff6ff); box-shadow:0 12px 40px rgba(15,23,42,.05); }
+  .quote-mark { display:block; height:34px; color:#2563eb; font-family:Georgia,serif; font-size:48px; font-weight:700; line-height:1; }
+  .quote-card blockquote { margin:4px 0 18px; color:#0f172a; font-size:17px; font-weight:700; line-height:1.65; word-break:keep-all; overflow-wrap:anywhere; }
+  .quote-meta { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; color:#334155; font-size:13px; font-weight:700; }
+  .quote-meta a { color:#1d4ed8; font-size:12px; }
+  .quote-note { margin:10px 0 18px; color:#64748b; font-size:11px; line-height:1.5; }
+  .quote-card button { display:flex; justify-content:center; align-items:center; gap:8px; width:100%; min-height:42px; border:0; border-radius:12px; background:#2563eb; color:#fff; font:inherit; font-size:13px; font-weight:700; cursor:pointer; }
+  .quote-card button:hover { background:#1d4ed8; }
+  .quote-card button:focus-visible { outline:3px solid #2563eb; outline-offset:3px; }
   a:focus-visible { outline:3px solid #2563eb; outline-offset:3px; }
   @media (max-width:900px) {
     .blog-layout { grid-template-columns:minmax(0,1fr); grid-template-areas:"heading" "latest" "sidebar"; gap:0; }
@@ -102,21 +104,20 @@
     .mobile-sidebar-link { display:inline-block; padding:8px 0; }
   }
   @media (max-width:560px) {
-    header { flex-wrap:wrap; }
-    .logo { font-size:22px; }
-    .nav { gap:6px; }
-    .nav a { padding:8px 10px; font-size:13px; }
     .latest-posts .post-card { grid-template-columns:minmax(90px,34%) minmax(0,1fr); align-items:start; gap:12px; padding:12px; }
     .latest-posts .post-copy .tag { font-size:10px; }
-    .latest-posts .post-copy h3 { font-size:17px; }
+    .latest-posts .post-copy h3 { font-size:16px; }
     .latest-posts .post-copy p { font-size:13px; }
     .latest-posts .post-copy .meta { gap:6px; font-size:11px; }
   }
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6705155374292160" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="/blog/header.css">
 </head>
 <body>
-  <svg aria-hidden="true" focusable="false" width="0" height="0" style="position:absolute">
+  <div class="wrap">
+    <header class="dm-site-header">
+  <svg class="dm-brand-filter" aria-hidden="true" focusable="false" width="0" height="0">
     <defs>
       <filter id="logo-cutout" color-interpolation-filters="sRGB">
         <feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 1.5 0 -0.3" result="cutout" />
@@ -124,15 +125,13 @@
       </filter>
     </defs>
   </svg>
-  <div class="wrap">
-    <header>
-      <a class="logo" href="/"><span class="logo-icon" aria-hidden="true"><img src="/blog/datamoney-logo-blue.png" width="1254" height="1254" alt=""></span><span class="logo-text">데이터<span>머니</span></span></a>
-      <nav class="nav">
-        <a href="/">홈</a>
-        <a href="/tools/">도구</a>
-        <a href="https://www.youtube.com/@datamoneykr" target="_blank" rel="noopener noreferrer">YouTube</a>
-      </nav>
-    </header>
+  <a class="dm-brand" href="/"><span class="dm-brand-icon" aria-hidden="true"><img src="/blog/datamoney-logo-blue.png" width="1254" height="1254" alt=""></span><span class="dm-brand-text">데이터<span>머니</span></span></a>
+  <nav class="dm-site-nav" aria-label="주 메뉴">
+    <a href="/">홈</a>
+    <a href="/tools/">도구</a>
+    <a href="https://www.youtube.com/@datamoneykr" target="_blank" rel="noopener noreferrer">YouTube</a>
+  </nav>
+</header>
     <main class="blog-layout">
     <div class="section-head latest-heading"><div><h2 id="latest-heading">최신 글</h2></div><a class="mobile-sidebar-link" href="#blog-sidebar">계산기·다른 글 보기</a></div>
       <section class="latest-column" aria-labelledby="latest-heading">
@@ -400,13 +399,19 @@
       <p class="popular-empty">조회수 통계를 집계 중입니다.</p>
     </section>
 
-    <div class="section-head"><div><h2>투자 메모</h2></div></div>
-      <div class="post-card">
-        <span class="tag">DCA 핵심</span>
-        <h3 style="font-size:26px">25일의 법칙</h3>
-        <p>연간 최고 수익일 상위 25일만 놓쳐도 20년 복리가 절반으로 줄어듭니다.<br>중단의 비용은 하락의 비용보다 큽니다.</p>
-        <div class="meta"><span><a href="/blog/dca-stop-loss-54percent/">전체 분석 보기</a></span></div>
+    <div class="section-head"><div><h2 id="investment-quote-heading">투자 명언</h2></div></div>
+    <section class="quote-card" aria-labelledby="investment-quote-heading">
+      <span class="quote-mark" aria-hidden="true">“</span>
+      <div class="quote-current" aria-live="polite" aria-atomic="true">
+        <blockquote id="investment-quote-text">가격은 지불하는 것이고, 가치는 그 대가로 얻는 것이다.</blockquote>
+        <div class="quote-meta">
+          <span id="investment-quote-author">워런 버핏</span>
+          <a id="investment-quote-source" href="https://wealthawesome.com/investor-wisdom/investor/warren-buffett" target="_blank" rel="noopener noreferrer">출처 보기 ↗</a>
+        </div>
+        <p class="quote-note">원문의 뜻을 읽기 쉽게 풀어썼습니다.</p>
       </div>
+      <button type="button" id="investment-quote-next">새로운 명언 <span aria-hidden="true">↻</span></button>
+    </section>
 
       </aside>
     </main>
@@ -414,6 +419,7 @@
     <footer>© 2026 데이터머니 · datamoney.kr</footer>
   </div>
 <script src="/scripts/popular-posts.js?v=69ac9c78" defer></script>
+<script src="/scripts/investment-quotes.js" defer></script>
 </body>
 </html>
 

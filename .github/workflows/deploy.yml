@@ -20,6 +20,9 @@ jobs:
         with:
           ref: master
 
+      - name: Synchronize blog navigation
+        run: python3 scripts/sync_blog_headers.py
+
       - name: Add AdSense code to site pages
         run: python3 scripts/ensure_adsense.py
 

@@ -1,0 +1,77 @@
+/* Shared DataMoney blog navigation. */
+.dm-site-header {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 16px 0;
+  font-family: "Pretendard Variable", "Pretendard", "Apple SD Gothic Neo", sans-serif;
+  line-height: normal;
+}
+body > .dm-site-header {
+  width: min(1120px, calc(100% - 28px));
+  margin: 18px auto 0;
+}
+.dm-site-header * { box-sizing: border-box; }
+.dm-site-header a { text-decoration: none; }
+.dm-site-header .dm-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  white-space: nowrap;
+  color: #0f172a;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -.03em;
+}
+.dm-site-header .dm-brand-icon {
+  position: relative;
+  top: 2px;
+  display: block;
+  width: 28px;
+  height: 28px;
+  overflow: hidden;
+  flex: none;
+}
+.dm-site-header .dm-brand-icon img {
+  position: absolute;
+  display: block;
+  width: 44px;
+  height: 44px;
+  max-width: none;
+  left: -8.7px;
+  top: -8px;
+  border: 0;
+  border-radius: 0;
+  filter: url(#logo-cutout);
+}
+.dm-site-header .dm-brand-text > span { color: #2563eb; }
+.dm-site-header .dm-brand-filter { position: absolute; width: 0; height: 0; overflow: hidden; }
+.dm-site-header .dm-site-nav { display: flex; gap: 10px; flex-wrap: wrap; }
+.dm-site-header .dm-site-nav a {
+  padding: 10px 14px;
+  border: 1px solid rgba(15,23,42,.08);
+  border-radius: 999px;
+  background: rgba(255,255,255,.72);
+  color: #334155;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: normal;
+}
+/* Preserve contrast on the one article with a dark background. */
+body.dm-dark-theme .dm-site-header .dm-brand { color: #f8fafc; }
+body.dm-dark-theme .dm-site-header .dm-site-nav a { background: #fff; }
+body.dm-header-flush .dm-site-header { margin-top: 18px; }
+.dm-site-header a:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+@media (max-width: 560px) {
+  .dm-site-header { flex-wrap: wrap; }
+  .dm-site-header .dm-brand { font-size: 22px; }
+  .dm-site-header .dm-site-nav { gap: 6px; }
+  .dm-site-header .dm-site-nav a { padding: 8px 10px; font-size: 13px; }
+}
