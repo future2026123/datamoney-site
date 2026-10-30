@@ -130,6 +130,9 @@
   [data-dm-print-content] .toc,
   [data-dm-print-content] .yt-embed,
   [data-dm-print-content] .video,
+  [data-dm-print-content] .video-wrap,
+  [data-dm-print-content] .video-box,
+  [data-dm-print-content] .video-embed,
   [data-dm-print-content] iframe { display: none !important; }
   [data-dm-print-content] :is(h1, h2, h3, h4) {
     break-after: avoid-page;

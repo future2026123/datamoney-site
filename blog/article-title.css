@@ -78,6 +78,8 @@
 
 .dm-article-thumbnail { margin: 0 0 30px; }
 .dm-article-thumbnail img { display: block; width: 100%; height: auto; max-width: 100%; border-radius: 8px; }
+/* A matching intro video already shows this image, while print still needs it. */
+@media screen { .dm-article-thumbnail--video { display: none; } }
 
 @media (min-width: 901px) {
   :is(.article-shell > .article, .dm-heading-layout > .paper,

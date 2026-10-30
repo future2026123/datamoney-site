@@ -3,6 +3,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 from xml.etree import ElementTree
 import html
+import re
 import struct
 import sys
 
@@ -78,10 +79,42 @@ def home_thumbnails():
     return result
 
 
+def has_matching_intro_video(source, thumbnail_src):
+    """The intro player can serve as the cover when it uses the same image."""
+    video_id = Path(urlsplit(thumbnail_src).path).stem
+    if not re.fullmatch(r"[A-Za-z0-9_-]{11}", video_id):
+        return False
+    tree = Tree(source)
+    headings = [node for node in tree.nodes if node.has_class("dm-article-heading")]
+    if len(headings) != 1 or headings[0].end is None:
+        return False
+    heading = headings[0]
+    content = next((node for node in heading.ancestors()
+                    if node.tag == "article" or node.has_class("dm-article-page")
+                    or (node.tag == "main" and node.has_class("article"))), None)
+    if not content:
+        return False
+    inside = [node for node in tree.nodes if content in node.ancestors() and node.start >= heading.end]
+    for node in inside:
+        if node.tag != "iframe":
+            continue
+        url = urlsplit(node.attrs.get("src", ""))
+        if (url.hostname or "").lower() not in {"youtube.com", "www.youtube.com", "youtube-nocookie.com", "www.youtube-nocookie.com"}:
+            continue
+        if url.path.rstrip("/") != "/embed/" + video_id:
+            continue
+        if not any(item.tag == "h2" and item.start < node.start for item in inside):
+            return True
+    return False
+
+
 def synchronize(path, thumbnail):
     original = path.read_text(encoding="utf-8")
     src, width, height = thumbnail
-    figure = (f'{START}\n<figure class="dm-article-thumbnail">'
+    classes = "dm-article-thumbnail"
+    if has_matching_intro_video(original, src):
+        classes += " dm-article-thumbnail--video"
+    figure = (f'{START}\n<figure class="{classes}">'
               f'<img src="{html.escape(src, quote=True)}" width="{width}" height="{height}" '
               f'alt="" decoding="async"></figure>\n{END}')
     if START in original or END in original:
