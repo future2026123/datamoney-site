@@ -15,9 +15,13 @@
         return;
       }
       const cards = new Map(
-        [...document.querySelectorAll(".latest-posts > a.post-card, .side-posts > a.post-card")]
+        [...document.querySelectorAll(".latest-posts > a.post-card")]
           .map(card => [new URL(card.href).pathname.replace(/\/?$/, "/"), card])
       );
+      const otherThumbnails = {
+        "/blog/ria-overseas-stock-yangdose-0won/": "/blog/thumbnails/AmyqHO3RK5w.jpg",
+        "/blog/dividend-100manwon-roadmap/": "/blog/thumbnails/7GT3FNVbtyk.jpg",
+      };
       const list = document.createElement("ol");
       list.className = "popular-list";
       data.posts.slice(0, 5).forEach((post, index) => {
@@ -31,9 +35,10 @@
         rank.textContent = String(index + 1);
         link.appendChild(rank);
         const image = cards.get(post.path)?.querySelector(".post-thumb img");
-        if (image) {
+        const imageSrc = image?.getAttribute("src") || otherThumbnails[post.path];
+        if (imageSrc) {
           const thumbnail = document.createElement("img");
-          thumbnail.src = image.getAttribute("src");
+          thumbnail.src = imageSrc;
           thumbnail.alt = "";
           thumbnail.loading = "lazy";
           link.appendChild(thumbnail);
