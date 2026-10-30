@@ -1,12 +1,11 @@
 .dm-article-heading {
   box-sizing: border-box;
-  margin: 12px 0 20px;
-  padding: clamp(28px, 4.2vw, 52px);
-  border: 1px solid #e3e8ef;
-  border-radius: 20px;
-  background: #fff;
+  margin: 0 0 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: #101319;
-  box-shadow: 0 12px 40px rgba(15, 23, 42, .05);
+  box-shadow: none;
 }
 
 .dm-article-heading h1 {
@@ -35,40 +34,49 @@
 }
 
 .dm-article-byline span + span::before {
-  content: "·";
+  content: "\00b7";
   margin-right: 10px;
   color: #aab0b8;
 }
 
-.article-shell > .dm-article-heading { grid-column: 1 / -1; margin: 0; }
-.dm-article-support .hero-grid { min-height: 0; }
-.dm-article-support .hero-copy { justify-content: center; }
-
-.hero.dm-article-heading {
-  margin: 0;
-  padding: clamp(28px, 4.2vw, 52px);
-  border-color: #e3e8ef;
-  border-radius: 20px;
-  background: #fff;
-  color: #101319;
-  box-shadow: 0 12px 40px rgba(15, 23, 42, .05);
-}
-
-.hero.dm-article-heading .eyebrow { display: none; }
-.hero.dm-article-heading .subtitle {
+.dm-article-heading .eyebrow { display: none; }
+.dm-article-heading .subtitle {
   margin: 14px 0 0;
   color: #5c6674;
   font-size: 17px;
   line-height: 1.6;
 }
 
+.dm-article-page {
+  box-sizing: border-box;
+  margin: 12px 0 20px;
+  padding: clamp(24px, 4vw, 48px);
+  border: 1px solid #e3e8ef;
+  border-radius: 20px;
+  background: #fff;
+  color: #172033;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, .05);
+}
+
+.dm-article-support .hero-grid { min-height: 0; }
+.dm-article-support .hero-copy { justify-content: center; }
+.dm-dark-theme main.dm-article-page { margin: 12px auto 20px; }
+.dm-dark-theme .dm-article-page .lead,
+.dm-dark-theme .dm-article-page .note { color: #475569; }
+.dm-dark-theme .dm-article-page .eyebrow,
+.dm-dark-theme .dm-article-page a { color: #1d4ed8; }
+
 @media (min-width: 851px) {
-  .dm-heading-layout { grid-template-areas: "hero hero" "paper side"; }
+  .dm-heading-layout { grid-template-areas: "paper side"; }
+}
+
+@media (max-width: 850px) {
+  .dm-heading-layout { grid-template-areas: "paper" "side"; }
 }
 
 @media (max-width: 560px) {
-  .dm-article-heading { padding: 26px 22px; border-radius: 16px; }
-  .hero.dm-article-heading { padding: 26px 22px; border-radius: 16px; }
+  .dm-article-heading { margin-bottom: 24px; }
   .dm-article-heading h1 { font-size: 28px; }
   .dm-article-byline { margin-top: 18px; font-size: 14px; }
+  .dm-article-page { padding: 26px 22px; border-radius: 16px; }
 }
