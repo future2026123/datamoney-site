@@ -33,6 +33,9 @@ jobs:
       - name: Add site information and privacy links
         run: python3 scripts/ensure_site_info_links.py
 
+      - name: Add Google Analytics to site pages
+        run: python3 scripts/ensure_analytics.py
+
       - name: Add AdSense code to site pages
         run: python3 scripts/ensure_adsense.py
 
