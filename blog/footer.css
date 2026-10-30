@@ -1,0 +1,32 @@
+body .dm-site-footer {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  margin: 28px 0 0;
+  padding: 22px 0 40px;
+  border: 0;
+  border-top: 1px solid #dfe6ef;
+  background: transparent;
+  color: #64748b;
+  font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.6;
+  text-align: left;
+}
+
+body > .dm-site-footer {
+  width: min(1120px, calc(100% - 28px));
+  margin-right: auto;
+  margin-left: auto;
+}
+
+body .dm-site-footer p { margin: 0; color: inherit; font-size: inherit; line-height: inherit; }
+body .dm-site-footer .dm-footer-disclaimer { margin-top: 4px; }
+body .dm-site-footer .dm-footer-links { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 12px; padding: 0; font-size: 13px; }
+body .dm-site-footer .dm-footer-links a { color: #526581; text-decoration: none; }
+body .dm-site-footer .dm-footer-links a:hover { color: #1d4ed8; text-decoration: underline; }
+body .dm-site-footer .dm-footer-links a:focus-visible { outline: 2px solid #2563eb; outline-offset: 3px; }
+
+.dm-article-note { margin: 28px 0 0; padding-top: 16px; border-top: 1px solid #e5eaf1; color: #64748b; font-size: 13px; line-height: 1.7; }
+.dm-article-note p { margin: 0; color: inherit; font-size: inherit; line-height: inherit; }
