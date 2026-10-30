@@ -24,12 +24,14 @@ jobs:
         run: python3 scripts/ensure_adsense.py
 
       - name: Refresh popular blog posts
+        id: popular
         run: python3 scripts/update-popular-posts.py
         env:
           CF_ANALYTICS_TOKEN: ${{ secrets.CF_ANALYTICS_TOKEN || secrets.CF_API_TOKEN }}
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
 
       - name: Deploy to Cloudflare Pages
+        if: github.event_name != 'schedule' || steps.popular.outputs.updated == 'true'
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}

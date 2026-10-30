@@ -162,13 +162,19 @@ def main():
     titles = article_titles()
     preserve_published(titles)
     token = os.environ.get("CF_ANALYTICS_TOKEN", "").strip()
+    updated = False
     if not token:
         print("Cloudflare analytics token is not configured; keeping the last available list.")
-        return
-    try:
-        refresh(token, titles)
-    except (OSError, ValueError, KeyError, TypeError, RuntimeError) as error:
-        print(f"Cloudflare analytics could not be refreshed; keeping the last available list: {type(error).__name__}")
+    else:
+        try:
+            refresh(token, titles)
+            updated = True
+        except (OSError, ValueError, KeyError, TypeError, RuntimeError) as error:
+            print(f"Cloudflare analytics could not be refreshed; keeping the last available list: {type(error).__name__}")
+    output = os.environ.get("GITHUB_OUTPUT")
+    if output:
+        with open(output, "a", encoding="utf-8") as stream:
+            stream.write(f"updated={str(updated).lower()}\n")
 
 
 if __name__ == "__main__":

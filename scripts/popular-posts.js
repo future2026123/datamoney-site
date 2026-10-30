@@ -9,7 +9,11 @@
       return response.json();
     })
     .then(data => {
-      if (!Array.isArray(data.posts) || !data.posts.length) return;
+      if (!Array.isArray(data.posts)) return;
+      if (!data.posts.length) {
+        if (data.generatedAt) container.querySelector(".popular-empty").textContent = "아직 집계된 조회수가 없습니다.";
+        return;
+      }
       const cards = new Map(
         [...document.querySelectorAll(".latest-posts > a.post-card, .side-posts > a.post-card")]
           .map(card => [new URL(card.href).pathname.replace(/\/?$/, "/"), card])
