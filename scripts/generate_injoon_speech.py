@@ -15,14 +15,14 @@ import subprocess
 import sys
 from pathlib import Path
 
-from build_speech_manifests import article_parts, build_manifest
+from build_speech_manifests import INJOON_VOICE_PROFILES, article_parts, build_manifest
 from speech_timing import normalized, timing_for, timing_key
 from speech_pronunciation import prepare_pronunciation, unknown_financial_terms
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE = Path(r"D:\Tools\DataMoney-TTS\injoon-article\jobs")
 VOICE = "ko-KR-InJoonNeural"
-PROFILE = "ko-KR-InJoonNeural-v1"
+LEGACY_PROFILE = "ko-KR-InJoonNeural-v1"
 MAX_BUCKET_BYTES = 8_000_000_000
 SENTENCE_END = re.compile(r"[.!?。！？][”’\"'」』)]*(?:\[\d{1,3}\])?(?=\s|$)")
 
@@ -55,13 +55,13 @@ def prepare_spoken_text(text):
                   lambda match: f"{match[1]}{match[3]}에서 {match[2]}{match[3]}", text)
 
 
-async def synthesize(text, path):
+async def synthesize(text, path, pitch):
     import edge_tts
 
     temporary = path.with_suffix(".partial.mp3")
     events = []
     with temporary.open("wb") as audio:
-        async for chunk in edge_tts.Communicate(text, VOICE, boundary="WordBoundary").stream():
+        async for chunk in edge_tts.Communicate(text, VOICE, pitch=pitch, boundary="WordBoundary").stream():
             if chunk["type"] == "audio":
                 audio.write(chunk["data"])
             elif chunk["type"] == "WordBoundary":
@@ -143,6 +143,13 @@ def put_verified(storage, path, key, content_type):
         raise RuntimeError("A different immutable object already exists or upload verification failed")
 
 
+def matches_source(payload, profile, pitch, blocks, text):
+    """A legacy cache without profile metadata was made at the original pitch."""
+    return (payload.get("voice") == VOICE and payload.get("profile", LEGACY_PROFILE) == profile and
+            payload.get("pitch", "+0Hz") == pitch and payload.get("blocks") == blocks and
+            payload.get("spoken_text") == text)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("slug")
@@ -158,8 +165,10 @@ def main():
         parser.error("Previously generated events and audio must be supplied together")
     source = (args.source_root / "blog" / args.slug / "index.html").read_text(encoding="utf-8")
     manifest = build_manifest(source)
-    if manifest["voice"] != PROFILE:
+    profile = manifest["voice"]
+    if profile not in INJOON_VOICE_PROFILES:
         parser.error("The article does not select the InJoon voice profile")
+    pitch = INJOON_VOICE_PROFILES[profile]
     blocks = article_parts(source)
     unknown = unknown_financial_terms(blocks)
     if unknown:
@@ -169,7 +178,7 @@ def main():
     if len(blocks) < 2 or len(text) < 10 or len(text) > 40_000:
         parser.error("Unexpected article length")
     job = CACHE / args.slug / manifest["content_id"]
-    print(f"Article {args.slug}, {len(blocks)} blocks, {len(text)} characters; id {manifest['content_id']}", flush=True)
+    print(f"Article {args.slug}, {len(blocks)} blocks, {len(text)} characters; profile {profile}, pitch {pitch}; id {manifest['content_id']}", flush=True)
     if args.dry_run:
         return
     job.mkdir(parents=True, exist_ok=True)
@@ -177,7 +186,7 @@ def main():
     cache_file = job / "source-and-words.json"
     if args.reuse_events:
         payload = json.loads(args.reuse_events.read_text(encoding="utf-8"))
-        if payload.get("voice") != VOICE or payload.get("blocks") != blocks or payload.get("spoken_text") != text:
+        if not matches_source(payload, profile, pitch, blocks, text):
             raise ValueError("Supplied local audio does not match the article text")
         if payload.get("audio_sha256") != hashlib.sha256(args.reuse_audio.read_bytes()).hexdigest():
             raise ValueError("Supplied audio does not match its recorded checksum")
@@ -185,14 +194,14 @@ def main():
         raw.write_bytes(args.reuse_audio.read_bytes())
     elif raw.is_file() and cache_file.is_file():
         payload = json.loads(cache_file.read_text(encoding="utf-8"))
-        if (payload.get("voice") != VOICE or payload.get("blocks") != blocks or payload.get("spoken_text") != text or
+        if (not matches_source(payload, profile, pitch, blocks, text) or
                 payload.get("audio_sha256") != hashlib.sha256(raw.read_bytes()).hexdigest()):
             raise ValueError("Cached audio or timings are inconsistent; review required")
         events = payload["events"]
         print("Reusing previously generated audio and word timings", flush=True)
     else:
-        events = asyncio.run(synthesize(text, raw))
-    payload = {"voice": VOICE, "blocks": blocks, "spoken_text": text, "events": events,
+        events = asyncio.run(synthesize(text, raw, pitch))
+    payload = {"voice": VOICE, "profile": profile, "pitch": pitch, "blocks": blocks, "spoken_text": text, "events": events,
                "audio_sha256": hashlib.sha256(raw.read_bytes()).hexdigest()}
     cache_temp = cache_file.with_suffix(".tmp")
     cache_temp.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
@@ -208,7 +217,7 @@ def main():
     timing_file = job / "timing.json"
     timing_file.write_text(json.dumps(timing, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     audio_key = f"audio/articles/{args.slug}/{manifest['content_id']}.mp3"
-    index = {"version": 1, "voice": PROFILE, "content_id": manifest["content_id"], "audio": audio_key}
+    index = {"version": 1, "voice": profile, "content_id": manifest["content_id"], "audio": audio_key}
     index_file = job / "availability.json"
     index_file.write_text(json.dumps(index, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     print(f"Prepared {len(timing['cues'])} timed sentences; {seconds:.2f}s; {output.stat().st_size} bytes", flush=True)

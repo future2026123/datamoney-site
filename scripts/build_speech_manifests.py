@@ -36,7 +36,14 @@ SOURCE_CITATION_END = re.compile(r"\(\d{4}\)\.\s*(.*)$")
 SOURCE_LINK_LABEL = re.compile(r"(?:^|\s+)(?:DOI|논문|원문(?:\s*보기)?|자료(?:\s*보기)?|링크)\s*[↗→]?\s*$", re.IGNORECASE)
 MAX_CHARS = 120
 VOICE_PROFILE_ID = "female-v1"
-SUPPORTED_VOICE_PROFILES = {VOICE_PROFILE_ID, "ko-KR-InJoonNeural-v1"}
+# A profile is part of the immutable audio fingerprint. Never change a profile's
+# pitch in place: introduce a new profile when the preferred sound changes.
+INJOON_VOICE_PROFILES = {
+    "ko-KR-InJoonNeural-v1": "+0Hz",
+    "ko-KR-InJoonNeural-low5-v2": "-5Hz",
+}
+DEFAULT_INJOON_PROFILE = "ko-KR-InJoonNeural-low5-v2"
+SUPPORTED_VOICE_PROFILES = {VOICE_PROFILE_ID, *INJOON_VOICE_PROFILES}
 
 
 class VoiceProfile(HTMLParser):

@@ -13,8 +13,11 @@ Figure captions and reference lists are excluded. Until an exact matching
 recording exists, the previous device voice remains available and the UI says
 that the AI voice is being prepared.
 
-An article may explicitly select the `ko-KR-InJoonNeural-v1` voice. That voice
-uses the online InJoon text-to-speech service through the dedicated `injoon-env`
+For new InJoon narration, use `ko-KR-InJoonNeural-low5-v2`: the user's preferred
+InJoon voice with pitch lowered by 5 Hz. The original
+`ko-KR-InJoonNeural-v1` profile stays available at its original pitch so older
+immutable recordings retain their identity. Both profiles use the online
+InJoon text-to-speech service through the dedicated `injoon-env`
 environment; it sends the article's public text to the service. The generated
 mono MP3 uses 32 kbps, and word timings are mapped back to the article's exact
 sentences. Figure captions, reference lists and bracketed citation numbers are
@@ -51,8 +54,8 @@ rewriting the audio. The player highlights the current sentence and can follow
 its location; manual scrolling suspends following until the reader enables it
 again.
 
-An article may explicitly use `<meta name="dm-speech-voice"
-content="ko-KR-InJoonNeural-v1">`. This changes its content fingerprint and
+An article using the preferred InJoon voice includes `<meta name="dm-speech-voice"
+content="ko-KR-InJoonNeural-low5-v2">`. This changes its content fingerprint and
 marks the voice as separately managed: the female generator and its timing
 backfill will not upload or replace that article's recording. A dedicated
 generator for another voice must use its own fingerprint, upload the audio and

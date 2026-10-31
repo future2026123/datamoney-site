@@ -122,6 +122,9 @@ class SpeechManifestTests(unittest.TestCase):
         self.assertEqual(selected["voice"], "ko-KR-InJoonNeural-v1")
         self.assertEqual(original["chunks"], selected["chunks"])
         self.assertNotEqual(original["content_id"], selected["content_id"])
+        lower = speech.build_manifest(changed.replace("ko-KR-InJoonNeural-v1", "ko-KR-InJoonNeural-low5-v2"))
+        self.assertEqual(selected["chunks"], lower["chunks"])
+        self.assertNotEqual(selected["content_id"], lower["content_id"])
 
     def test_unknown_voice_fails_instead_of_publishing_the_wrong_recording(self):
         source = (ROOT / "blog" / "ai-semiconductor-per-2026" / "index.html").read_text(encoding="utf-8")

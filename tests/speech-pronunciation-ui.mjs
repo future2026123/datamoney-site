@@ -6,6 +6,7 @@ const source = await readFile(new URL('../blog/article-speech.js', import.meta.u
 const window = {};
 vm.runInNewContext(source, {window});
 const say = window.prepareDataMoneySpeech;
+assert.equal(say('EP.01 제목과 PNAS 연구'), '에피소드 1 제목과 피 엔 에이 에스 연구');
 assert.equal(say('S&P 500과 S&P500, PER는 ETF를 본다.'), '에스 엔 피 오백과 에스 엔 피 오백, 퍼는 이 티 에프를 본다.');
 assert.equal(say('per도 보지만 one per year와 SUPER는 그대로.'), '퍼도 보지만 one per year와 SUPER는 그대로.');
 assert.equal(say('선행 per 낮아지는 이유'), '선행 퍼 낮아지는 이유');

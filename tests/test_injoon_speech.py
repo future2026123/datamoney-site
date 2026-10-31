@@ -1,10 +1,15 @@
+import asyncio
 import sys
+import tempfile
+import types
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
-from generate_injoon_speech import article_sentences, prepare_spoken_text, validate_cues
+from build_speech_manifests import DEFAULT_INJOON_PROFILE, INJOON_VOICE_PROFILES
+from generate_injoon_speech import article_sentences, matches_source, prepare_spoken_text, synthesize, validate_cues
 
 
 class InJoonSpeechTests(unittest.TestCase):
@@ -17,6 +22,34 @@ class InJoonSpeechTests(unittest.TestCase):
         {"text": "첫", "start": 1, "end": 1.2}, {"text": "문장이다", "start": 1.2, "end": 2},
         {"text": "손실은", "start": 2.2, "end": 2.6}, {"text": "0.95%였다", "start": 2.6, "end": 3.8},
     ]
+
+    def test_lower_pitch_is_sent_to_the_voice_service(self):
+        calls = []
+
+        class FakeCommunicate:
+            def __init__(self, text, voice, *, pitch, boundary):
+                calls.append((text, voice, pitch, boundary))
+
+            async def stream(self):
+                yield {"type": "audio", "data": b"a" * 10001}
+                for index in range(20):
+                    yield {"type": "WordBoundary", "text": "단어", "offset": index * 10000000,
+                           "duration": 1000000}
+
+        with tempfile.TemporaryDirectory() as directory, \
+             patch.dict(sys.modules, {"edge_tts": types.SimpleNamespace(Communicate=FakeCommunicate)}):
+            path = Path(directory) / "test.mp3"
+            events = asyncio.run(synthesize("시험 음성", path, INJOON_VOICE_PROFILES[DEFAULT_INJOON_PROFILE]))
+            self.assertEqual(path.stat().st_size, 10001)
+        self.assertEqual(calls, [("시험 음성", "ko-KR-InJoonNeural", "-5Hz", "WordBoundary")])
+        self.assertEqual(len(events), 20)
+
+    def test_original_pitch_cache_cannot_be_reused_for_lower_pitch(self):
+        legacy = {"voice": "ko-KR-InJoonNeural", "blocks": ["본문"], "spoken_text": "본문"}
+        self.assertTrue(matches_source(legacy, "ko-KR-InJoonNeural-v1", "+0Hz", ["본문"], "본문"))
+        self.assertFalse(matches_source(legacy, DEFAULT_INJOON_PROFILE, "-5Hz", ["본문"], "본문"))
+        updated = dict(legacy, profile=DEFAULT_INJOON_PROFILE, pitch="-5Hz")
+        self.assertTrue(matches_source(updated, DEFAULT_INJOON_PROFILE, "-5Hz", ["본문"], "본문"))
 
     def test_word_timings_map_to_exact_visible_sentences(self):
         result = validate_cues(self.SOURCE, self.EVENTS, "a" * 64)

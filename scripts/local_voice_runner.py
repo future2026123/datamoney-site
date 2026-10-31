@@ -15,7 +15,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from build_speech_manifests import VOICE_PROFILE_ID, build_manifest
+from build_speech_manifests import INJOON_VOICE_PROFILES, VOICE_PROFILE_ID, build_manifest
 from generate_local_speech import grouped_text, idle_seconds
 from local_speech_storage import BUCKET, client
 from speech_timing import timing_key
@@ -27,7 +27,6 @@ STATE = TOOL_ROOT / "local-voice-cache" / "runner-state.json"
 LOG = TOOL_ROOT / "local-voice-cache" / "runner.log"
 PYTHON = TOOL_ROOT / "venv" / "Scripts" / "python.exe"
 GENERATOR = ROOT / "scripts" / "generate_local_speech.py"
-INJOON_PROFILE = "ko-KR-InJoonNeural-v1"
 INJOON_PYTHON = TOOL_ROOT / "injoon-env" / "Scripts" / "python.exe"
 INJOON_GENERATOR = ROOT / "scripts" / "generate_injoon_speech.py"
 EXPECTED_REMOTE = "https://github.com/future2026123/datamoney-site.git"
@@ -111,11 +110,11 @@ def managed_locally(manifest):
 
 
 def managed_by_runner(manifest):
-    return managed_locally(manifest) or manifest.get("voice") == INJOON_PROFILE
+    return managed_locally(manifest) or manifest.get("voice") in INJOON_VOICE_PROFILES
 
 
 def generator_command(slug, manifest, alignment_only, idle_only):
-    if manifest.get("voice") == INJOON_PROFILE:
+    if manifest.get("voice") in INJOON_VOICE_PROFILES:
         if alignment_only:
             raise ValueError("InJoon audio and timing data are generated together")
         return [str(INJOON_PYTHON), "-B", str(INJOON_GENERATOR), slug,
@@ -208,7 +207,7 @@ def main():
         if args.inspect:
             return
         jobs = [(slug, manifest, True) for slug, manifest in missing_timing]
-        jobs += [(slug, manifest, False) for slug, manifest in pending if manifest.get("voice") == INJOON_PROFILE]
+        jobs += [(slug, manifest, False) for slug, manifest in pending if manifest.get("voice") in INJOON_VOICE_PROFILES]
         jobs += [(slug, manifest, False) for slug, manifest in pending if managed_locally(manifest)]
         for slug, manifest, alignment_only in jobs:
             if args.idle_only and idle_seconds() < 180:

@@ -8,6 +8,8 @@
   // machine-readable so every voice uses the same pronunciation rules.
   const PRONUNCIATION_RULES = /* dm-pronunciations:start */
   [
+    {"pattern":"EP\\.01", "spoken":"에피소드 1"},
+    {"pattern":"PNAS", "spoken":"피 엔 에이 에스"},
     {"pattern":"S\\s*&\\s*P\\s*500", "spoken":"에스 엔 피 오백", "ignoreCase":true},
     {"pattern":"S\\s*&\\s*P", "spoken":"에스 엔 피", "ignoreCase":true},
     {"pattern":"PER", "spoken":"퍼"},

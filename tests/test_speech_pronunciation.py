@@ -15,6 +15,8 @@ from speech_timing import timing_for
 
 class PronunciationTests(unittest.TestCase):
     def test_financial_terms_change_only_in_spoken_text(self):
+        self.assertEqual(prepare_pronunciation("EP.01 제목과 PNAS 연구"),
+                         "에피소드 1 제목과 피 엔 에이 에스 연구")
         self.assertEqual(prepare_pronunciation("S&P 500과 S&P500, PER는 ETF를 본다."),
                          "에스 엔 피 오백과 에스 엔 피 오백, 퍼는 이 티 에프를 본다.")
         self.assertEqual(prepare_pronunciation("per도 보지만 one per year와 SUPER는 그대로."),
