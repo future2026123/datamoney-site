@@ -111,6 +111,18 @@ body:has(.dm-article-heading, article.dm-post) > .dm-sidebar-shell { margin-top:
   body:has(.dm-article-heading) > .wrap > :is(.article-shell, .dm-heading-layout, .dm-sidebar-shell) { margin-top: 16px; }
   body:has(.dm-article-heading, article.dm-post) > .dm-sidebar-shell { margin-top: 16px; }
 }
+/* Let the mobile blog read as one white surface from edge to edge. */
+@media screen and (max-width: 560px) {
+  body:has(.dm-shared-sidebar) { background: #fff; }
+  body:has(.dm-shared-sidebar) :is(
+    .latest-column,
+    .article-shell > .article,
+    .dm-heading-layout > .paper,
+    .dm-sidebar-shell > .dm-article-page,
+    .dm-sidebar-shell > article,
+    .dm-shared-sidebar .home-card
+  ) { background: #fff; border: 0; border-radius: 0; box-shadow: none; }
+}
 @media (max-width: 380px) {
   .dm-shared-sidebar .popular-list a { grid-template-columns: minmax(0, 1fr) 88px; gap: 10px; }
   .dm-shared-sidebar .popular-list a.no-thumbnail { grid-template-columns: minmax(0, 1fr); }
