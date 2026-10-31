@@ -131,9 +131,24 @@
     .dm-article-page .content-grid main, article.dm-post) table tr:nth-child(even) td { background: #f8fafc; }
 .dm-article-page .check-table table td { color: #172033; }
 
+/* Keep the shape and spacing of article callouts consistent; their colors retain meaning. */
+:is(.article, article:has(> .dm-article-heading), main.dm-article-page,
+    .dm-article-page .content-grid main, article.dm-post)
+    :is(div.highlight, div.calc-box, div.warn-box, div.warn, div.info-box,
+        div.good-box, div.cta-box, div.box, div.verdict-box, div.tax-box):not(.dm-original-sidebar *) {
+  box-sizing: border-box;
+  margin: 24px 0;
+  padding: 20px 22px;
+  border-radius: 15px;
+}
+
 @media screen and (max-width: 560px) {
   :is(.article, article:has(> .dm-article-heading), main.dm-article-page,
       .dm-article-page .content-grid main, article.dm-post) table { display: block; max-width: 100%; overflow-x: auto; }
+  :is(.article, article:has(> .dm-article-heading), main.dm-article-page,
+      .dm-article-page .content-grid main, article.dm-post)
+      :is(div.highlight, div.calc-box, div.warn-box, div.warn, div.info-box,
+          div.good-box, div.cta-box, div.box, div.verdict-box, div.tax-box):not(.dm-original-sidebar *) { padding: 16px; }
 }
 
 .dm-article-thumbnail { margin: 0 0 30px; }
