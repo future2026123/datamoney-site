@@ -10,6 +10,7 @@ START = "<!-- dm-shared-sidebar:start -->"
 END = "<!-- dm-shared-sidebar:end -->"
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
 HEAD_END = re.compile(r"</head\s*>", re.IGNORECASE)
+HOME_ONLY = re.compile(r"\n[ \t]*<!-- dm-home-only:start -->.*?<!-- dm-home-only:end -->", re.DOTALL)
 
 
 def version(path):
@@ -188,11 +189,14 @@ def synchronize(path, fragment):
 
 def main():
     fragment = FRAGMENT.read_text(encoding="utf-8").strip()
+    if len(HOME_ONLY.findall(fragment)) != 1:
+        raise ValueError("Expected one home-only sidebar block")
+    common_fragment = HOME_ONLY.sub("", fragment)
     paths = [ROOT / "blog/index.html", *sorted((ROOT / "blog").glob("*/index.html")), ROOT / "templates/blog_post.html"]
     preview = ROOT / "preview/article-format/index.html"
     if preview.exists():
         paths.append(preview)
-    changed = sum(synchronize(path, fragment) for path in paths)
+    changed = sum(synchronize(path, fragment if path == ROOT / "blog/index.html" else common_fragment) for path in paths)
     print(f"Blog sidebars synchronized: {len(paths)} pages/templates, {changed} updated.")
 
 
