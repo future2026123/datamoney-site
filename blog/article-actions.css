@@ -126,7 +126,7 @@
     transform: none !important;
   }
   .dm-article-heading[data-dm-print-content] { margin-bottom: 24px !important; }
-  .dm-article-actions, .dm-comments,
+  .dm-article-actions, .dm-comments, .dm-article-thumbnail,
   [data-dm-print-content] .toc,
   [data-dm-print-content] .yt-embed,
   [data-dm-print-content] .video,
