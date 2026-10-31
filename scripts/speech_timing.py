@@ -26,8 +26,8 @@ def sentences(source):
     return result
 
 
-def timing_for(source, words, content_id):
-    pieces = sentences(source)
+def timing_for(source, words, content_id, *, pieces=None):
+    pieces = sentences(source) if pieces is None else pieces
     expected_parts = [normalized(text) for text in pieces]
     expected = "".join(expected_parts)
     recognized = []

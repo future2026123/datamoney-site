@@ -14,6 +14,17 @@ class GeneratorWaitTests(unittest.TestCase):
         self.assertTrue(runner.managed_locally({"voice": "female-v1"}))
         self.assertFalse(runner.managed_locally({"voice": "ko-KR-InJoonNeural-v1"}))
 
+    def test_injoon_uses_its_own_generator_and_environment(self):
+        manifest = {"voice": "ko-KR-InJoonNeural-v1"}
+        self.assertTrue(runner.managed_by_runner(manifest))
+        command = runner.generator_command("example", manifest, False, True)
+        self.assertEqual(command[0], str(runner.INJOON_PYTHON))
+        self.assertIn(str(runner.INJOON_GENERATOR), command)
+        self.assertIn("--upload", command)
+        self.assertNotIn("--yield-when-active", command)
+        with self.assertRaises(ValueError):
+            runner.generator_command("example", manifest, True, False)
+
     def test_generator_refuses_to_replace_a_separately_managed_voice(self):
         root = Path(__file__).resolve().parents[1]
         article = (root / "blog" / "ai-semiconductor-per-2026" / "index.html").read_text(encoding="utf-8")

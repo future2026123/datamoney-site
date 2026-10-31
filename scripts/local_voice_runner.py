@@ -27,6 +27,9 @@ STATE = TOOL_ROOT / "local-voice-cache" / "runner-state.json"
 LOG = TOOL_ROOT / "local-voice-cache" / "runner.log"
 PYTHON = TOOL_ROOT / "venv" / "Scripts" / "python.exe"
 GENERATOR = ROOT / "scripts" / "generate_local_speech.py"
+INJOON_PROFILE = "ko-KR-InJoonNeural-v1"
+INJOON_PYTHON = TOOL_ROOT / "injoon-env" / "Scripts" / "python.exe"
+INJOON_GENERATOR = ROOT / "scripts" / "generate_injoon_speech.py"
 EXPECTED_REMOTE = "https://github.com/future2026123/datamoney-site.git"
 LOADED_BUILDER = hashlib.sha256((ROOT / "scripts" / "build_speech_manifests.py").read_bytes()).digest()
 
@@ -102,6 +105,26 @@ def managed_locally(manifest):
     return manifest.get("voice") == VOICE_PROFILE_ID
 
 
+def managed_by_runner(manifest):
+    return managed_locally(manifest) or manifest.get("voice") == INJOON_PROFILE
+
+
+def generator_command(slug, manifest, alignment_only, idle_only):
+    if manifest.get("voice") == INJOON_PROFILE:
+        if alignment_only:
+            raise ValueError("InJoon audio and timing data are generated together")
+        return [str(INJOON_PYTHON), "-B", str(INJOON_GENERATOR), slug,
+                "--source-root", str(CHECKOUT), "--upload"]
+    if not managed_locally(manifest):
+        raise ValueError("Unsupported automatic voice profile")
+    command = [str(PYTHON), "-B", str(GENERATOR), slug, "--source-root", str(CHECKOUT), "--upload"]
+    if alignment_only:
+        command.append("--alignment-only")
+    if idle_only:
+        command.append("--yield-when-active")
+    return command
+
+
 def wait_for_generator(process, idle_only):
     """Wait without imposing an article-length limit; stop promptly for desktop activity."""
     while True:
@@ -174,12 +197,13 @@ def main():
                       "pending": [slug for slug, _ in pending], "review_required": failures,
                       "timing_pending": [slug for slug, _ in missing_timing],
                       "timing_review_required": timing_failures,
-                      "external_voice_pending": [slug for slug, manifest in pending if not managed_locally(manifest)]})
+                      "external_voice_pending": [slug for slug, manifest in pending if not managed_by_runner(manifest)]})
         save_state(state)
         log(f"Published checkout: {revision[:12]}; ready {len(ready)}/{len(entries)}; pending {len(pending)}")
         if args.inspect:
             return
         jobs = [(slug, manifest, True) for slug, manifest in missing_timing]
+        jobs += [(slug, manifest, False) for slug, manifest in pending if manifest.get("voice") == INJOON_PROFILE]
         jobs += [(slug, manifest, False) for slug, manifest in pending if managed_locally(manifest)]
         for slug, manifest, alignment_only in jobs:
             if args.idle_only and idle_seconds() < 180:
@@ -189,11 +213,7 @@ def main():
             if job_failures.get(slug) == manifest["content_id"] and not args.retry_review:
                 log(f"Awaiting speech review: {slug}")
                 continue
-            args_for_child = [str(PYTHON), "-B", str(GENERATOR), slug, "--source-root", str(CHECKOUT), "--upload"]
-            if alignment_only:
-                args_for_child.append("--alignment-only")
-            if args.idle_only:
-                args_for_child.append("--yield-when-active")
+            args_for_child = generator_command(slug, manifest, alignment_only, args.idle_only)
             log(f"{'Aligning existing audio' if alignment_only else 'Generating article'}: {slug}")
             flags = getattr(subprocess, "CREATE_NO_WINDOW", 0) | getattr(subprocess, "BELOW_NORMAL_PRIORITY_CLASS", 0)
             with LOG.open("a", encoding="utf-8", buffering=1) as output:

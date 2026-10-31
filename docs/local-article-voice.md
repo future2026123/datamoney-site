@@ -1,10 +1,9 @@
 # Local article narration
 
-Article narration is synthesized on the dedicated Windows PC with the locally
-installed Qwen voice and uploaded as 48 kbps mono MP3 to the private
-`datamoney-article-voice` R2 bucket. Cloudflare serves it through
-`audio.datamoney.kr`; the bucket's development URL is disabled. No TTS API is
-used for generation.
+The default Qwen article narration is synthesized on the dedicated Windows PC
+and uploaded as 48 kbps mono MP3 to the private `datamoney-article-voice` R2
+bucket. Cloudflare serves it through `audio.datamoney.kr`; the bucket's
+development URL is disabled. The default Qwen voice does not use a TTS API.
 
 The Pages build runs `scripts/build_speech_manifests.py`. It publishes a small
 fingerprint for each article, derived from the readable text and voice profile.
@@ -14,8 +13,17 @@ Figure captions and reference lists are excluded. Until an exact matching
 recording exists, the previous device voice remains available and the UI says
 that the AI voice is being prepared.
 
-The generator caches individual groups, verifies the entire recording with a
-local transcription model and checks number tokens before uploading. This
+An article may explicitly select the `ko-KR-InJoonNeural-v1` voice. That voice
+uses the online InJoon text-to-speech service through the dedicated `injoon-env`
+environment; it sends the article's public text to the service. The generated
+mono MP3 uses 32 kbps, and word timings are mapped back to the article's exact
+sentences. Figure captions, reference lists and bracketed citation numbers are
+not spoken. When the article changes, the idle runner generates a new recording
+and timing file for its new content fingerprint before publishing its index.
+The existing female voice generator never handles an InJoon article.
+
+The Qwen generator caches individual groups, verifies the entire recording with
+a local transcription model and checks number tokens before uploading. This
 automated check catches some omissions but does not guarantee pronunciation or
 financial accuracy; items that fail are held for review. An uploaded file is
 size- and SHA-256-checked before its availability index is published. Changing
@@ -52,10 +60,10 @@ timing first, and publish the matching availability index last.
   user at `%LOCALAPPDATA%\DataMoneyTTS\r2-credentials.dpapi`. Never commit
   credentials or put them in the site.
 - Task Scheduler runs `scripts/local_voice_runner.py --idle-only` under the
-  logged-in user. It starts after three minutes without input, requires 6 GiB
-  free GPU memory, and stops the generator promptly when desktop activity
-  resumes. The PC must be on and signed in. Completed groups are retained for
-  retry; a group interrupted in progress is regenerated.
+  logged-in user. It starts after three minutes without input and stops the
+  generator promptly when desktop activity resumes. The default Qwen voice also
+  requires 6 GiB free GPU memory. The PC must be on and signed in. Completed
+  groups are retained for retry; a group interrupted in progress is regenerated.
 - To inspect without generating, use the TTS environment's Python with
   `-B scripts/local_voice_runner.py --inspect`. Items in `review_required`
   are not retried automatically for the same article fingerprint. Review the
