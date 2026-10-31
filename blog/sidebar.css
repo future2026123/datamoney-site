@@ -49,12 +49,15 @@
 .dm-shared-sidebar .ai-traffic-info summary { cursor: pointer; }
 .dm-shared-sidebar .ai-traffic-info p { margin: 8px 0 0; }
 .dm-shared-sidebar .popular-card #popular-posts-note[hidden] + #popular-posts { margin-top: 16px; }
-.dm-shared-sidebar .popular-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 20px; border: 0; background: transparent; }
-.dm-shared-sidebar .popular-list li { margin: 0; padding: 0; }
-.dm-shared-sidebar .popular-list a { display: block; }
-.dm-shared-sidebar .popular-list img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: contain; border-radius: 8px; background: #f4f7fb; }
-.dm-shared-sidebar .popular-title { display: block; margin-top: 10px; color: #0f172a; font-size: 15px; font-weight: 700; line-height: 1.45; overflow-wrap: anywhere; }
-.dm-shared-sidebar .popular-list a.no-thumbnail .popular-title { margin-top: 0; }
+.dm-shared-sidebar .popular-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; border: 0; background: transparent; counter-reset: popular-rank; }
+.dm-shared-sidebar .popular-list li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 10px; align-items: start; margin: 0; padding: 14px 0; border-bottom: 1px solid #e9edf3; counter-increment: popular-rank; }
+.dm-shared-sidebar .popular-list li:first-child { padding-top: 0; }
+.dm-shared-sidebar .popular-list li:last-child { padding-bottom: 0; border-bottom: 0; }
+.dm-shared-sidebar .popular-list li::before { content: counter(popular-rank); color: #0f172a; font-size: 16px; font-weight: 800; line-height: 1.4; }
+.dm-shared-sidebar .popular-list a { display: grid; grid-template-columns: minmax(0, 1fr) 104px; gap: 12px; align-items: start; min-width: 0; }
+.dm-shared-sidebar .popular-list a.no-thumbnail { grid-template-columns: minmax(0, 1fr); }
+.dm-shared-sidebar .popular-list img { grid-column: 2; grid-row: 1; display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: contain; border-radius: 8px; background: #f4f7fb; }
+.dm-shared-sidebar .popular-title { grid-column: 1; grid-row: 1; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; min-width: 0; margin: 0; color: #0f172a; font-size: 15px; font-weight: 700; line-height: 1.45; word-break: keep-all; overflow-wrap: anywhere; }
 .dm-shared-sidebar .popular-empty { margin: 0; padding: 0; border: 0; background: transparent; color: #475569; font-size: 13px; line-height: 1.6; }
 .dm-shared-sidebar .quote-card { margin-top: 16px; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
 .dm-shared-sidebar .quote-mark { display: block; height: 34px; color: #2563eb; font-family: Georgia,serif; font-size: 48px; font-weight: 700; line-height: 1; }
@@ -109,6 +112,8 @@ body:has(.dm-article-heading, article.dm-post) > .dm-sidebar-shell { margin-top:
   body:has(.dm-article-heading, article.dm-post) > .dm-sidebar-shell { margin-top: 16px; }
 }
 @media (max-width: 380px) {
+  .dm-shared-sidebar .popular-list a { grid-template-columns: minmax(0, 1fr) 88px; gap: 10px; }
+  .dm-shared-sidebar .popular-list a.no-thumbnail { grid-template-columns: minmax(0, 1fr); }
   .dm-shared-sidebar .dm-channel-links :is(a, button) { gap: 6px; padding: 9px 8px; font-size: 12px; }
   .dm-shared-sidebar .dm-channel-arrow { display: none; }
 }
