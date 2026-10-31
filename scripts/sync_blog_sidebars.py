@@ -177,6 +177,9 @@ def synchronize(path, fragment):
     updated = ensure_asset(updated, r'''<link\s+rel=["']stylesheet["']\s+href=["']/blog/sidebar\.css(?:\?[^"']*)?["']\s*/?>''', css)
     updated = ensure_asset(updated, r'''<script\s+src=["']/scripts/popular-posts\.js(?:\?[^"']*)?["']\s+defer\s*></script\s*>''', popular)
     updated = ensure_asset(updated, r'''<script\s+src=["']/scripts/investment-quotes\.js(?:\?[^"']*)?["']\s+defer\s*></script\s*>''', quotes)
+    if path != ROOT / "blog/index.html":
+        sticky = f'<script src="/scripts/sticky-article-sidebar.js?v={version(ROOT / "scripts/sticky-article-sidebar.js")}" defer></script>'
+        updated = ensure_asset(updated, r'''<script\s+src=["']/scripts/sticky-article-sidebar\.js(?:\?[^"']*)?["']\s+defer\s*></script\s*>''', sticky)
     if updated != original:
         path.write_text(updated, encoding="utf-8")
         return True
