@@ -1,147 +1,51 @@
-name: Deploy to Cloudflare Pages
-
+name: Voice infrastructure read-only preflight
 on:
-  push:
-    branches: [master]
   workflow_dispatch:
-  schedule:
-    - cron: '17 1 * * *'
-
-concurrency:
-  group: datamoney-production
-  cancel-in-progress: false
-
+permissions: {}
 jobs:
-  deploy-pages:
-    name: Deploy Static Site (Cloudflare Pages)
+  inspect:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      CF_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      CF_ACCOUNT: ${{ secrets.CF_ACCOUNT_ID }}
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: master
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
-      - name: Test private comment security
-        run: node tests/private-comments.mjs
-
-      - name: Test keyboard back navigation
-        run: node tests/back-navigation.mjs
-
-      - name: Test investor survey
+      - name: Inspect Cloudflare access without changing settings
+        shell: bash
         run: |
-          node tests/investor-survey.mjs
-          node tests/investor-ui.mjs
-          node tests/investor-embed-reload.mjs
-          node tests/investor-email.mjs
-
-      - name: Synchronize blog navigation
-        run: python3 scripts/sync_blog_headers.py
-
-      - name: Synchronize blog sidebars
-        run: python3 scripts/sync_blog_sidebars.py
-
-      - name: Synchronize article thumbnails
-        run: python3 scripts/sync_blog_thumbnails.py
-
-      - name: Test article data and source excerpt format
-        run: python3 -m unittest discover -s tests
-
-      - name: Add article structured data
-        run: python3 scripts/ensure_article_schema.py
-
-      - name: Synchronize blog footers
-        run: python3 scripts/sync_blog_footers.py
-
-      - name: Build blog search index
-        run: python3 scripts/build-search-index.py
-
-      - name: Add site information and privacy links
-        run: python3 scripts/ensure_site_info_links.py
-
-      - name: Add Google Analytics to site pages
-        run: python3 scripts/ensure_analytics.py
-
-      - name: Add AdSense code to site pages
-        run: python3 scripts/ensure_adsense.py
-
-      - name: Refresh popular blog posts
-        id: popular
-        run: python3 scripts/update-popular-posts.py
-        env:
-          CF_ANALYTICS_TOKEN: ${{ secrets.CF_ANALYTICS_TOKEN || secrets.CF_API_TOKEN }}
-          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          DATAMONEY_INTERNAL_IPS: ${{ secrets.DATAMONEY_INTERNAL_IPS }}
-
-      - name: Refresh AI referral traffic
-        id: ai_traffic
-        run: node scripts/update-ai-traffic.mjs
-        env:
-          GA4_SERVICE_ACCOUNT_JSON: ${{ secrets.GA4_SERVICE_ACCOUNT_JSON }}
-          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
-
-      - name: Deploy Article Reactions and Comments
-        if: github.event_name != 'schedule'
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: deploy --config wrangler.article-engagement.toml
-          postCommands: printf '%s' "$RESEND_API_KEY" | npx --no-install wrangler secret put RESEND_API_KEY --config wrangler.article-engagement.toml
-        env:
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-
-      - name: Deploy to Cloudflare Pages
-        if: github.event_name != 'schedule' || steps.popular.outputs.updated == 'true' || steps.ai_traffic.outputs.updated == 'true'
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy . --project-name=datamoney-tools --branch=master
-
-      - name: Restore IndexNow checkpoint
-        if: github.event_name == 'push'
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ runner.temp }}/datamoney-indexnow-last-commit
-          key: datamoney-indexnow-v1-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: |
-            datamoney-indexnow-v1-
-
-      - name: Notify IndexNow of changed pages
-        if: github.event_name == 'push'
-        env:
-          INDEXNOW_BEFORE: ${{ github.event.before }}
-        run: |
-          base="$INDEXNOW_BEFORE"
-          checkpoint="$RUNNER_TEMP/datamoney-indexnow-last-commit"
-          if [ -f "$checkpoint" ]; then base="$(cat "$checkpoint")"; fi
-          if ! git merge-base --is-ancestor "$base" HEAD; then base="$INDEXNOW_BEFORE"; fi
-          python3 scripts/notify_indexnow.py --before "$base" --after HEAD
-          git rev-parse HEAD > "$checkpoint"
-
-      - name: Save IndexNow checkpoint
-        if: github.event_name == 'push'
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ runner.temp }}/datamoney-indexnow-last-commit
-          key: datamoney-indexnow-v1-${{ github.run_id }}-${{ github.run_attempt }}
-          
-  deploy-worker:
-    name: Deploy Redirect Worker
-    if: github.event_name != 'schedule'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Wrangler
-        run: npm install -g wrangler
-
-      - name: Deploy Worker
-        run: wrangler deploy
-        working-directory: .
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          python3 - <<'PY'
+          import json, os, urllib.request, urllib.error
+          token = os.environ.get('CF_TOKEN', '')
+          account = os.environ.get('CF_ACCOUNT', '')
+          if not token or not account:
+              print('missing Cloudflare token or account ID')
+              raise SystemExit(0)
+          def call(label, path):
+              request = urllib.request.Request('https://api.cloudflare.com/client/v4' + path, headers={'Authorization': 'Bearer ' + token, 'Accept': 'application/json'})
+              try:
+                  with urllib.request.urlopen(request, timeout=20) as response:
+                      status, payload = response.status, json.load(response)
+              except urllib.error.HTTPError as error:
+                  status = error.code
+                  try: payload = json.load(error)
+                  except Exception: payload = {}
+              except Exception as error:
+                  print(json.dumps({'check': label, 'error_type': type(error).__name__}))
+                  return None
+              print(json.dumps({'check': label, 'status': status, 'success': payload.get('success'), 'error_codes': [item.get('code') for item in payload.get('errors', [])]}))
+              return payload if payload.get('success') else None
+          buckets = call('r2-list', '/accounts/' + account + '/r2/buckets?per_page=1')
+          if buckets is not None:
+              print(json.dumps({'check': 'r2-result', 'existing_bucket_visible': bool(buckets.get('result', {}).get('buckets', []))}))
+          zones = call('zone-lookup', '/zones?name=datamoney.kr&status=active')
+          if zones and zones.get('result'):
+              zone = zones['result'][0]
+              print(json.dumps({'check': 'zone-plan', 'plan': (zone.get('plan') or {}).get('name', 'unknown')}))
+              zid = zone['id']
+              dns = call('audio-dns-lookup', '/zones/' + zid + '/dns_records?name=audio.datamoney.kr')
+              if dns is not None:
+                  print(json.dumps({'check': 'audio-dns-result', 'records': len(dns.get('result', []))}))
+              rules = call('rate-limit-read', '/zones/' + zid + '/rulesets/phases/http_ratelimit/entrypoint')
+              if rules is not None:
+                  print(json.dumps({'check': 'rate-limit-result', 'rules': len((rules.get('result') or {}).get('rules', []))}))
+          PY
