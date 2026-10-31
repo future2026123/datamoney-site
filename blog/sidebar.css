@@ -48,6 +48,7 @@
 .dm-shared-sidebar .ai-traffic-info { margin-top: 14px; color: #64748b; font-size: 12px; line-height: 1.55; }
 .dm-shared-sidebar .ai-traffic-info summary { cursor: pointer; }
 .dm-shared-sidebar .ai-traffic-info p { margin: 8px 0 0; }
+.dm-shared-sidebar .popular-card #popular-posts-note[hidden] + #popular-posts { margin-top: 16px; }
 .dm-shared-sidebar .popular-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 20px; border: 0; background: transparent; }
 .dm-shared-sidebar .popular-list li { margin: 0; padding: 0; }
 .dm-shared-sidebar .popular-list a { display: block; }
