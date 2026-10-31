@@ -23,8 +23,35 @@
 .dm-shared-sidebar * { box-sizing: border-box; }
 .dm-shared-sidebar a { color: inherit; text-decoration: none; }
 .dm-shared-sidebar .home-card { padding: 22px; background: #fff; border: 1px solid rgba(15,23,42,.08); border-radius: 20px; box-shadow: 0 12px 40px rgba(15,23,42,.05); }
-.dm-shared-sidebar .investor-test-banner { display: block; overflow: hidden; border-radius: 20px; box-shadow: 0 12px 40px rgba(15,23,42,.05); }
+.dm-shared-sidebar .investor-test-banner { position: relative; display: block; overflow: hidden; border-radius: 20px; box-shadow: 0 12px 40px rgba(15,23,42,.05); transition: box-shadow .24s ease; }
 .dm-shared-sidebar .investor-test-banner img { display: block; width: 100%; height: auto; }
+.dm-shared-sidebar .investor-test-banner::before,
+.dm-shared-sidebar .investor-test-banner::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  width: 11px;
+  height: 11px;
+  background: #fff3b0;
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  opacity: 0;
+  pointer-events: none;
+  animation: dm-investor-sparkle 14s ease-in-out infinite;
+}
+.dm-shared-sidebar .investor-test-banner::before { left: 18%; top: 84%; }
+.dm-shared-sidebar .investor-test-banner::after { right: 18%; top: 84%; width: 9px; height: 9px; animation-delay: -7s; }
+@keyframes dm-investor-sparkle {
+  0%, 4%, 11%, 100% { opacity: 0; transform: scale(.45) rotate(-15deg); }
+  7.5% { opacity: .85; transform: scale(1) rotate(0); }
+}
+@media (hover: hover) {
+  .dm-shared-sidebar .investor-test-banner:hover { box-shadow: 0 15px 40px rgba(15,23,42,.14); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dm-shared-sidebar .investor-test-banner { transition: none; }
+  .dm-shared-sidebar .investor-test-banner::before,
+  .dm-shared-sidebar .investor-test-banner::after { animation: none; }
+}
 .dm-investor-embed { min-width: 0; padding: 24px; border: 1px solid #e3e8ef; border-radius: 20px; background: #fff; box-shadow: 0 12px 40px rgba(15,23,42,.05); }
 .blog-layout > .dm-investor-embed { grid-area: latest; }
 .dm-heading-layout > .dm-investor-embed { grid-area: paper; }
