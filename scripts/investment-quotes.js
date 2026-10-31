@@ -67,19 +67,21 @@
     "sourceVerified": true
   },
   {
-    "text": "가격은 내가 내는 돈이고 가치는 그 돈으로 얻는 것이다.",
+    "text": "가격은 지불하는 것이고 가치는 얻는 것.",
     "author": "워런 버핏",
-    "source": "https://wealthawesome.com/investor-wisdom/investor/warren-buffett",
-    "work": "Partnership Letters – PDF",
-    "original": "Price is what you pay. Value is what you get.",
+    "source": "https://www.berkshirehathaway.com/letters/2008ltr.pdf",
+    "translationSource": "https://magazine.hankyung.com/business/article/201710179704b",
+    "work": "Berkshire Hathaway 2008 shareholder letter, citing Benjamin Graham",
+    "original": "Price is what you pay; value is what you get.",
     "sourceVerified": true
   },
   {
-    "text": "남들이 탐욕을 부릴 때 두려워하고 남들이 두려워할 때 탐욕을 부려라.",
+    "text": "우리는 그저 남들이 탐욕스러울 때 두려워하고, 남들이 두려워 할 때 탐욕스러워지려고 할 뿐이다.",
     "author": "워런 버핏",
-    "source": "https://wealthawesome.com/investor-wisdom/investor/warren-buffett",
-    "work": "Charlie Rose Interview 10-1-2008",
-    "original": "You want to be greedy when others are fearful. You want to be fearful when others are greedy. It’s that simple.",
+    "source": "https://berkshirehathaway.com/letters/1986.html",
+    "translationSource": "https://sj0707.tistory.com/3",
+    "work": "Berkshire Hathaway 1986 shareholder letter",
+    "original": "We simply attempt to be fearful when others are greedy and to be greedy only when others are fearful.",
     "sourceVerified": true
   },
   {
@@ -387,19 +389,21 @@
     "sourceVerified": true
   },
   {
-    "text": "열 살 아이에게 2분 안에 설명하지 못할 기업이라면 주식을 사지 마라.",
+    "text": "자신이 왜 어떤 주식을 보유하는지 10살 아이에게 2분 안에 설명할 수 없다면 보유하지 말아야 한다.",
     "author": "피터 린치",
-    "source": "https://wealthawesome.com/investor-wisdom/investor/peter-lynch",
-    "work": "Charlie Rose Transcript 1993",
-    "original": "If you don’t understand a company, if you can’t explain it to a 10-year-old in 2 minutes or less, don’t own it.",
-    "sourceVerified": true
+    "source": "https://hedgefundalpha.com/education/peter-lynch-lecture-investments-average-investor-can-pick-stocks/",
+    "translationSource": "https://contents.premium.naver.com/bigpicture/moreandmore/contents/260513234225351nf",
+    "work": "1994 lecture; exact wording not independently transcribed",
+    "original": "If you can’t explain to a 10 year old in two minutes or less why you own a stock, then you shouldn’t own it.",
+    "sourceVerified": false
   },
   {
-    "text": "투자를 잘해도 열 번 중 여섯 번 맞힌다. 아홉 번은 맞힐 수 없다.",
+    "text": "이 업계에서 끝내주는 사람이라면 열 번 중에 여섯 번을 맞히겠죠.",
     "author": "피터 린치",
-    "source": "https://wealthawesome.com/investor-wisdom/investor/peter-lynch",
-    "work": "Betting on the Market",
-    "original": "In this business, if you’re good, you’re right six times out of ten. You’re never going to be right nine times out of ten.",
+    "source": "https://www.pbs.org/wgbh/pages/frontline/shows/betting/pros/lynch.html",
+    "translationSource": "https://srin-e.tistory.com/161",
+    "work": "PBS FRONTLINE, Betting on the Market",
+    "original": "In this business if you're good, you're right six times out of ten.",
     "sourceVerified": true
   },
   {
@@ -523,11 +527,12 @@
     "sourceVerified": false
   },
   {
-    "text": "마음에 들어서가 아니라 다른 비슷한 주식보다 싸다고 판단해 주식을 샀다.",
+    "text": "강세장은 비관 속에서 태어나 회의론 속에서 자라고 낙관 속에서 성숙해 도취감 속에서 사라진다.",
     "author": "존 템플턴",
-    "source": "https://wealthawesome.com/investor-wisdom/investor/john-templeton",
-    "work": "After the Bubble Burst",
-    "original": "I never in all my life bought a stock because I liked it. I bought it because it was a cheaper bargain than any similar stock I would buy anywhere in the rest of the world.",
+    "source": "https://www.morningstar.com.au/personal-finance/is-this-a-bubble-bursting",
+    "translationSource": "https://www.etoday.co.kr/news/view/2442657",
+    "work": "Templeton quotation cited by Morningstar; original occasion unverified",
+    "original": "Bull markets are born in pessimism, grow on scepticism, mature on optimism and die on euphoria.",
     "sourceVerified": false
   },
   {
@@ -807,6 +812,7 @@
   const author = document.getElementById("investment-quote-author");
   const original = document.getElementById("investment-quote-original");
   const reviewNote = document.getElementById("investment-quote-review-note");
+  const translationSource = document.getElementById("investment-quote-translation-source");
   const button = document.getElementById("investment-quote-next");
   if (!text || !author || !original || !reviewNote || !button || quotes.length < 2) return;
 
@@ -821,6 +827,11 @@
     original.textContent = quote.original;
     reviewNote.hidden = quote.sourceVerified;
     author.textContent = quote.author;
+    if (translationSource) {
+      translationSource.hidden = !quote.translationSource;
+      if (quote.translationSource) translationSource.href = quote.translationSource;
+      else translationSource.removeAttribute("href");
+    }
   }
 
   // Reserve the height of the longest quote at the current width so the button
@@ -847,6 +858,8 @@
       sample.querySelector(".quote-original").textContent = quote.original;
       sample.querySelector(".quote-review-note").hidden = quote.sourceVerified;
       sample.querySelector(".quote-meta span").textContent = quote.author;
+      const sourceLink = sample.querySelector(".quote-translation-source");
+      if (sourceLink) sourceLink.hidden = !quote.translationSource;
       ruler.appendChild(sample);
       return sample;
     });

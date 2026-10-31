@@ -68,6 +68,8 @@
 .dm-shared-sidebar .quote-review-note { margin: -3px 0 6px; color: #64748b; font-size: 11px; line-height: 1.4; }
 .dm-shared-sidebar .quote-review-note[hidden] { display: none; }
 .dm-shared-sidebar .quote-meta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; color: #334155; font-size: 13px; font-weight: 700; }
+.dm-shared-sidebar .quote-meta .quote-translation-source { color: #64748b; font-size: 12px; font-weight: 400; text-decoration: underline; text-underline-offset: 2px; }
+.dm-shared-sidebar .quote-translation-source[hidden] { display: none; }
 .dm-shared-sidebar .quote-card button { display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; min-height: 38px; margin-top: 12px; padding: 0 12px; border: 1px solid #dbe7fa; border-radius: 10px; background: #f1f5fd; color: #2856b8; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .dm-shared-sidebar .quote-card button:hover { background: #e7efff; }
 .dm-shared-sidebar .dm-channel-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
