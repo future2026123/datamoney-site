@@ -89,7 +89,7 @@ async function main() {
   // Preserve the last published aggregate if Google's API is temporarily down.
   try {
     const prior = await jsonRequest(fetch, 'https://datamoney.kr/blog/ai-traffic.json', {cache:'no-store'});
-    if (Number.isSafeInteger(prior.sessions) && prior.sessions >= 0 && prior.periodDays === 28 &&
+    if (Number.isSafeInteger(prior.sessions) && prior.sessions >= 100 && prior.periodDays === 28 &&
         Number.isFinite(Date.parse(prior.updatedAt))) {
       await mkdir(dirname(OUTPUT),{recursive:true});
       await writeFile(OUTPUT,JSON.stringify(prior)+'\n',{encoding:'utf8'});
