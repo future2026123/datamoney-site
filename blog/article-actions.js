@@ -222,13 +222,21 @@
         !element.parentElement.closest('li, blockquote, td, th'))
         .map(element => element.innerText.replace(/\s+/gu, ' ').trim()).filter(Boolean);
       if (title) parts.unshift(title);
-      const sentences = parts.flatMap(part => (part.match(/.*?[.!?。！？](?=\s|$)|.+$/gu) || [])
-        .map(value => value.trim()).filter(Boolean));
+      const isEnglish = text => !/[가-힣ᄀ-ᇿ㄰-㆏]/u.test(text) && (text.match(/[A-Za-z]/g) || []).length >= 2 &&
+        (/[a-z]/.test(text) || /[A-Z]{2,}\s+[A-Z]{2,}/.test(text));
+      const sentenceParts = parts.flatMap(part => (part.match(/.*?[.!?。！？][”’"'」』)]*(?:\[\d{1,3}\])?(?=\s|$)|.+$/gu) || [])
+        .map(value => ({text:value.trim(), englishBlock:isEnglish(part)})).filter(value => value.text));
+      const sentences = sentenceParts.map(value => value.text);
       if (!sentences.length) { announce('읽을 본문을 찾지 못했어요.'); return; }
       const chunks = sentences.flatMap((text, index) => {
-        const spoken = window.prepareDataMoneySpeech ? window.prepareDataMoneySpeech(text) : text;
-        const pieces = spoken.match(/.{1,220}(?:\s+|$)|.{1,220}/gu) || [spoken];
-        return pieces.map(value => ({text:value.trim(), index})).filter(value => value.text);
+        const english = sentenceParts[index].englishBlock || isEnglish(text);
+        const prepared = window.prepareDataMoneyUtterances ? window.prepareDataMoneyUtterances(text, english ? 'en-US' : undefined)
+          : [{text:english ? text : (window.prepareDataMoneySpeech ? window.prepareDataMoneySpeech(text) : text),
+              lang:english ? 'en-US' : 'ko-KR'}];
+        return prepared.flatMap(item => {
+          const pieces = item.text.match(/.{1,220}(?:\s+|$)|.{1,220}/gu) || [item.text];
+          return pieces.map(value => ({text:value.trim(), lang:item.lang, index})).filter(value => value.text);
+        });
       });
       highlighter?.prepare(sentences.map(text => ({text})));
       let index = 0;
@@ -257,7 +265,13 @@
         if (!speaking || index >= chunks.length) { finish(); return; }
         const chunk = chunks[index++];
         const utterance = new SpeechSynthesisUtterance(chunk.text);
-        utterance.lang = 'ko-KR';
+        utterance.lang = chunk.lang;
+        if (chunk.lang === 'en-US' && typeof window.speechSynthesis.getVoices === 'function') {
+          const voices = window.speechSynthesis.getVoices();
+          const englishVoice = voices.find(voice => /^en-US$/i.test(voice.lang)) ||
+                               voices.find(voice => /^en(?:-|$)/i.test(voice.lang));
+          if (englishVoice) utterance.voice = englishVoice;
+        }
         utterance.onstart = () => {
           if (!speaking || currentSession !== session) return;
           highlighter?.show(chunk.index);

@@ -62,6 +62,33 @@
     return value.replace(pattern, (_, prefix) => prefix + rule.spoken);
   }, String(text));
 
+  // Keep this classifier aligned with scripts/speech_language.py. Short Korean
+  // finance abbreviations still use the Korean pronunciation dictionary.
+  window.prepareDataMoneyUtterance = (text, forcedLanguage) => {
+    const value = String(text);
+    const english = forcedLanguage === 'en-US' ||
+      (!/[가-힣ᄀ-ᇿ㄰-㆏]/u.test(value) && (value.match(/[A-Za-z]/g) || []).length >= 2 &&
+       (/[a-z]/.test(value) || /[A-Z]{2,}\s+[A-Z]{2,}/.test(value)));
+    return {text: english ? value : window.prepareDataMoneySpeech(value), lang: english ? 'en-US' : 'ko-KR'};
+  };
+  window.prepareDataMoneyUtterances = (text, forcedLanguage) => {
+    if (forcedLanguage === 'en-US' || window.prepareDataMoneyUtterance(text).lang === 'en-US')
+      return [window.prepareDataMoneyUtterance(text, forcedLanguage)];
+    const result = [];
+    let start = 0;
+    const pattern = /"[^"\n]*[.!?]"|“[^”\n]*[.!?]”/gu;
+    for (const match of text.matchAll(pattern)) {
+      if (window.prepareDataMoneyUtterance(match[0]).lang !== 'en-US') continue;
+      const before = text.slice(start, match.index).trim();
+      if (before) result.push(window.prepareDataMoneyUtterance(before));
+      result.push(window.prepareDataMoneyUtterance(match[0], 'en-US'));
+      start = match.index + match[0].length;
+    }
+    const after = text.slice(start).trim();
+    if (after) result.push(window.prepareDataMoneyUtterance(after));
+    return result;
+  };
+
   // Resolve the spoken text to DOM ranges without changing links or markup.
   window.createDataMoneySpeechHighlighter = ({title, content, followInput}) => {
     const excluded = 'script, style, nav, aside, svg, noscript, iframe, figcaption, [hidden], [aria-hidden="true"], .dm-end-actions, .dm-feedback, .dm-comments, .dm-references, .references, .reference-list, .references-list, .sources, .source-list, .sources-box, .source-box, .bibliography, .eyebrow';

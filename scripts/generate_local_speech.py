@@ -22,9 +22,11 @@ from build_speech_manifests import VOICE_PROFILE_ID, article_parts, build_manife
 from local_speech_storage import BUCKET, client, upload
 from speech_pronunciation import prepare_pronunciation, unknown_financial_terms
 from speech_timing import sentences, timing_for, timing_key
+from speech_language import ENGLISH_FEMALE_VOICE, is_english, korean_review_parts, language_segments
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOL_ROOT = Path(r"D:\Tools\DataMoney-TTS")
+ENGLISH_PYTHON = TOOL_ROOT / "injoon-env" / "Scripts" / "python.exe"
 MODEL = TOOL_ROOT / "models" / "qwen3-0.6b-base"
 REF_AUDIO = TOOL_ROOT / "samples" / "qwen-female-design.wav"
 REF_TEXT = ("주식으로 천만 원을 잃은 사람이 있다고 가정해 보자. "
@@ -68,7 +70,30 @@ def grouped_text(chunks):
     return groups
 
 
-def group_hash(text):
+def grouped_languages(parts):
+    """Retain existing Korean grouping while separating English sentences."""
+    segments = language_segments(parts)
+    if not any(language == "en" for language, _ in segments):
+        chunks = [{"text": value} for part in parts
+                  for value in split_block(prepare_pronunciation(part))]
+        return [("ko", value) for value in grouped_text(chunks)]
+    groups, pending, pending_language = [], [], None
+    for language, value in segments:
+        spoken = value if language == "en" else prepare_pronunciation(value)
+        for chunk in split_block(spoken):
+            if pending_language is not None and language != pending_language:
+                groups.extend((pending_language, item) for item in grouped_text(pending))
+                pending = []
+            pending_language = language
+            pending.append({"text": chunk})
+    if pending:
+        groups.extend((pending_language, item) for item in grouped_text(pending))
+    return groups
+
+
+def group_hash(text, language="ko"):
+    if language == "en":
+        return hashlib.sha256(("edge-english-v1\n" + ENGLISH_FEMALE_VOICE + "\n" + text).encode("utf-8")).hexdigest()
     reference = hashlib.sha256(REF_AUDIO.read_bytes()).hexdigest()
     return hashlib.sha256((MODEL_VERSION + "\n" + reference + "\n" + text).encode("utf-8")).hexdigest()
 
@@ -127,6 +152,26 @@ def render_mp3(wavs, target):
         target.write_bytes(temporary.read_bytes())
 
 
+def render_english_wav(text, target):
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="dm-english-") as directory:
+        mp3 = Path(directory) / "english.mp3"
+        wav = Path(directory) / "english.wav"
+        result = subprocess.run([str(ENGLISH_PYTHON), "-X", "utf8", "-B",
+                                 str(ROOT / "scripts" / "synthesize_english_group.py"), str(mp3)],
+                                input=text, text=True, encoding="utf-8", capture_output=True)
+        if result.returncode:
+            print("English voice is unavailable; retry later.", flush=True)
+            raise SystemExit(10)
+        subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", str(mp3),
+                        "-ar", "24000", "-ac", "1", "-c:a", "pcm_s16le", str(wav)], check=True)
+        if not valid_wav(wav, text):
+            raise RuntimeError("English speech failed duration validation")
+        temporary = target.with_suffix(".partial.wav")
+        temporary.write_bytes(wav.read_bytes())
+        temporary.replace(target)
+
+
 def bucket_bytes(storage):
     paginator = storage.get_paginator("list_objects_v2")
     return sum(obj["Size"] for page in paginator.paginate(Bucket=BUCKET) for obj in page.get("Contents", []))
@@ -155,21 +200,27 @@ def main():
         print("This article uses a separately managed voice; local female generation is disabled.", flush=True)
         raise SystemExit(20)
     parts = article_parts(source_text)
-    unknown = unknown_financial_terms(parts)
+    unknown = unknown_financial_terms(korean_review_parts(parts))
     if unknown and not args.alignment_only:
         print("Pronunciation review required before upload: " + ", ".join(unknown), flush=True)
         raise SystemExit(20)
-    spoken_chunks = [{"text": value} for part in parts
-                     for value in split_block(prepare_pronunciation(part))]
-    groups = grouped_text(spoken_chunks)
+    groups = grouped_languages(parts)
     chosen = groups[:args.max_groups] if args.max_groups else groups
     job = CACHE / "articles" / args.slug / manifest["content_id"]
-    wavs = [] if args.alignment_only else [CACHE / "groups" / (group_hash(value) + ".wav") for value in chosen]
-    missing = [] if args.alignment_only else [i for i, (p, text) in enumerate(zip(wavs, chosen)) if not valid_wav(p, text)]
+    wavs = [] if args.alignment_only else [CACHE / "groups" / (group_hash(text, language) + ".wav")
+                                           for language, text in chosen]
+    missing = [] if args.alignment_only else [i for i, (p, (_, text)) in enumerate(zip(wavs, chosen)) if not valid_wav(p, text)]
     print(f"Article: {args.slug}; groups: {len(chosen)}/{len(groups)}; to generate: {len(missing)}", flush=True)
     if args.dry_run:
         return
-    if missing and not args.alignment_only:
+    for i in (index for index in missing if chosen[index][0] == "en"):
+        if args.yield_when_active and idle_seconds() < 30:
+            print("Desktop activity resumed; English speech will retry later.", flush=True)
+            raise SystemExit(10)
+        print(f"Generating English group {i + 1}/{len(chosen)}", flush=True)
+        render_english_wav(chosen[i][1], wavs[i])
+    korean_missing = [index for index in missing if chosen[index][0] == "ko"]
+    if korean_missing and not args.alignment_only:
         os.environ["HF_HUB_OFFLINE"] = "1"
         os.environ["TRANSFORMERS_OFFLINE"] = "1"
         import numpy as np
@@ -185,20 +236,20 @@ def main():
                                                attn_implementation="sdpa", local_files_only=True)
         prompt = model.create_voice_clone_prompt(ref_audio=str(REF_AUDIO), ref_text=REF_TEXT)
         (CACHE / "groups").mkdir(parents=True, exist_ok=True)
-        for i in missing:
+        for i in korean_missing:
             if args.yield_when_active and idle_seconds() < 30:
                 print("Desktop activity resumed; cached audio is retained and generation will retry later.", flush=True)
                 raise SystemExit(10)
-            seed = int(hashlib.sha256(chosen[i].encode("utf-8")).hexdigest()[:8], 16)
+            seed = int(hashlib.sha256(chosen[i][1].encode("utf-8")).hexdigest()[:8], 16)
             torch.manual_seed(seed)
             print(f"Generating {i + 1}/{len(chosen)}", flush=True)
             with torch.inference_mode():
-                waves, rate = model.generate_voice_clone(text=chosen[i], language="Korean", voice_clone_prompt=prompt)
+                waves, rate = model.generate_voice_clone(text=chosen[i][1], language="Korean", voice_clone_prompt=prompt)
             if not waves or not len(waves[0]) or not np.isfinite(waves[0]).all() or rate != 24000:
                 raise RuntimeError(f"Invalid generated audio at group {i + 1}")
             temp = wavs[i].with_suffix(".partial.wav")
             sf.write(str(temp), waves[0], rate)
-            if not valid_wav(temp, chosen[i]):
+            if not valid_wav(temp, chosen[i][1]):
                 raise RuntimeError(f"Generated audio failed duration validation at group {i + 1}")
             temp.replace(wavs[i])
         del model, prompt
@@ -215,7 +266,7 @@ def main():
     print(f"Local audio ready: {output}; bytes: {output.stat().st_size}", flush=True)
     if not args.upload:
         return
-    review = transcript_check(output, " ".join(groups))
+    review = transcript_check(output, " ".join(text for _, text in groups))
     (job / "transcript-review.json").write_text(json.dumps(review, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"Transcript similarity: {review['similarity']}; missing numeric tokens: {len(review['missing_numbers'])}", flush=True)
     if not review["passed"]:
@@ -224,7 +275,8 @@ def main():
     visible_sentences = sentences(source_text)
     timing = timing_for(source_text, review["words"], manifest["content_id"],
                         pieces=visible_sentences,
-                        match_pieces=[prepare_pronunciation(item) for item in visible_sentences])
+                        match_pieces=[item if is_english(item) else prepare_pronunciation(item)
+                                      for item in visible_sentences])
     timing_path = job / "sentence-timing-v1.json"
     timing_path.write_text(json.dumps(timing, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     print(f"Sentence timestamps aligned: {len(timing['cues'])}", flush=True)

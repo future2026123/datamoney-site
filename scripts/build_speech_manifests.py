@@ -11,6 +11,8 @@ from pathlib import Path
 
 from sync_blog_sidebars import Tree, VOID
 from speech_pronunciation import prepare_pronunciation
+from speech_language import (ENGLISH_FEMALE_VOICE, ENGLISH_MALE_VOICE,
+                             LANGUAGE_ROUTING_VERSION, language_segments)
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "blog" / "speech-manifests"
@@ -243,6 +245,12 @@ def build_manifest(source):
     spoken_text = "\n".join(prepare_pronunciation(part) for part in parts)
     pronunciation_hash = hashlib.sha256(spoken_text.encode("utf-8")).hexdigest()
     fingerprint_input += "\npronunciation-v1:" + pronunciation_hash
+    segments = language_segments(parts)
+    if any(language == "en" for language, _ in segments):
+        routing = json.dumps([LANGUAGE_ROUTING_VERSION, ENGLISH_MALE_VOICE,
+                              ENGLISH_FEMALE_VOICE, segments], ensure_ascii=False,
+                             separators=(",", ":"))
+        fingerprint_input += "\nlanguage-routing:" + hashlib.sha256(routing.encode("utf-8")).hexdigest()
     fingerprint = hashlib.sha256(fingerprint_input.encode("utf-8")).hexdigest()
     return {"version": 1, "voice": voice, "content_id": fingerprint,
             "title": parts[0], "chunks": chunks}

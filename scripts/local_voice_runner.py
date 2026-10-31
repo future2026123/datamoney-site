@@ -30,7 +30,7 @@ GENERATOR = ROOT / "scripts" / "generate_local_speech.py"
 INJOON_PYTHON = TOOL_ROOT / "injoon-env" / "Scripts" / "python.exe"
 INJOON_GENERATOR = ROOT / "scripts" / "generate_injoon_speech.py"
 EXPECTED_REMOTE = "https://github.com/future2026123/datamoney-site.git"
-MANIFEST_DEPENDENCIES = ("scripts/build_speech_manifests.py", "scripts/speech_pronunciation.py",
+MANIFEST_DEPENDENCIES = ("scripts/build_speech_manifests.py", "scripts/speech_pronunciation.py", "scripts/speech_language.py",
                          "scripts/sync_blog_sidebars.py", "blog/article-speech.js")
 LOADED_MANIFEST_DEPENDENCIES = {
     path: hashlib.sha256((ROOT / path).read_bytes()).digest() for path in MANIFEST_DEPENDENCIES

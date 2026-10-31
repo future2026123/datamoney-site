@@ -70,7 +70,9 @@ jobs:
         run: node tests/article-local-speech-ui.mjs
 
       - name: Test shared speech pronunciation
-        run: node tests/speech-pronunciation-ui.mjs
+        run: |
+          node tests/speech-pronunciation-ui.mjs
+          node tests/speech-device-language.mjs
 
       - name: Test article data and source excerpt format
         run: python3 -m unittest discover -s tests

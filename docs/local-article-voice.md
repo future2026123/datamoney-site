@@ -3,7 +3,10 @@
 The default Qwen article narration is synthesized on the dedicated Windows PC
 and uploaded as 48 kbps mono MP3 to the private `datamoney-article-voice` R2
 bucket. Cloudflare serves it through `audio.datamoney.kr`; the bucket's
-development URL is disabled. The default Qwen voice does not use a TTS API.
+development URL is disabled. Korean Qwen speech is generated locally. When a
+readable English sentence is present, that public English text is sent to the
+online voice service from the dedicated `injoon-env` environment and spoken by
+`en-US-JennyNeural`; the generated groups are combined into the same MP3.
 
 The Pages build runs `scripts/build_speech_manifests.py`. It publishes a small
 fingerprint for each article, derived from the readable text and voice profile.
@@ -25,8 +28,19 @@ not spoken. When the article changes, the idle runner generates a new recording
 and timing file for its new content fingerprint before publishing its index.
 The existing female voice generator never handles an InJoon article.
 
+English sentences and English quotations inside Korean paragraphs use the
+native US English voice `en-US-GuyNeural` with InJoon narration. Korean parts
+retain the selected InJoon pitch. The text, voice routing, and voice names are
+included in the fingerprint for articles containing English, so an older
+Korean-accented recording cannot be mistaken for the new version. InJoon word
+timings are offset across language changes and the complete article remains one
+MP3. In the device-voice fallback, English sentences request an installed
+English voice; availability depends on the reader's device.
+
 The pronunciation dictionary in `blog/article-speech.js` is shared by both
-generators and the device-voice fallback. It changes spoken text only: the
+generators and the device-voice fallback for Korean speech. English sentences
+keep their original spelling and bypass Korean abbreviation substitutions. It
+changes spoken text only: the
 article and its sentence highlighting retain the displayed spelling. An article
 fingerprint includes its transformed speech, so a pronunciation change cannot
 reuse a stale recording, even if a rule is later removed. Unlisted capitalized
@@ -39,10 +53,12 @@ The Qwen generator caches individual groups, verifies the entire recording with
 a local transcription model and checks number tokens before uploading. This
 automated check catches some omissions but does not guarantee pronunciation or
 financial accuracy; items that fail are held for review. An uploaded file is
-size- and SHA-256-checked before its availability index is published. Changing
-the voice model, reference, grouping or audio encoding requires changing
-`VOICE_PROFILE_ID` in `scripts/build_speech_manifests.py`: audio and index URLs
-are immutable and must never be reused for different recordings.
+size- and SHA-256-checked before its availability index is published. A change
+to the Korean voice model, reference, grouping or encoding requires changing
+`VOICE_PROFILE_ID` in `scripts/build_speech_manifests.py`. A change to English
+voice routing requires a new `LANGUAGE_ROUTING_VERSION` in `speech_language.py`.
+Audio and index URLs are immutable and must never be reused for different
+recordings.
 
 Optional sentence timing is stored separately at
 `audio/manifests/<slug>/<content_id>-cues-v1.json`. It contains the article

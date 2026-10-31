@@ -44,6 +44,34 @@ class InJoonSpeechTests(unittest.TestCase):
         self.assertEqual(calls, [("시험 음성", "ko-KR-InJoonNeural", "-5Hz", "WordBoundary")])
         self.assertEqual(len(events), 20)
 
+    def test_bilingual_generation_selects_english_voice_and_offsets_timings(self):
+        calls = []
+
+        class FakeCommunicate:
+            def __init__(self, text, voice, *, pitch, boundary):
+                calls.append((text, voice, pitch, boundary))
+
+            async def stream(self):
+                yield {"type": "audio", "data": b"a" * 12000}
+                for index in range(10):
+                    yield {"type": "WordBoundary", "text": "word", "offset": index * 1000000,
+                           "duration": 500000}
+
+        with tempfile.TemporaryDirectory() as directory, \
+             patch.dict(sys.modules, {"edge_tts": types.SimpleNamespace(Communicate=FakeCommunicate)}):
+            path = Path(directory) / "test.mp3"
+            events = asyncio.run(synthesize([("ko", "한국어 문장입니다."),
+                                             ("en", "This is an English sentence.")], path, "-5Hz"))
+            self.assertEqual(path.stat().st_size, 24000)
+        self.assertEqual([call[1] for call in calls], ["ko-KR-InJoonNeural", "en-US-GuyNeural"])
+        self.assertEqual([call[2] for call in calls], ["-5Hz", "+0Hz"])
+        self.assertEqual(events[10]["start"], 2.0)
+
+    def test_old_single_voice_cache_is_not_reused_for_bilingual_audio(self):
+        old = {"voice": "ko-KR-InJoonNeural", "profile": DEFAULT_INJOON_PROFILE,
+               "pitch": "-5Hz", "blocks": ["한국어", "English sentence"], "spoken_text": "same"}
+        self.assertFalse(matches_source(old, DEFAULT_INJOON_PROFILE, "-5Hz", old["blocks"], "same", True))
+
     def test_original_pitch_cache_cannot_be_reused_for_lower_pitch(self):
         legacy = {"voice": "ko-KR-InJoonNeural", "blocks": ["본문"], "spoken_text": "본문"}
         self.assertTrue(matches_source(legacy, "ko-KR-InJoonNeural-v1", "+0Hz", ["본문"], "본문"))

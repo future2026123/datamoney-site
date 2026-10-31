@@ -11,4 +11,14 @@ assert.equal(say('S&P 500과 S&P500, PER는 ETF를 본다.'), '에스 엔 피 �
 assert.equal(say('per도 보지만 one per year와 SUPER는 그대로.'), '퍼도 보지만 one per year와 SUPER는 그대로.');
 assert.equal(say('선행 per 낮아지는 이유'), '선행 퍼 낮아지는 이유');
 assert.equal(say('PBR·CPI·ISA·IRP·KOSPI'), '피 비 알·씨 피 아이·아이 에스 에이·아이 알 피·코스피');
+const english = window.prepareDataMoneyUtterance('Annualized returns for the S&P 500 were negative.');
+assert.equal(english.lang, 'en-US');
+assert.equal(english.text, 'Annualized returns for the S&P 500 were negative.');
+assert.equal(window.prepareDataMoneyUtterance('Yes.').lang, 'en-US');
+assert.equal(window.prepareDataMoneyUtterance('I agree.').lang, 'en-US');
+assert.equal(window.prepareDataMoneyUtterances('그는 “Past performance does not guarantee future results.”라고 설명했다.').map(item => item.lang).join(','), 'ko-KR,en-US,ko-KR');
+const korean = window.prepareDataMoneyUtterance('S&P 500과 ETF를 비교한다.');
+assert.equal(korean.lang, 'ko-KR');
+assert.equal(korean.text, '에스 엔 피 오백과 이 티 에프를 비교한다.');
+assert.equal(window.prepareDataMoneyUtterance('PBR·CPI·ISA·IRP·KOSPI').lang, 'ko-KR');
 console.log('Shared speech pronunciation rules: device voice and generator inputs agree');
