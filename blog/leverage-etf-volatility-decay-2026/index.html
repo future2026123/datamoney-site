@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ETF 2배의 함정 — 레버리지 ETF가 일별 추종이라 절반이 되는 이유 | 데이터머니</title>
-<meta name="description" content="KODEX 200 10년 +4.6%, 같은 기간 KODEX 레버리지 +2.56%. 2배가 아니라 절반. 일별 수익률 추종 구조와 변동성 손실(volatility decay), 운용자산 함정, 개별 종목의 4% 미만 확률까지 데이터로 정리합니다.">
+<meta name="description" content="일별 수익률을 추종하는 레버리지 ETF의 구조와 변동성 손실, 투자 비용, 소수 종목에 집중된 장기 부의 창출을 살펴봅니다.">
 <meta name="keywords" content="레버리지 ETF, KODEX 레버리지, 변동성 손실, volatility decay, 일별 추종, ETF 총보수, 베셈빈더, TQQQ, BRZU, ETF 비교">
 <link rel="canonical" href="https://datamoney.kr/blog/leverage-etf-volatility-decay-2026/">
 <meta property="og:title" content="ETF 2배의 함정 — 레버리지가 절반이 되는 이유">
@@ -15,6 +15,11 @@
 <meta property="og:url" content="https://datamoney.kr/blog/leverage-etf-volatility-decay-2026/">
 <style>
   :root { --bg:#f3f7fd; --panel:#ffffff; --navy:#0b1628; --text:#111827; --sub:#475569; --line:rgba(15,23,42,.08); --blue:#2563eb; --blue-soft:#eff6ff; --gold-soft:#fff7e6; --warn:#fff1f0; --warn-line:rgba(220,38,38,.18); }
+  .article figure.source-excerpt { margin:1.8em 0 2.4em; padding:20px 22px; border:1px solid #dfe7f2; background:#f7f9fc; border-radius:15px; }
+  .article figure.source-excerpt .excerpt-label { display:block; margin-bottom:10px; font-size:12px; font-weight:700; color:#65758b; }
+  .article figure.source-excerpt > p.translation { margin:14px 0 0; font-size:16px; line-height:1.8; color:#253953; }
+  .article figure.source-excerpt figcaption { padding:12px 0 0; font-size:13px; line-height:1.6; color:#617089; overflow-wrap:anywhere; }
+  @media(max-width:600px) { .article figure.source-excerpt { padding:16px 14px; } }
   * { box-sizing:border-box; }
   body { margin:0; font-family:"Pretendard Variable","Pretendard","Apple SD Gothic Neo",sans-serif; color:var(--text); background:radial-gradient(circle at top left, rgba(37,99,235,.08), transparent 18%),linear-gradient(180deg,#f9fbff 0%, var(--bg) 100%); }
   a { color:inherit; text-decoration:none; }
@@ -64,6 +69,7 @@
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6705155374292160" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="/blog/header.css?v=11c66c07">
 <link rel="stylesheet" href="/blog/article-title.css?v=7ec1ef5c">
+<link rel="stylesheet" href="/blog/source-excerpt.css?v=18981397">
 <link rel="stylesheet" href="/blog/article-actions.css?v=c5a69071">
 <script src="/blog/article-actions.js?v=5b5b8fee" defer></script>
 <link rel="stylesheet" href="/blog/sidebar.css?v=a101426d">
@@ -110,7 +116,8 @@
 
 
 
-        <p class="lead">KODEX 200을 10년 들고 있으면 연 4.6%, 그런데 2배 추종 KODEX 레버리지를 똑같이 10년 들고 있으면 9.2%가 아니라 2.56%입니다. 2배가 아니라 절반. ETF 시장이 "2배"라고 부르는 그 숫자가 정확히 무엇인지, 그리고 일반 ETF 영역에서도 운용자산 1등이 왜 좋은 ETF를 의미하지 않는지, 그리고 개별 종목의 진짜 확률이 4% 미만인 이유까지 데이터로 정리합니다.</p>
+        <p class="lead">KODEX 200을 10년 들고 있으면 연 4.6%, 그런데 2배 추종 KODEX 레버리지를 똑같이 10년 들고 있으면 9.2%가 아니라 2.56%입니다. 2배가 아니라 절반. ETF 시장이 "2배"라고 부르는 그 숫자가 정확히 무엇인지, 운용자산과 투자 비용, 소수 종목에 집중된 시장의 장기 부의 창출을 살펴봅니다.</p>
+        <p class="source-context">위 10년 수익률과 아래 실제 사례는 영상에서 제시한 수치로, 비교 기간과 원자료를 확인 중입니다. 확인된 계산 예시와 구분해 읽어 주세요.</p>
 
         <div class="yt-embed">
           <iframe src="https://www.youtube.com/embed/mIWsMYQSa90" title="ETF 2배의 함정, 진짜 이유 공개" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
@@ -123,7 +130,8 @@
 
         <h2>"2배"의 정확한 정의 — 일별 수익률의 2배</h2>
         <p>레버리지 ETF는 매일 종가 기준으로 익스포저를 리밸런싱해 다음 날 기초지수 수익률의 2배를 추종합니다. 운용사 공식 정의 자체가 그렇게 되어 있습니다 — ProShares는 "Daily Investment Result", Direxion은 "300% of the daily performance" — 모두 "Daily(일별)"가 명시되어 있습니다.</p>
-        <p>여러 날에 걸친 누적 수익률은 단순 2배 공식이 성립하지 않습니다. 미국 SEC도 공식 경고에서 "Most leveraged and inverse ETFs reset daily ... performance over longer periods ... can differ significantly"라고 적었습니다. FINRA Regulatory Notice 09-31은 더 직접적입니다 — 레버리지/인버스 ETF는 "1거래일 이상 보유에 일반적으로 부적합(typically not suitable for retail investors who plan to hold them for more than one trading session)".</p>
+        <p>여러 날에 걸친 누적 수익률은 단순 2배 공식이 성립하지 않습니다. 미국 금융산업규제기구 FINRA는 일별로 재설정하는 레버리지·인버스 ETF의 장기 성과가 일별 목표와 크게 다를 수 있다고 설명합니다. 특히 변동성이 큰 시장에서 하루보다 오래 보유할 투자자에게 적합성을 신중하게 따져야 한다고 안내합니다.</p>
+        <figure class="source-figure source-excerpt"><span class="excerpt-label">공식 자료 원문 일부 발췌</span><img src="/blog/leverage-etf-volatility-decay-2026/finra-09-31-source.png" alt="Most leveraged and inverse ETFs reset daily, meaning that they are designed to achieve their stated objectives on a daily basis." loading="lazy" style="display:block;width:100%;height:auto;background:white;"><p class="translation"><strong>번역</strong> &nbsp;“대부분의 레버리지·인버스 ETF는 매일 재설정되며, 명시된 목표를 하루 단위로 달성하도록 설계됩니다.”</p><p class="source-context">FINRA는 미국 증권업계의 자율규제기구입니다. 레버리지 ETF의 배수가 어떤 기간을 기준으로 하는지 확인하기 위해 공식 안내문을 참고했습니다.</p><figcaption>FINRA, Regulatory Notice 09-31 (2009) · <a href="https://www.finra.org/rules-guidance/notices/09-31" target="_blank" rel="noopener noreferrer">원문 보기 ↗</a></figcaption></figure>
 
         <h2>변동성 손실 — 지수가 0%여도 레버리지는 깎인다</h2>
         <p>매일 익스포저를 재조정한다는 것은, 변동성이 큰 환경에서는 누적 자산이 깎이는 방향으로 작동한다는 뜻입니다. 강한 일방향 추세장(예: 2020 NASDAQ)에서는 단순 2배를 초과하는 수익도 가능하지만(TQQQ 2020년 약 +110%), 횡보·고변동 구간에서는 정반대가 됩니다.</p>
@@ -135,15 +143,16 @@
             <tr><td>시작</td><td>—</td><td>100.00</td><td>100.00</td></tr>
             <tr><td>1일</td><td>+10%</td><td>110.00</td><td>120.00 (+20%)</td></tr>
             <tr><td>2일</td><td>−9.09%</td><td>100.00</td><td>98.18 (−18.18%)</td></tr>
-            <tr><td>3일</td><td>+20%</td><td>120.00</td><td>117.82</td></tr>
-            <tr><td>4일</td><td>−16.67%</td><td>100.00</td><td>96.40</td></tr>
+            <tr><td>3일</td><td>+20%</td><td>120.00</td><td>137.45</td></tr>
+            <tr><td>4일</td><td>약 −16.67%</td><td>100.00</td><td>91.64</td></tr>
           </tbody>
         </table>
-        <p>기초지수는 100→100→100→100으로 횡보(±0%)했지만, 2배 레버리지는 −3.6% 손실. 이걸 "변동성 손실(volatility decay)"이라고 부릅니다. 어렵게 생각할 필요 없고, <b>지수의 방향보다 흔들림 자체가 돈을 갉아먹는 구조</b>라는 겁니다.</p>
+        <p>기초지수는 100→110→100→120→100으로 움직여 제자리로 돌아왔지만, 2배 레버리지는 약 <b>−8.36%</b>입니다. 일별 수익률이 복리로 적용되기 때문에 생기는 차이입니다. 표는 보수와 추적오차를 제외한 계산 예시이며, 수익률과 평가액은 반올림했습니다.</p>
 
         <div class="warn-box">
           <strong>실제 사례</strong>
           2026년 4월 27일 코스피 200이 +4.13% 상승한 구간에서 KODEX 레버리지는 −0.96%. 지수는 올랐는데 레버리지는 빠졌습니다. 일별 추종이라 가능한 결과입니다. 미국 사례로는 TQQQ가 2022년 한 해 −80% 가까이 빠졌고 회복에 약 2년이 걸렸습니다. 브라질 BRZU는 2020년 코로나 폭락에서 변동성이 너무 커지자 운용사가 직접 3배에서 2배로 강제 축소했습니다.
+          <p>이 사례의 비교 구간과 수치는 원자료를 확인 중입니다.</p>
         </div>
 
         <h2>거짓말 — 운용자산이 크다고 좋은 ETF가 아니다</h2>
@@ -153,7 +162,7 @@
         <ol>
           <li><b>추적오차</b> — ETF가 기초지수를 얼마나 잘 따라가느냐</li>
           <li><b>괴리율</b> — ETF의 시장 가격이 진짜 가치(NAV)에서 얼마나 벗어나 있느냐</li>
-          <li><b>총보수</b> — 매매중개·환헤지까지 다 포함한 진짜 비용</li>
+          <li><b>비용</b> — 총보수와 함께 별도로 발생할 수 있는 거래비용·환헤지 비용 등을 확인합니다.</li>
           <li><b>거래량</b> — 운용자산이 아니라 거래량이 사고팔 때의 손실을 결정합니다</li>
         </ol>
 
@@ -168,16 +177,17 @@
         <p>1억 원을 10년 굴리면 보수의 차이만으로 약 −360만 원이 빠집니다. 가만히 있어도. 운용자산이 10배 큰 ETF가 비용은 5배 비쌌던 겁니다. 같은 시기 KODEX 미국 반도체는 장중 +2.1% 프리미엄까지 발생했습니다.</p>
 
         <h2>거짓말 — 개별 종목 신화</h2>
-        <p>"엔비디아 1만% 올랐다, 개별 종목이 ETF보다 낫다"는 흔한 주장. 그런데 그 엔비디아를 미리 고를 확률이 4%도 안 됩니다. 로또보다 살짝 나은 수준.</p>
+        <p>"엔비디아 1만% 올랐다, 개별 종목이 ETF보다 낫다"는 흔한 주장. 다만 과거 시장 전체의 부가 소수 종목에 집중됐다는 사실은, 미래의 승자를 사전에 골라내는 일이 쉽지 않다는 점을 생각하게 합니다.</p>
         <p>먼저 "하루 20% 오를 수 있다"는 주장부터 살펴보면, 한국거래소 가격제한폭은 위아래 ±30%. 하루 20% 오를 수 있다는 건 하루 30% 빠질 수도 있다는 말과 똑같습니다. 변동성은 양방향입니다 — 변동성이 크다는 게 곧 수익률이 높다는 뜻은 아닙니다.</p>
 
         <h3>베셈빈더 100년 데이터</h3>
         <p>미국 애리조나 주립대 베셈빈더(Hendrik Bessembinder) 교수는 1925~2023년까지 미국 보통주 29,078개 종목을 추적했습니다. 결론은 두 줄입니다.</p>
         <ul>
-          <li>미국 주식 절반 이상(<b>51.6%</b>)은 평생 손실로 끝났습니다. 동전 던지기, 그것도 살짝 지는 게임.</li>
-          <li>시장 전체 부의 100%를 만든 기업은 약 <b>4% 미만</b>(약 1,000개). 나머지 96%는 1개월짜리 미국 단기국채 수익률에도 못 미쳤습니다.</li>
+          <li>1925년 12월부터 2023년 12월까지 조사한 29,078개 미국 주식 중 <b>51.6%</b>는 관측 기간의 누적 수익률이 마이너스였습니다. <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4897069" target="_blank" rel="noopener noreferrer">연구 원문 보기 ↗</a></li>
+          <li>1926~2016년을 다룬 원연구에서는 시장 전체의 단기국채 대비 순부 창출이 소수 종목에 집중됐습니다. 상위 약 1,000개 종목이 전체 순부 창출을 설명하며, 나머지 종목은 <b>합계 기준으로</b> 단기국채와 비슷한 부를 만들었습니다.</li>
         </ul>
-        <p>엔비디아처럼 1만% 오른 종목이 있는 것은 맞습니다. 그러나 그 한 개를 사전에 고를 확률이 4% 미만이라는 게 데이터의 결론입니다.</p>
+        <p>이는 과거에 부가 집중된 정도를 보여주는 결과입니다. 미래에 특정 종목을 미리 고를 확률이나 나머지 종목 각각의 성과가 모두 단기국채보다 낮았다는 뜻은 아닙니다. <a href="https://www.wpcarey.asu.edu/department-finance/faculty-research/do-stocks-outperform-treasury-bills" target="_blank" rel="noopener noreferrer">애리조나주립대 연구 설명</a>에서 연구의 취지와 기간을 확인할 수 있습니다.</p>
+        <figure class="source-figure source-excerpt"><span class="excerpt-label">대학 연구 설명 원문 일부 발췌</span><img src="/blog/leverage-etf-volatility-decay-2026/asu-bessembinder-source.png" alt="상위 천 개 종목이 부의 창출을 설명하고 나머지 96%는 합계로 단기국채와 비슷한 성과를 냈다는 애리조나주립대 설명" loading="lazy" style="display:block;width:100%;height:auto;background:white;"><p class="translation"><strong>번역</strong> &nbsp;“부의 창출은 성과가 가장 높았던 1,000개 종목에서 나왔고, 나머지 96%는 합계로 1개월 만기 국채와 비슷한 성과를 냈습니다.”</p><p class="source-context">애리조나주립대는 베셈빈더 교수가 소속된 미국 대학입니다. 상위 종목의 기여도와 나머지 종목의 성과를 각각 어떻게 해석해야 하는지 확인하려고 대학의 연구 설명을 참고했습니다.</p><figcaption>Arizona State University, Do Stocks Outperform Treasury Bills? · <a href="https://www.wpcarey.asu.edu/department-finance/faculty-research/do-stocks-outperform-treasury-bills" target="_blank" rel="noopener noreferrer">원문 보기 ↗</a></figcaption></figure>
 
         <h2>핵심 한 가지</h2>
         <div class="cta-box">
@@ -201,7 +211,7 @@
         <div class="aside-card">
           <h3>핵심 숫자</h3>
           <p style="font-size:14px">KODEX 레버리지 10년 +2.56%</p>
-          <p style="font-size:14px">변동성 손실 4일 누적 −3.6%</p>
+          <p style="font-size:14px">계산 예시의 4일 누적 손실 약 −8.36%</p>
           <p style="font-size:14px">TQQQ 2022 −80%, 회복 2년</p>
           <p style="font-size:14px">총보수 차이 1억×10년 −360만 원</p>
           <p style="font-size:14px">미국 보통주 51.6% 평생 마이너스</p>
