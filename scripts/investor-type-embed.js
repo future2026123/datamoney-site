@@ -3,6 +3,12 @@
   const sidebar = document.querySelector('.dm-shared-sidebar');
   const banners = document.querySelectorAll('.dm-shared-sidebar .investor-test-banner, .dm-mobile-investor-banner');
   if (!sidebar || !banners.length) return;
+  const setTestInAddress = open => {
+    const url = new URL(window.location.href);
+    if (open) url.searchParams.set('investor_test', '1');
+    else url.searchParams.delete('investor_test');
+    history.replaceState(history.state, '', url);
+  };
 
   banners.forEach(banner => banner.addEventListener('click', event => {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -16,6 +22,7 @@
     const original = [...layout.children].find(element => element !== sidebar && element.matches('article, main, .article, .paper, .dm-article-page, .latest-column'));
     if (!original) return;
     event.preventDefault();
+    setTestInAddress(true);
 
     const previousScroll = window.scrollY;
     const panel = document.createElement('section');
@@ -54,10 +61,12 @@
       observer?.disconnect();
       panel.remove();
       original.removeAttribute('data-investor-original-hidden');
+      setTestInAddress(false);
       window.scrollTo({top: previousScroll, behavior: 'instant'});
       banner.focus({preventScroll: true});
     });
     window.scrollTo({top: Math.max(0, panel.getBoundingClientRect().top + window.scrollY - 90), behavior: 'auto'});
     close.focus({preventScroll: true});
   }));
+  if (new URL(window.location.href).searchParams.get('investor_test') === '1') banners[0].click();
 })();
