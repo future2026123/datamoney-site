@@ -100,6 +100,9 @@ body:has(.dm-article-heading, article.dm-post) > .dm-sidebar-shell { margin-top:
 @media (max-width: 900px) {
   .dm-sidebar-shell { grid-template-columns: minmax(0,1fr); gap: 20px; }
 }
+@media (max-width: 760px) {
+  .dm-shared-sidebar .investor-test-banner { display: none; }
+}
 @media (max-width: 380px) {
   .dm-shared-sidebar .dm-channel-links :is(a, button) { gap: 6px; padding: 9px 8px; font-size: 12px; }
   .dm-shared-sidebar .dm-channel-arrow { display: none; }

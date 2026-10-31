@@ -117,6 +117,8 @@ body > .dm-site-header {
   cursor: pointer;
 }
 .dm-site-header .dm-header-search button:focus-visible { outline: 2px solid #2563eb; outline-offset: -4px; border-radius: 8px; }
+.dm-site-header .dm-mobile-investor-banner { display: none; }
+.dm-site-header .dm-mobile-investor-banner img { display: block; width: 100%; height: auto; border-radius: 12px; }
 .dm-site-header .dm-site-nav { display: flex; justify-self: end; gap: 10px; flex-wrap: nowrap; }
 .dm-site-header .dm-site-nav a {
   padding: 10px 14px;
@@ -138,6 +140,7 @@ body.dm-header-flush .dm-site-header { margin-top: 18px; }
   .dm-site-header .dm-brand { grid-column: 1; grid-row: 1; }
   .dm-site-header .dm-site-nav { grid-column: 2; grid-row: 1; }
   .dm-site-header .dm-header-search { grid-column: 1 / -1; grid-row: 2; }
+  body:has(.dm-shared-sidebar) .dm-site-header .dm-mobile-investor-banner { display: block; grid-column: 1 / -1; grid-row: 3; min-width: 0; }
 }
 @media (max-width: 560px) {
   .dm-site-header .dm-brand { font-size: 22px; }

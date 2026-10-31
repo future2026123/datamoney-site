@@ -1,10 +1,10 @@
 (() => {
   'use strict';
   const sidebar = document.querySelector('.dm-shared-sidebar');
-  const banner = sidebar?.querySelector('.investor-test-banner');
-  if (!sidebar || !banner) return;
+  const banners = document.querySelectorAll('.dm-shared-sidebar .investor-test-banner, .dm-mobile-investor-banner');
+  if (!sidebar || !banners.length) return;
 
-  banner.addEventListener('click', event => {
+  banners.forEach(banner => banner.addEventListener('click', event => {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     const layout = sidebar.parentElement;
     const existing = layout.querySelector(':scope > .dm-investor-embed');
@@ -59,5 +59,5 @@
     });
     window.scrollTo({top: Math.max(0, panel.getBoundingClientRect().top + window.scrollY - 90), behavior: 'auto'});
     close.focus({preventScroll: true});
-  });
+  }));
 })();
