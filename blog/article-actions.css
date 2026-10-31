@@ -4,8 +4,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-top: 26px;
-  padding-top: 18px;
+  margin-top: 16px;
+  padding-top: 10px;
   border-top: 1px solid #e7ebf0;
   color: #394454;
 }
@@ -129,7 +129,7 @@ mark.dm-speech-reading { background-color: #fff0a6; color: inherit; }
 .dm-comments :is(.dm-comment-notice, .dm-comment-verification-notice):empty { display: none; }
 .dm-comment-verification[hidden] { display: none; }
 @media (max-width: 560px) {
-  .dm-article-actions { gap: 8px; margin-top: 20px; padding-top: 14px; }
+  .dm-article-actions { gap: 8px; margin-top: 14px; padding-top: 10px; }
   .dm-actions-group, .dm-actions-group:last-of-type { gap: 9px; }
   .dm-action { min-width: 26px; min-height: 36px; font-size: 14px; }
   .dm-action svg { width: 21px; height: 21px; }
