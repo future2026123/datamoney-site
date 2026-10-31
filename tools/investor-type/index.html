@@ -10,8 +10,8 @@
 <meta property="og:type" content="website"><meta property="og:title" content="나는 어떤 투자자일까? | 데이터머니"><meta property="og:description" content="평소 투자 성향과 지금의 투자 심리, 여덟 캐릭터 중 나는 누구일까요?"><meta property="og:url" content="https://datamoney.kr/tools/investor-type/">
 <link rel="stylesheet" href="/blog/header.css?v=11c66c07">
 <link rel="stylesheet" href="style.css?v=20261101-footer">
-<script src="app.js?v=20261031-stickers" defer></script>
-<script src="email.js?v=20261031-1" defer></script>
+<script src="app.js?v=20261101-email-image" defer></script>
+<script src="email.js?v=20261101-email-image" defer></script>
 <script src="/scripts/back-navigation.js?v=20261031-1" defer></script>
 <link rel="stylesheet" href="/brand.css?v=20261031-round">
 </head>
@@ -35,12 +35,12 @@
     <section class="email-panel" aria-labelledby="email-heading">
       <p class="eyebrow">나의 결과 보관하기</p>
       <h3 id="email-heading">나의 투자 성향, 다음 달에도 같을까요?</h3>
-      <p class="email-lead">지금의 투자 성향과 심리 결과를 이메일로 받아두고, 한 달 뒤 다시 검사해 비교해 보세요.</p>
+      <p class="email-lead">지금의 투자 성향과 심리 결과, 공유 이미지를 이메일로 받아두고 한 달 뒤 다시 검사해 비교해 보세요.</p>
       <form id="result-email-form">
         <label class="email-label" for="result-email">이메일 주소</label>
         <input id="result-email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="이메일 주소를 입력해 주세요" required>
         <div class="email-consents">
-          <label><input id="result-email-consent" type="checkbox" required><span><strong>[필수] 결과 발송 및 저장을 위한 개인정보 수집·이용 동의</strong><small>이메일 주소, 투자 유형·심리 결과와 수신 선택을 결과 발송·비교와 선택 소식 발송에 이용하며, 1년 또는 삭제 요청 시까지 보관합니다. 이메일 발송을 위해 Resend(미국)에 이메일 주소와 결과 안내 내용이 전송됩니다. 동의하지 않아도 검사 결과를 볼 수 있습니다.</small></span></label>
+          <label><input id="result-email-consent" type="checkbox" required><span><strong>[필수] 결과 발송 및 저장을 위한 개인정보 수집·이용 동의</strong><small>이메일 주소, 투자 유형·심리 결과와 수신 선택을 결과 발송·비교와 선택 소식 발송에 이용하며, 1년 또는 삭제 요청 시까지 보관합니다. 이메일 발송을 위해 Resend(미국)에 이메일 주소와 결과 안내 내용, 결과 이미지가 전송됩니다. 동의하지 않아도 검사 결과를 볼 수 있습니다.</small></span></label>
           <label><input id="result-test-news" type="checkbox"><span>[선택] 새로운 무료 검사 소식 받기 <small>광고성 정보 포함</small></span></label>
           <label><input id="result-monthly-report" type="checkbox"><span>[선택] 월간 데이터머니 금융 리포트 받기 <small>광고성 정보 포함</small></span></label>
         </div>
@@ -52,6 +52,5 @@
     <div class="share-area"><p>친구는 어떤 투자자일까요?</p><img id="card-preview" alt="공유할 나의 투자 유형 결과 카드"><button id="share" class="primary" type="button">친구에게 결과 공유하기</button><button id="save" class="secondary" type="button">내 결과 이미지 저장</button><button id="again" class="text-button under" type="button">다시 해보기</button><p id="notice" class="hint" role="status" aria-live="polite"></p></div>
     <p class="disclaimer">캐릭터는 평소 성향에 관한 세 가지 답을 조합한 자기 점검용 결과이며 검증된 심리검사나 투자 권유가 아닙니다. 공유 이미지에는 현재 심리와 손익 등 상세 답변이 표시되지 않습니다.</p>
   </section>
-  <canvas id="canvas" width="1080" height="1350" hidden></canvas>
 </main><footer><span class="investor-site-links" data-site-info-links="true"><a href="/privacy/">개인정보처리방침</a><a href="/about/">사이트 소개</a></span><button id="delete-data" type="button" class="text-button">이전에 동의해 저장한 응답 삭제</button><span class="investor-copyright">© 데이터머니</span></footer></div>
 </body></html>

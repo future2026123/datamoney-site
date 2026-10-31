@@ -8,6 +8,8 @@ const SURVEY_AGGREGATE_PATH = '/api/article-engagement/_survey-aggregate';
 const SURVEY_ADMIN_PATH = '/api/article-engagement/_admin/survey';
 const EMAIL_PATH = '/api/article-engagement/_email/';
 const EMAIL_ADMIN_PATH = '/api/article-engagement/_admin/email-subscribers';
+const EMAIL_RESULT_CARD_BASE = 'https://datamoney.kr/tools/investor-type/result-cards/20261101/';
+const EMAIL_RESULT_CARD_ASSET_BASE = 'https://datamoney-tools.pages.dev/tools/investor-type/result-cards/20261101/';
 const EMAIL_TYPES = [
   {name:'차근차근 거북이',short:'존버형'}, {name:'꼼꼼한 다람쥐',short:'짠테크형'},
   {name:'감각적인 고양이',short:'촉형'}, {name:'귀 쫑긋 토끼',short:'포모형'},
@@ -19,6 +21,21 @@ const EMAIL_REACTION = ['거의 없음','가끔 생각남','자주 생각남','�
 async function emailTokenHash(token) {
   const hash = await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token));
   return [...new Uint8Array(hash)].map(n=>n.toString(16).padStart(2,'0')).join('');
+}
+async function emailResultCard(typeCode) {
+  // Fetch only a published, fixed type image; do not accept a client file or URL.
+  const response=await fetch(EMAIL_RESULT_CARD_ASSET_BASE+typeCode+'.png', {headers:{'User-Agent':'DataMoney-Result-Email/1.0'}});
+  if (!response.ok || !(response.headers.get('content-type')||'').toLowerCase().startsWith('image/png') ||
+      (Number(response.headers.get('content-length'))||0)>1024*1024) throw new Error('Result image unavailable');
+  const bytes=new Uint8Array(await response.arrayBuffer());
+  const signature=[137,80,78,71,13,10,26,10];
+  if (bytes.length<24 || bytes.length>1024*1024 || !signature.every((value,index)=>bytes[index]===value) ||
+      String.fromCharCode(...bytes.subarray(12,16))!=='IHDR') throw new Error('Invalid result image');
+  const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+  if (view.getUint32(16)!==1080 || view.getUint32(20)!==1350) throw new Error('Invalid result image dimensions');
+  let binary='';
+  for (let offset=0;offset<bytes.length;offset+=32768) binary+=String.fromCharCode(...bytes.subarray(offset,offset+32768));
+  return btoa(binary);
 }
 const COOKIE = 'dm_article_visitor';
 const SURVEY_COOKIE = 'dm_survey_visitor';
@@ -414,6 +431,9 @@ export class ArticleEngagement {
       const emailRecent=this.sql.exec('SELECT COUNT(*) AS n FROM email_results WHERE email = ? AND created_at > ?',email,now-86400000).one().n;
       const total=this.sql.exec('SELECT COUNT(*) AS n FROM email_rate WHERE created_at > ?',now-86400000).one().n;
       if (recent>=3 || emailRecent>=3 || total>=90) return json({error:'Too many requests'},429);
+      let cardContent;
+      try { cardContent=await emailResultCard(input.typeCode); }
+      catch (_) { return json({error:'Result image unavailable'},502); }
       const bytes=crypto.getRandomValues(new Uint8Array(32));
       const token=[...bytes].map(n=>n.toString(16).padStart(2,'0')).join('');
       const hash=await emailTokenHash(token);
@@ -422,10 +442,20 @@ export class ArticleEngagement {
       await this.state.storage.setAlarm(now+61000);
       const link='https://datamoney.kr/account/result/#'+token;
       const type=EMAIL_TYPES[input.typeCode], anxiety=EMAIL_ANXIETY[input.anxiety], reaction=EMAIL_REACTION[input.reaction];
-      const body='안녕하세요. 데이터머니입니다.\n\n나의 투자 성향 결과: '+type.name+' ('+type.short+')\n최근 불안감: '+anxiety+'\n최근 매도 충동: '+reaction+'\n\n아래 링크에서 이메일을 확인하고 전체 결과를 저장해 보세요. 다음 검사 결과와도 비교할 수 있습니다.\n'+link+'\n\n이 링크는 본인만 보관해 주세요. 확인 전에는 선택한 소식 수신이 시작되지 않습니다. 요청하지 않으셨다면 이 메일을 무시해 주세요.\n\n문의: sys247365@gmail.com\n데이터머니 https://datamoney.kr';
+      // The numeric, validated type selects the same fixed card used by the
+      // share button. Clients cannot supply an arbitrary attachment URL.
+      const cardUrl=EMAIL_RESULT_CARD_BASE+input.typeCode+'.png';
+      const body='안녕하세요. 데이터머니입니다.\n\n나의 투자 성향 결과: '+type.name+' ('+type.short+')\n최근 불안감: '+anxiety+'\n최근 매도 충동: '+reaction+'\n\n나의 결과 공유 이미지를 파일로 첨부했습니다.\n\n아래 링크에서 이메일을 확인하고 전체 결과를 저장해 보세요. 다음 검사 결과와도 비교할 수 있습니다.\n'+link+'\n\n이 링크는 본인만 보관해 주세요. 확인 전에는 선택한 소식 수신이 시작되지 않습니다. 요청하지 않으셨다면 이 메일을 무시해 주세요.\n\n문의: sys247365@gmail.com\n데이터머니 https://datamoney.kr';
+      const html='<!doctype html><html lang="ko"><body style="font-family:Arial,sans-serif;color:#182338;line-height:1.6">'+
+        '<p>안녕하세요. 데이터머니입니다.</p><p>나의 투자 성향 결과: <strong>'+type.name+' ('+type.short+')</strong><br>'+
+        '최근 불안감: '+anxiety+'<br>최근 매도 충동: '+reaction+'</p>'+
+        '<p>나의 결과 공유 이미지를 파일로 첨부했습니다.</p><p><img src="'+cardUrl+'" alt="'+type.name+' 투자 캐릭터 결과 카드" width="480" style="display:block;width:100%;max-width:480px;height:auto"></p>'+
+        '<p><a href="'+link+'">이메일을 확인하고 전체 결과 저장하기</a></p>'+
+        '<p>다음 검사 결과와도 비교할 수 있습니다. 이 링크는 본인만 보관해 주세요. 확인 전에는 선택한 소식 수신이 시작되지 않습니다. 요청하지 않으셨다면 이 메일을 무시해 주세요.</p>'+
+        '<p>문의: sys247365@gmail.com<br>데이터머니 <a href="https://datamoney.kr">datamoney.kr</a></p></body></html>';
       let sent=false;
       try {
-        const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{authorization:'Bearer '+this.env.RESEND_API_KEY,'content-type':'application/json'},body:JSON.stringify({from:'데이터머니 <hello@send.datamoney.kr>',to:[email],subject:'[데이터머니] 나의 투자 성향 결과를 확인해 주세요',text:body})});
+        const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{authorization:'Bearer '+this.env.RESEND_API_KEY,'content-type':'application/json'},body:JSON.stringify({from:'데이터머니 <hello@send.datamoney.kr>',to:[email],subject:'[데이터머니] 나의 투자 성향 결과를 확인해 주세요',text:body,html,attachments:[{filename:'datamoney-investor-result.png',content:cardContent,content_type:'image/png'}]})});
         sent=response.ok;
       } catch (_) {}
       if (!sent) { this.sql.exec('DELETE FROM email_results WHERE token_hash = ?',hash); return json({error:'Email delivery unavailable'},502); }

@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 import {DatabaseSync} from 'node:sqlite';
 import worker,{ArticleEngagement} from '../workers/article-engagement.js';
 const db=new DatabaseSync(':memory:');
@@ -8,8 +10,16 @@ const obj=new ArticleEngagement(state,env);
 env.ARTICLE_ENGAGEMENT={idFromName:()=>'',get:()=>obj};
 const base='https://datamoney.kr/api/article-engagement';
 const originalFetch=globalThis.fetch;
-let sent=[],sendOK=true;
+let sent=[],sendOK=true,assetMode='valid';
 globalThis.fetch=async (url,options)=>{
+  const match=String(url).match(/^https:\/\/datamoney-tools\.pages\.dev\/tools\/investor-type\/result-cards\/20261101\/([0-7])\.png$/);
+  if(match){
+    assert.equal(options.headers['User-Agent'],'DataMoney-Result-Email/1.0');
+    if(assetMode==='missing') return new Response('missing',{status:404});
+    if(assetMode==='invalid') return new Response('not a PNG',{status:200,headers:{'content-type':'image/png'}});
+    const image=await readFile(new URL(`../tools/investor-type/result-cards/20261101/${match[1]}.png`,import.meta.url));
+    return new Response(image,{status:200,headers:{'content-type':'image/png','content-length':String(image.length)}});
+  }
   assert.equal(url,'https://api.resend.com/emails');
   assert.equal(options.headers.authorization,'Bearer test-key');
   sent.push(JSON.parse(options.body));
@@ -27,6 +37,10 @@ assert.equal((await call('/_email/request',{body:input})).status,200);
 assert.equal(sent.length,1);
 assert.deepEqual(sent[0].to,['reader@example.com']);
 assert.ok(sent[0].text.includes('살펴보는 부엉이 (뇌지컬형)'));
+assert.equal(sent[0].attachments[0].filename,'datamoney-investor-result.png');
+assert.equal(sent[0].attachments[0].content_type,'image/png');
+assert.deepEqual(Buffer.from(sent[0].attachments[0].content,'base64'),await readFile(new URL('../tools/investor-type/result-cards/20261101/5.png',import.meta.url)));
+assert.ok(sent[0].html.includes('src="https://datamoney.kr/tools/investor-type/result-cards/20261101/5.png"'));
 const token=sent[0].text.match(/\/account\/result\/#([a-f0-9]{64})/)[1];
 const row=db.prepare('SELECT * FROM email_results').get();
 assert.notEqual(row.token_hash,token,'the emailed bearer token must not be stored in plaintext');
@@ -48,5 +62,28 @@ assert.equal((await call('/_email/open',{body:{token}})).status,404);
 sendOK=false;
 assert.equal((await call('/_email/request',{body:{...input,email:'other@example.com'}})).status,502);
 assert.equal(db.prepare('SELECT COUNT(*) AS n FROM email_results').get().n,0,'failed sends must not retain a pending result');
+sendOK=true;assetMode='missing';
+const beforeMissing=sent.length;
+assert.equal((await call('/_email/request',{body:{...input,email:'missing@example.com'},headers:{'cf-connecting-ip':'192.0.2.17'}})).status,502);
+assert.equal(sent.length,beforeMissing,'a missing image must never result in an incomplete email');
+assert.equal(db.prepare('SELECT COUNT(*) AS n FROM email_results').get().n,0);
+assetMode='invalid';
+assert.equal((await call('/_email/request',{body:{...input,email:'bad-image@example.com'},headers:{'cf-connecting-ip':'192.0.2.18'}})).status,502);
+assert.equal(sent.length,beforeMissing,'an invalid image must never result in an incomplete email');
+assetMode='valid';
+const hashes=new Set();
+for(let code=0;code<8;code++){
+  const bytes=await readFile(new URL(`../tools/investor-type/result-cards/20261101/${code}.png`,import.meta.url));
+  assert.equal(bytes.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
+  assert.equal(bytes.readUInt32BE(16),1080);assert.equal(bytes.readUInt32BE(20),1350);
+  hashes.add(createHash('sha256').update(bytes).digest('hex'));
+  const result=await call('/_email/request',{body:{...input,email:`card${code}@example.com`,typeCode:code,cardUrl:'https://attacker.example/file'},headers:{'cf-connecting-ip':`192.0.2.${20+code}`}});
+  assert.equal(result.status,200);
+  const expected=`https://datamoney.kr/tools/investor-type/result-cards/20261101/${code}.png`;
+  assert.deepEqual(Buffer.from(sent.at(-1).attachments[0].content,'base64'),bytes,'attachment must match the displayed card');
+  assert.ok(!('path' in sent.at(-1).attachments[0]),'attachment content cannot be a client-provided URL');
+  assert.ok(sent.at(-1).html.includes(`src="${expected}"`));
+}
+assert.equal(hashes.size,8,'all eight result cards must be distinct');
 globalThis.fetch=originalFetch;
 console.log('Result emails, separate confirmed subscriptions, withdrawal and deletion: passed');

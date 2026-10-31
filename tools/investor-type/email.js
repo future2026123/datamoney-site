@@ -45,7 +45,7 @@
         status.textContent=response.status===429?'요청이 많습니다. 잠시 후 다시 시도해 주세요.':'이메일을 보내지 못했습니다. 주소를 확인하고 잠시 후 다시 시도해 주세요.';
         return;
       }
-      status.textContent='결과 메일을 보냈어요. 받은 편지함에서 확인 링크를 열어 주세요. 메일이 없다면 스팸함도 확인해 주세요.';
+      status.textContent='결과 이미지와 확인 링크를 이메일로 보냈어요. 받은 편지함에서 확인해 주세요. 메일이 없다면 스팸함도 확인해 주세요.';
       form.reset();
     } catch (_) {status.textContent='이메일을 보내지 못했습니다. 잠시 후 다시 시도해 주세요.';}
     finally {button.disabled=false;}

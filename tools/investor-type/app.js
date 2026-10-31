@@ -23,7 +23,8 @@
     {name:'눈치 빠른 여우',short:'줍줍형',art:[1081,0,367,525],tag:'흐름 속에서 가능성을 먼저 보는 편',description:'변화가 생기면 나만의 감각으로 기회를 찾아보려는 모습이 보여요.',strength:'새로운 상황에서 선택지를 빠르게 발견할 수 있어요.',caution:'기회가 매력적으로 보여도 손실 가능성과 자금 계획을 확인해요.'},
     {name:'도전하는 사자',short:'야수형',art:[0,0,374,525],tag:'새로운 기회를 보면 마음이 움직이는 편',description:'시장 변화와 사람들의 이야기에 관심을 가지며 기회를 적극적으로 살펴봐요.',strength:'새로운 가능성을 열린 마음으로 탐색할 수 있어요.',caution:'주변 분위기가 뜨거울수록 감당 가능한 위험을 먼저 정해 보세요.'}
   ];
-  const answers={}; let step=0,result=null,finishing=false;
+  const answers={}; let step=0,result=null,resultCode=null,finishing=false;
+  const cardPath=code=>`/tools/investor-type/result-cards/20261101/${code}.png`;
   const artOutline = type => {
     if (type.clip) return type.clip;
     const [x,y,w,h]=type.art;
@@ -49,25 +50,6 @@
     if(answers.loss>=2)return '손실을 만회할 방법보다 돈의 목적과 감당 가능한 위험부터 다시 살펴보세요.';
     return '투자 목적과 생활비 여유를 정기적으로 확인할 날짜를 정해 보세요.';
   }
-  function drawCard(){
-    const c=$('canvas'),x=c.getContext('2d'); x.fillStyle='#f4f7fc';x.fillRect(0,0,1080,1350);
-    const family='"Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif';
-    x.fillStyle='#305cdb';x.fillRect(0,0,1080,24);x.font=`700 42px ${family}`;x.fillText('데이터머니',80,120);
-    x.fillStyle='#586b83';x.font=`400 34px ${family}`;x.fillText('나의 투자 캐릭터',80,235);
-    x.fillStyle='#14233c';x.font=`700 64px ${family}`;x.fillText(result.name,80,330,920);
-    x.fillStyle='#305cdb';x.font=`700 36px ${family}`;x.fillText(result.tag,80,405,920);
-    const sheet=$('character-sheet');
-    if(sheet.complete&&sheet.naturalWidth){
-      const [sx,sy,sw,sh]=result.art, scale=Math.min(600/sw,540/sh), dx=(1080-sw*scale)/2, dy=450;
-      x.save();x.beginPath();
-      artOutline(result).forEach(([px,py],i)=>{const mx=dx+(px-sx)*scale,my=dy+(py-sy)*scale;if(i)x.lineTo(mx,my);else x.moveTo(mx,my);});
-      x.closePath();x.clip();x.drawImage(sheet,sx,sy,sw,sh,dx,dy,sw*scale,sh*scale);x.restore();
-    }
-    x.fillStyle='#ccd9e9';x.fillRect(80,1080,920,3);x.fillStyle='#526782';x.font=`400 32px ${family}`;x.fillText('나의 투자 캐릭터 알아보기',80,1160);x.fillText('datamoney.kr/tools/investor-type/',80,1230);
-    $('card-preview').src=c.toDataURL('image/png');
-  }
-  $('character-sheet').addEventListener('load',()=>{if(result&&!$('result').hidden)drawCard();});
-  if(document.fonts)document.fonts.ready.then(()=>{if(result&&!$('result').hidden)drawCard();}).catch(()=>{});
   function finish(){
     finishing=true;$('quiz-status').textContent='결과를 준비하고 있어요.';let message='';
     const baseline=[answers.risk,answers.approach,answers.social];
@@ -77,20 +59,23 @@
       const current=Object.fromEntries(['loss','anxiety','horizon','reaction','buffer'].map(key=>[key,answers[key]]));
       fetch('/api/article-engagement/_survey-aggregate',{method:'POST',credentials:'omit',headers:{'content-type':'application/json'},body:JSON.stringify({baseline,answers:current})}).then(response=>{if(response.ok)try{localStorage.setItem(key,day);}catch(_){}}).catch(()=>{});
     }
-    result=types[4*baseline[0]+2*baseline[1]+baseline[2]];
+    resultCode=4*baseline[0]+2*baseline[1]+baseline[2];result=types[resultCode];
     $('character-image').setAttribute('viewBox',result.art.join(' '));$('character-image').setAttribute('aria-label',`${result.name} 캐릭터`);
     $('character-clip').setAttribute('d',artOutline(result).map(([x,y],i)=>`${i?'L':'M'}${x} ${y}`).join(' ')+' Z');
     $('result-title').textContent=result.name;$('tagline').textContent=`${result.short} · ${result.tag}`;$('description').textContent=result.description;$('strength').textContent=result.strength;$('caution').textContent=result.caution;$('tip').textContent=tip();
     $('anxiety-result').textContent=['거의 없음','가끔 신경 쓰임','자주 걱정됨','일상에 영향'][answers.anxiety];
     $('sell-result').textContent=['거의 없음','가끔 생각남','자주 생각남','당장 팔고 싶음'][answers.reaction];
-    $('notice').textContent=message;show('result');drawCard();$('result-title').focus();finishing=false;$('quiz-status').textContent='';
+    $('notice').textContent=message;show('result');$('card-preview').src=cardPath(resultCode);$('result-title').focus();finishing=false;$('quiz-status').textContent='';
     const tipCode=answers.horizon>=2?0:answers.buffer>=2?1:answers.anxiety>=2?2:answers.reaction>=2?3:answers.loss>=2?4:5;
-    if(typeof window.dmOnInvestorResult==='function') window.dmOnInvestorResult({typeCode:4*baseline[0]+2*baseline[1]+baseline[2],anxiety:answers.anxiety,reaction:answers.reaction,tipCode});
+    if(typeof window.dmOnInvestorResult==='function') window.dmOnInvestorResult({typeCode:resultCode,anxiety:answers.anxiety,reaction:answers.reaction,tipCode});
   }
-  $('save').addEventListener('click',()=>{const a=document.createElement('a');a.href=$('canvas').toDataURL('image/png');a.download='datamoney-investor-type.png';a.click();});
+  $('save').addEventListener('click',()=>{const a=document.createElement('a');a.href=cardPath(resultCode);a.download='datamoney-investor-type.png';a.click();});
   $('share').addEventListener('click',async()=>{
     const data={title:'나의 투자 캐릭터 테스트',text:`나는 ${result.name}! 당신은 어떤 투자자일까요?`,url:'https://datamoney.kr/tools/investor-type/'};
-    try{if(navigator.share){const blob=await new Promise(resolve=>$('canvas').toBlob(resolve,'image/png'));const file=blob&&new File([blob],'datamoney-result.png',{type:'image/png'});if(file&&navigator.canShare?.({files:[file]}))data.files=[file];await navigator.share(data);}else{await navigator.clipboard.writeText(`${data.text} ${data.url}`);$('notice').textContent='테스트 링크를 복사했어요. 친구에게 보내 보세요.';}}
+    try{if(navigator.share){
+      if(navigator.canShare){try{const response=await fetch(cardPath(resultCode),{cache:'force-cache'});if(response.ok){const file=new File([await response.blob()],'datamoney-result.png',{type:'image/png'});if(navigator.canShare({files:[file]}))data.files=[file];}}catch(_) {}}
+      await navigator.share(data);
+    }else{await navigator.clipboard.writeText(`${data.text} ${data.url}`);$('notice').textContent='테스트 링크를 복사했어요. 친구에게 보내 보세요.';}}
     catch(error){if(error.name!=='AbortError')$('notice').textContent=`주소를 복사해 공유해 주세요: ${data.url}`;}
   });
   $('again').addEventListener('click',()=>{step=0;show('intro');$('start').focus();});
