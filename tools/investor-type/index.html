@@ -8,8 +8,8 @@
 <link rel="canonical" href="https://datamoney.kr/tools/investor-type/"><link rel="icon" href="/favicon.ico?v=2">
 <meta property="og:type" content="website"><meta property="og:title" content="나는 어떤 투자자일까? | 데이터머니"><meta property="og:description" content="평소 투자 성향과 지금의 투자 심리, 여덟 캐릭터 중 나는 누구일까요?"><meta property="og:url" content="https://datamoney.kr/tools/investor-type/">
 <link rel="stylesheet" href="/blog/header.css?v=11c66c07">
-<link rel="stylesheet" href="style.css?v=20261031-clear">
-<script src="app.js?v=20261031-7" defer></script>
+<link rel="stylesheet" href="style.css?v=20261031-characters">
+<script src="app.js?v=20261031-8" defer></script>
 </head>
 <body>
 <div class="shell"><header><a class="brand" href="/">데이터<span>머니</span></a><a href="/tools/">다른 도구 보기</a></header>
@@ -17,14 +17,14 @@
   <section id="intro" class="screen hero">
     <div class="hero-copy"><p class="eyebrow"><span class="dot"></span> 데이터머니 투자 유형 테스트</p><h1>평소의 나와 지금의 나,<br><em>어떤 투자자일까?</em></h1><p class="lead">평소 투자 습관으로 나의 캐릭터를 만나고,<br>요즘 시장 앞에서 내 마음도 살펴보세요.</p>
       <button id="start" class="primary" type="button">내 투자 캐릭터 알아보기 <span aria-hidden="true">↗</span></button><p class="hint">8개의 질문 <span>·</span> 약 2분 소요 <span>·</span> 무료</p></div>
-    <div class="hero-art hero-animals"><img id="character-sheet" src="characters.png" alt="사자, 부엉이, 거북이, 여우, 다람쥐, 토끼, 늑대, 고양이 투자 캐릭터"><div class="art-badge">평소의 나 + 지금의 나<br><strong>8가지 투자 캐릭터</strong></div></div>
+    <div class="hero-art hero-animals"><img id="character-sheet" src="characters-labelled-20261031.png" alt="사자, 부엉이, 거북이, 여우, 다람쥐, 토끼, 늑대, 고양이 투자 캐릭터"></div>
   </section>
   <section id="quiz" class="screen panel" hidden aria-labelledby="question-title">
     <div class="progress-head"><span id="step"></span><button id="back" class="text-button" type="button">이전</button></div><p id="phase" class="eyebrow"></p><div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
     <h2 id="question-title" tabindex="-1"></h2><p id="question-hint" class="question-hint"></p><div id="choices" class="choices"></div><p id="quiz-status" role="status" aria-live="polite"></p>
   </section>
   <section id="result" class="screen" hidden aria-labelledby="result-title">
-    <div class="result-hero"><p class="eyebrow">평소 나의 투자 캐릭터</p><svg id="character-image" class="result-character" role="img"><image href="characters.png" width="1536" height="1024"/></svg><h2 id="result-title" tabindex="-1"></h2><p id="tagline" class="tagline"></p><p id="description"></p></div>
+    <div class="result-hero"><p class="eyebrow">평소 나의 투자 캐릭터</p><svg id="character-image" class="result-character" role="img"><image href="characters-labelled-20261031.png" width="1536" height="1024"/></svg><h2 id="result-title" tabindex="-1"></h2><p id="tagline" class="tagline"></p><p id="description"></p></div>
     <div class="mood-panel"><p class="eyebrow">지금 나의 투자 심리</p><h3>요즘 시장 앞에서의 나</h3><div class="mood-grid"><div><span>최근 불안감</span><strong id="anxiety-result"></strong></div><div><span>최근 매도 충동</span><strong id="sell-result"></strong></div></div><p>선택한 답변을 그대로 요약한 결과예요. 평소의 성향과 지금의 마음은 다를 수 있습니다.</p></div>
     <div class="result-details"><div><h3>나의 강점</h3><p id="strength"></p></div><div><h3>이럴 때 주의</h3><p id="caution"></p></div><div><h3>지금 나에게 필요한 한 가지</h3><p id="tip"></p></div></div>
     <div class="share-area"><p>친구는 어떤 투자자일까요?</p><img id="card-preview" alt="공유할 나의 투자 유형 결과 카드"><button id="share" class="primary" type="button">친구에게 결과 공유하기</button><button id="save" class="secondary" type="button">내 결과 이미지 저장</button><button id="again" class="text-button under" type="button">다시 해보기</button><p id="notice" class="hint" role="status" aria-live="polite"></p></div>
