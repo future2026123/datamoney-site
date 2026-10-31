@@ -39,7 +39,8 @@
 }
 @keyframes dm-investor-shine {
   0%, 4% { transform: translateX(-140%); }
-  30%, 100% { transform: translateX(140%); }
+  /* 1.5-second sweep within the existing 7-second loop. */
+  25.42857%, 100% { transform: translateX(140%); }
 }
 @media (hover: hover) {
   .dm-shared-sidebar .investor-test-banner:hover { box-shadow: 0 15px 40px rgba(15,23,42,.14); }
