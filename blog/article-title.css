@@ -64,6 +64,21 @@
   word-break: keep-all;
 }
 
+/* Justify article prose and allow normal Korean line breaks, including inline text. */
+:is(.article, article:has(> .dm-article-heading), main.dm-article-page,
+    .dm-article-page .content-grid main, .dm-article-page .hero-copy)
+    :is(p, li):not(.section-kicker, .source, .source-citation, .eyebrow, .subtitle, .source-scroll-hint,
+      :where(.dm-article-heading *, .dm-comments *, .dm-author-note *, .dm-references *, figure *, table *, nav *, aside *)) {
+  text-align: justify;
+  word-break: normal;
+}
+:is(.article, article:has(> .dm-article-heading), main.dm-article-page,
+    .dm-article-page .content-grid main, .dm-article-page .hero-copy)
+    :is(p, li):not(.section-kicker, .source, .source-citation, .eyebrow, .subtitle, .source-scroll-hint,
+      :where(.dm-article-heading *, .dm-comments *, .dm-author-note *, .dm-references *, figure *, table *, nav *, aside *)) * {
+  word-break: inherit;
+}
+
 :is(.article, article:has(> .dm-article-heading), main.dm-article-page,
     .dm-article-page .content-grid main, article.dm-post)
     h2:not(.dm-original-sidebar h2, .dm-comments h2) {

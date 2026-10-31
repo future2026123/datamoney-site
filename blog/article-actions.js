@@ -155,7 +155,9 @@
         return;
       }
       const title = (heading || fallbackTitle).querySelector?.('h1')?.innerText?.trim() || fallbackTitle?.innerText?.trim();
-      const parts = readable.filter(element => !element.parentElement.closest('li, blockquote, td, th'))
+      // Chart captions and reference lists are visible to readers but need not be narrated.
+      const parts = readable.filter(element => !element.closest('figcaption, .dm-references') &&
+        !element.parentElement.closest('li, blockquote, td, th'))
         .map(element => element.innerText.trim()).filter(Boolean);
       if (title) parts.unshift(title);
       const text = parts.join('. ');
