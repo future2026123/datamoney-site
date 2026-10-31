@@ -10,6 +10,7 @@
   document.body.appendChild(button);
 
   const footerLink = document.querySelector('.dm-footer-top');
+  const sidebar = document.querySelector('.dm-shared-sidebar');
   const important = 'a, button, input, textarea, select, summary, img, video, iframe, canvas, svg, p, li, h1, h2, h3, h4, h5, h6, td, th, blockquote, label, figcaption, span, strong, em, [contenteditable]';
   let scheduled = false;
   let shown = false;
@@ -46,6 +47,15 @@
   };
   const update = () => {
     scheduled = false;
+    const sidebarRect = sidebar?.getBoundingClientRect();
+    if (innerWidth > 900 && sidebarRect?.width) {
+      const left = `${Math.max(2, sidebarRect.left - button.offsetWidth - 2)}px`;
+      if (button.style.left !== left) button.style.left = left;
+      if (button.style.right !== 'auto') button.style.right = 'auto';
+    } else {
+      if (button.style.left) button.style.left = '';
+      if (button.style.right) button.style.right = '';
+    }
     const active = document.activeElement;
     const editing = active && (active.matches('input, textarea, select') || active.isContentEditable);
     const visible = scrollY > 480 && !editing && !footerLinkIsVisible() && !coversContent();

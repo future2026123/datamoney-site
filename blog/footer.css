@@ -62,20 +62,18 @@ body .dm-site-footer .dm-footer-links a:focus-visible { outline: 2px solid #2563
 .dm-back-to-top-arrow { font-size: 18px; font-weight: 700; line-height: 1; }
 .dm-back-to-top-label { font-size: 10px; font-weight: 700; line-height: 1.2; word-break: keep-all; }
 
-@media (max-width: 1319px) {
+@media (max-width: 900px) {
   .blog-layout .latest-posts .post-card { padding-right: 20px; }
 }
 
-@media (min-width: 1320px) {
+@media (min-width: 901px) {
+  .blog-layout .latest-posts .post-card { padding-right: 28px; }
   .dm-back-to-top {
-    right: max(12px, calc((100vw - 1120px) / 2 - 90px));
-    flex-direction: row;
-    gap: 5px;
-    width: 78px;
-    min-height: 44px;
-    border-radius: 22px;
+    width: 44px;
+    min-height: 60px;
+    border-radius: 18px;
   }
-  .dm-back-to-top-label { font-size: 12px; white-space: nowrap; }
+  .dm-back-to-top-label { font-size: 11px; white-space: nowrap; }
 }
 
 @media print { .dm-back-to-top, .dm-footer-top { display: none !important; } }
