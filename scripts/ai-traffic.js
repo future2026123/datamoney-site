@@ -10,7 +10,7 @@
     })
     .then(data => {
       const updated = Date.parse(data.updatedAt);
-      if (!Number.isSafeInteger(data.sessions) || data.sessions < 0 || data.periodDays !== 28 ||
+      if (!Number.isSafeInteger(data.sessions) || data.sessions < 100 || data.periodDays !== 28 ||
           !Number.isFinite(updated) || updated > Date.now() + 3600000 || Date.now() - updated > 7 * 86400000) return;
       number.textContent = data.sessions.toLocaleString('ko-KR');
       card.hidden = false;

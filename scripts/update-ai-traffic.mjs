@@ -102,7 +102,9 @@ async function main() {
       const result = await collect({credentials:JSON.parse(raw),propertyId});
       const temporary = `${OUTPUT}.tmp`;
       await mkdir(dirname(OUTPUT),{recursive:true});
-      await writeFile(temporary,JSON.stringify(result)+'\n',{encoding:'utf8'});
+      // Keep the card and its count private until the 28-day total reaches 100.
+      const publicResult = result.sessions >= 100 ? result : {available:false};
+      await writeFile(temporary,JSON.stringify(publicResult)+'\n',{encoding:'utf8'});
       await rename(temporary,OUTPUT);
       updated = true;
       console.log('GA4 AI-assistant referral totals updated.');
