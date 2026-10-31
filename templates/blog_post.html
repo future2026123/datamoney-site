@@ -7,13 +7,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{POST_TITLE}} | 데이터머니</title>
 <meta name="description" content="{{POST_EXCERPT}}">
+<link rel="canonical" href="{{POST_URL}}">
+<meta property="og:type" content="article">
+<meta property="og:title" content="{{POST_TITLE}}">
+<meta property="og:description" content="{{POST_EXCERPT}}">
+<meta property="og:url" content="{{POST_URL}}">
+<meta property="og:image" content="{{POST_IMAGE}}">
+<meta name="twitter:card" content="summary_large_image">
 <style>
-  body { font-family: 'Noto Sans KR', sans-serif; color: #1e293b; line-height: 1.8; margin: 0; }
-  .dm-post { box-sizing: border-box; width: min(1120px, calc(100% - 28px)); margin: 0 auto; padding: 32px 16px; }
-  h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
-  h2 { font-size: 22px; font-weight: 700; margin-top: 40px; border-left: 4px solid #2563EB; padding-left: 12px; }
+  body { font-family: 'Pretendard', 'Malgun Gothic', sans-serif; color: #172033; background: #f2f5fa; margin: 0; word-break: keep-all; overflow-wrap: anywhere; }
+  .dm-post { box-sizing: border-box; min-width: 0; padding: 34px 30px; background: #fff; border: 1px solid #e3e8ef; border-radius: 20px; box-shadow: 0 12px 40px rgba(15,23,42,.05); }
+  .dm-post h2 { margin: 2.4em 0 .8em; padding-top: .3em; }
   h3 { font-size: 18px; font-weight: 600; margin-top: 28px; }
-  p  { margin: 16px 0; }
+  .dm-post p { margin: 0 0 1.3em; }
+  .dm-post table { display: block; max-width: 100%; overflow-x: auto; }
+  .dm-post a { color: #2859ae; overflow-wrap: anywhere; }
   table { width: 100%; border-collapse: collapse; margin: 24px 0; }
   th, td { border: 1px solid #e2e8f0; padding: 10px 14px; text-align: left; }
   th { background: #0F172A; color: #F8FAFC; }
@@ -60,6 +68,7 @@
 </header>
 <div class="dm-sidebar-shell">
 <article class="dm-post">
+  <div class="dm-article-heading"><h1>{{POST_TITLE}}</h1><div class="dm-article-byline"><span>데이터머니</span><span>{{POST_DATE}}</span><span>읽는 시간 {{POST_READ_MINUTES}}분</span></div></div>
   {{POST_CONTENT}}
 </article>
 <!-- dm-shared-sidebar:start -->
