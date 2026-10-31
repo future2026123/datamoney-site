@@ -268,6 +268,8 @@
           <label for="dm-comment-body">댓글 남기기</label>
           <textarea id="dm-comment-body" name="body" maxlength="600" placeholder="의견을 남겨 주세요." required></textarea>
           <p class="dm-comment-policy">링크나 연락처가 포함된 댓글은 검토 후 공개될 수 있습니다.</p>
+          <label class="dm-comment-private"><input id="dm-comment-private" type="checkbox" disabled> 운영자만 보기 (비밀댓글)</label>
+          <p class="dm-comment-policy">비밀댓글은 운영자만 볼 수 있으며 등록 후 댓글 목록에 표시되지 않습니다.</p>
           <div class="dm-comment-input-row">
             <div class="dm-comment-name-field"><label for="dm-comment-name">닉네임</label><input id="dm-comment-name" name="nickname" maxlength="20" autocomplete="nickname" required></div>
             <button class="dm-comment-submit" type="submit">댓글 등록</button>
@@ -294,6 +296,7 @@
     const formSlot = section.querySelector('.dm-comment-form-slot');
     const name = section.querySelector('#dm-comment-name');
     const body = section.querySelector('#dm-comment-body');
+    const privateComment = section.querySelector('#dm-comment-private');
     const notice = section.querySelector('.dm-comment-notice');
     const submit = section.querySelector('.dm-comment-submit');
     const replyContext = section.querySelector('.dm-comment-reply-context');
@@ -313,6 +316,7 @@
     fetch('/api/article-engagement/_config', {cache: 'no-store', credentials: 'same-origin'})
       .then(response => { if (!response.ok) throw new Error('Verification unavailable'); return response.json(); })
       .then(config => {
+        privateComment.disabled = config.privateComments !== true;
         if (!config.turnstileSiteKey) { submit.disabled = false; return; }
         verificationRequired = true;
         verification.hidden = false;
@@ -463,13 +467,13 @@
       try {
         const result = await request('/comments', {
           method: 'POST', headers: {'content-type': 'application/json'},
-          body: JSON.stringify({nickname: name.value, body: body.value, parentId, turnstileToken: verificationToken})
+          body: JSON.stringify({nickname: name.value, body: body.value, parentId, isPrivate: privateComment.checked, turnstileToken: verificationToken})
         });
         updateCounts(result);
         body.value = '';
         resetReply();
         await loadComments(false);
-        notice.textContent = result.status === 'pending' ? '댓글이 접수됐어요. 검토 후 공개됩니다.' : '댓글을 등록했어요.';
+        notice.textContent = result.status === 'private' ? '비밀댓글이 접수됐어요. 운영자만 확인할 수 있습니다.' : result.status === 'pending' ? '댓글이 접수됐어요. 검토 후 공개됩니다.' : '댓글을 등록했어요.';
       } catch (error) {
         notice.textContent = error.status === 429 ? '잠시 후 다시 댓글을 등록해 주세요.' : error.status === 403 && verificationRequired ? '로봇 확인을 다시 진행해 주세요.' : '댓글을 등록하지 못했어요. 다시 시도해 주세요.';
       } finally {

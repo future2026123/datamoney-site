@@ -65,7 +65,7 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === CONFIG_PATH && request.method === 'GET') {
       if (!!env.TURNSTILE_SITEKEY !== !!env.TURNSTILE_SECRET) return json({error: 'Verification unavailable'}, 503);
-      return json({turnstileSiteKey: env.TURNSTILE_SITEKEY || null});
+      return json({turnstileSiteKey: env.TURNSTILE_SITEKEY || null, privateComments: true});
     }
     const adminRoute = url.pathname.match(ADMIN_ROUTE);
     const route = url.pathname.match(ROUTE);
@@ -196,6 +196,7 @@ export class ArticleEngagement {
       const nickname = typeof input?.nickname === 'string' ? input.nickname.trim() : '';
       const body = typeof input?.body === 'string' ? input.body.trim() : '';
       const parentId = input?.parentId == null ? null : input.parentId;
+      if (input?.isPrivate !== undefined && typeof input.isPrivate !== 'boolean') return json({error: 'Invalid privacy setting'}, 400);
       if (!nickname || [...nickname].length > 20 || /[\u0000-\u001f\u007f]/.test(nickname) || !body || [...body].length > 600 || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(body)) {
         return json({error: 'Invalid comment'}, 400);
       }
@@ -211,8 +212,8 @@ export class ArticleEngagement {
       this.sql.exec('DELETE FROM comment_rate WHERE created_at <= ?', now - 60000);
       const requests = this.sql.exec('SELECT COUNT(*) AS n FROM comment_rate WHERE identity = ?', identity).one().n;
       if (requests >= 6) return json({error: 'Please wait before commenting again'}, 429);
-      const duplicate = body.length >= 30 && this.sql.exec('SELECT 1 FROM comments WHERE body = ? AND created_at > ? AND deleted_at IS NULL LIMIT 1', body, now - 86400000).toArray().length > 0;
-      const status = needsReview(nickname, body) || duplicate ? 'pending' : 'published';
+      const duplicate = body.length >= 30 && this.sql.exec("SELECT 1 FROM comments WHERE body = ? AND status != 'private' AND created_at > ? AND deleted_at IS NULL LIMIT 1", body, now - 86400000).toArray().length > 0;
+      const status = input.isPrivate === true ? 'private' : needsReview(nickname, body) || duplicate ? 'pending' : 'published';
       this.sql.exec('INSERT INTO comment_rate (identity, created_at) VALUES (?, ?)', identity, now);
       this.sql.exec('INSERT INTO comments (article, visitor, nickname, body, created_at, parent_id, status) VALUES (?, ?, ?, ?, ?, ?, ?)', article, visitor, nickname, body, now, parentId, status);
       await this.state.storage.setAlarm(now + 61000);
@@ -266,7 +267,7 @@ export class ArticleEngagement {
     const [, rawId, action] = match;
     if (request.method === 'GET' && !rawId) {
       const status = url.searchParams.get('status') || 'pending';
-      if (!['pending', 'published'].includes(status)) return json({error: 'Invalid status'}, 400);
+      if (!['pending', 'published', 'private'].includes(status)) return json({error: 'Invalid status'}, 400);
       const rawBefore = url.searchParams.get('before');
       if (rawBefore && !/^[1-9]\d*$/.test(rawBefore)) return json({error: 'Invalid cursor'}, 400);
       const before = rawBefore ? Number(rawBefore) : Number.MAX_SAFE_INTEGER;
@@ -280,6 +281,7 @@ export class ArticleEngagement {
     const comment = this.sql.exec('SELECT article, parent_id, deleted_at, status FROM comments WHERE id = ?', id).toArray()[0];
     if (!comment || comment.deleted_at !== null) return json({error: 'Not found'}, 404);
     if (request.method === 'POST' && action === 'approve') {
+      if (comment.status === 'private') return json({error: 'Private comments cannot be published'}, 403);
       this.sql.exec("UPDATE comments SET status = 'published' WHERE id = ?", id);
       return json({ok: true});
     }

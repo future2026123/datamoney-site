@@ -40,6 +40,11 @@
     article.href = `/blog/${encodeURIComponent(comment.article)}/#dm-comments`;
     article.textContent = '해당 글 보기';
     header.append(name, date, article);
+    if (comment.status === 'private') {
+      const badge = document.createElement('span');
+      badge.textContent = '비밀댓글';
+      header.append(badge);
+    }
     if (comment.parent_id) {
       const reply = document.createElement('span');
       reply.textContent = '답글';
@@ -78,7 +83,7 @@
   };
   const showEmpty = () => {
     empty.hidden = list.children.length > 0;
-    empty.textContent = currentStatus === 'pending' ? '검토할 댓글이 없습니다.' : '공개된 댓글이 없습니다.';
+    empty.textContent = currentStatus === 'pending' ? '검토할 댓글이 없습니다.' : currentStatus === 'private' ? '비밀댓글이 없습니다.' : '공개된 댓글이 없습니다.';
   };
   const load = async append => {
     more.disabled = true;

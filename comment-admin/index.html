@@ -48,7 +48,7 @@
     <header><a href="/blog/">데이터<span>머니</span></a><a class="home" href="/blog/">블로그로 돌아가기</a></header>
     <main>
       <h1>댓글 관리</h1>
-      <p class="intro">검토가 필요한 댓글을 확인하고 승인하거나 삭제할 수 있습니다.</p>
+      <p class="intro">검토가 필요한 댓글과 운영자만 볼 수 있는 비밀댓글을 확인하고 관리할 수 있습니다.</p>
       <form id="admin-login">
         <div class="key-field"><label for="admin-key">관리자 접속키</label><input id="admin-key" type="password" autocomplete="off" required></div>
         <button class="primary" type="submit">열기</button>
@@ -58,6 +58,7 @@
         <div class="tabs" role="group" aria-label="댓글 상태">
           <button type="button" data-status="pending" aria-pressed="true">검토 대기</button>
           <button type="button" data-status="published" aria-pressed="false">공개 댓글</button>
+          <button type="button" data-status="private" aria-pressed="false">비밀댓글</button>
         </div>
         <p class="status" id="admin-empty" hidden></p>
         <ul class="comments" id="admin-comments"></ul>
@@ -65,6 +66,6 @@
       </section>
     </main>
   </div>
-  <script src="/comment-admin/admin.js?v=20261030-1" defer></script>
+  <script src="/comment-admin/admin.js?v=20261031-private" defer></script>
 </body>
 </html>
