@@ -68,9 +68,21 @@
       </button>
     </div>
     <div class="dm-actions-group">
-      <button class="dm-action" type="button" data-action="speech" aria-label="글 음성으로 듣기" aria-pressed="false" title="음성으로 듣기">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 9h3l4-3.5v13L7 15H4zM14.2 9.3a4 4 0 0 1 0 5.4M16.7 6.8a7.4 7.4 0 0 1 0 10.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
+      <div class="dm-speech-wrap">
+        <button class="dm-action" type="button" data-action="speech" aria-label="글 음성으로 듣기" aria-haspopup="dialog" aria-expanded="false" aria-pressed="false" title="음성으로 듣기">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 9h3l4-3.5v13L7 15H4zM14.2 9.3a4 4 0 0 1 0 5.4M16.7 6.8a7.4 7.4 0 0 1 0 10.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="dm-speech-menu" role="dialog" aria-label="음성 재생 설정" hidden>
+          <div class="dm-speech-heading"><strong>음성 재생 설정</strong><button type="button" data-speech-close aria-label="음성 설정 닫기">×</button></div>
+          <fieldset class="dm-speech-speeds"><legend>재생 속도</legend>
+            <label><input type="radio" name="dm-speech-speed" value="0.85"> 느림</label>
+            <label><input type="radio" name="dm-speech-speed" value="1" checked> 보통</label>
+            <label><input type="radio" name="dm-speech-speed" value="1.2"> 빠름</label>
+          </fieldset>
+          <button type="button" class="dm-speech-play" data-speech-play disabled>음성 재생</button>
+          <p class="dm-speech-feedback" role="status" aria-live="polite"></p>
+        </div>
+      </div>
       <div class="dm-action-wrap">
         <button class="dm-action" type="button" data-action="font" aria-label="글자 크기" aria-haspopup="true" aria-expanded="false" title="글자 크기"><span class="dm-font-icon" aria-hidden="true">가<strong>가</strong></span></button>
         <div class="dm-font-menu" hidden>
@@ -140,11 +152,13 @@
   });
 
   const speechButton = button('speech');
-  const canSpeak = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window && content;
-  if (!canSpeak) {
-    speechButton.disabled = true;
-    speechButton.title = '이 브라우저는 음성 읽기를 지원하지 않습니다';
-  } else {
+  const attachDeviceSpeech = () => {
+    if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window) || !content) {
+      speechButton.disabled = true;
+      speechButton.title = '이 글의 AI 음성은 아직 준비 중입니다';
+      return;
+    }
+    speechButton.title = 'AI 음성 준비 중 · 기기 음성으로 듣기';
     let speaking = false;
     speechButton.addEventListener('click', () => {
       if (speaking) {
@@ -155,7 +169,6 @@
         return;
       }
       const title = (heading || fallbackTitle).querySelector?.('h1')?.innerText?.trim() || fallbackTitle?.innerText?.trim();
-      // Chart captions and reference lists are visible to readers but need not be narrated.
       const parts = readable.filter(element => !element.closest('figcaption, .dm-references') &&
         !element.parentElement.closest('li, blockquote, td, th'))
         .map(element => element.innerText.trim()).filter(Boolean);
@@ -180,9 +193,15 @@
       speaking = true;
       speechButton.setAttribute('aria-pressed', 'true');
       speechButton.setAttribute('aria-label', '음성 듣기 중지');
+      announce('AI 음성을 준비 중이라 현재는 기기 음성으로 재생해요.');
       speakNext();
     });
     window.addEventListener('pagehide', () => { if (speaking) window.speechSynthesis.cancel(); });
+  };
+  if (typeof window.initDataMoneyArticleSpeech === 'function') {
+    window.initDataMoneyArticleSpeech({toolbar, speechButton, onUnavailable: attachDeviceSpeech});
+  } else {
+    attachDeviceSpeech();
   }
 
   button('share').addEventListener('click', async () => {

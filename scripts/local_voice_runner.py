@@ -1,0 +1,188 @@
+"""Synchronize generated article speech while this Windows PC is idle.
+
+The checkout is dedicated to this service. The runner never resets a dirty
+checkout, never publishes audio that failed verification, and preserves partial
+generation so it can continue after an interruption.
+"""
+
+import argparse
+import hashlib
+import json
+import os
+import re
+import subprocess
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+from build_speech_manifests import build_manifest
+from generate_local_speech import grouped_text, idle_seconds
+from local_speech_storage import BUCKET, client
+
+ROOT = Path(__file__).resolve().parents[1]
+TOOL_ROOT = Path(r"D:\Tools\DataMoney-TTS")
+CHECKOUT = TOOL_ROOT / "published-site-local-voice"
+STATE = TOOL_ROOT / "local-voice-cache" / "runner-state.json"
+LOG = TOOL_ROOT / "local-voice-cache" / "runner.log"
+PYTHON = TOOL_ROOT / "venv" / "Scripts" / "python.exe"
+GENERATOR = ROOT / "scripts" / "generate_local_speech.py"
+EXPECTED_REMOTE = "https://github.com/future2026123/datamoney-site.git"
+LOADED_BUILDER = hashlib.sha256((ROOT / "scripts" / "build_speech_manifests.py").read_bytes()).digest()
+
+
+def log(message):
+    print(datetime.now(timezone.utc).isoformat(timespec="seconds"), message, flush=True)
+
+
+def git(*args):
+    return subprocess.check_output(["git", "-C", str(CHECKOUT), *args], text=True, encoding="utf-8").strip()
+
+
+def sync_checkout():
+    if not (CHECKOUT / ".git").is_dir():
+        raise RuntimeError("The dedicated published-site checkout is missing")
+    if git("remote", "get-url", "origin").rstrip("/") != EXPECTED_REMOTE:
+        raise RuntimeError("The dedicated checkout has an unexpected remote")
+    if git("status", "--porcelain", "--untracked-files=normal"):
+        raise RuntimeError("The dedicated checkout contains changes; refusing to update it")
+    git("fetch", "--quiet", "origin", "master")
+    git("merge", "--ff-only", "origin/master")
+    deployed_builder = CHECKOUT / "scripts" / "build_speech_manifests.py"
+    if not deployed_builder.exists() or hashlib.sha256(deployed_builder.read_bytes()).digest() != LOADED_BUILDER:
+        raise RuntimeError("The speech manifest builder changed; retry on the next run")
+    return git("rev-parse", "HEAD")
+
+
+def load_state():
+    try:
+        state = json.loads(STATE.read_text(encoding="utf-8"))
+        return state if isinstance(state, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def save_state(state):
+    STATE.parent.mkdir(parents=True, exist_ok=True)
+    temp = STATE.with_suffix(".tmp")
+    temp.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    temp.replace(STATE)
+
+
+def is_ready(storage, slug, manifest):
+    from botocore.exceptions import ClientError
+
+    try:
+        body = storage.get_object(Bucket=BUCKET, Key=f"audio/manifests/{slug}/{manifest['content_id']}.json")["Body"]
+        try:
+            current = json.loads(body.read().decode("utf-8"))
+        finally:
+            body.close()
+    except ClientError as exc:
+        if exc.response.get("ResponseMetadata", {}).get("HTTPStatusCode") == 404:
+            return False
+        raise
+    return (current.get("version") == 1 and current.get("voice") == manifest["voice"] and
+            current.get("content_id") == manifest["content_id"] and
+            current.get("audio") == f"audio/articles/{slug}/{manifest['content_id']}.mp3")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--idle-only", action="store_true")
+    parser.add_argument("--inspect", action="store_true", help="Synchronize and report readiness without synthesis")
+    parser.add_argument("--retry-review", action="store_true", help="Retry items held for speech review")
+    args = parser.parse_args()
+    if os.name != "nt":
+        raise SystemExit("This runner requires the configured Windows PC")
+    if args.idle_only and idle_seconds() < 180:
+        log("PC is active; generation will retry during idle time")
+        return
+
+    import msvcrt
+    STATE.parent.mkdir(parents=True, exist_ok=True)
+    lock = (STATE.parent / "runner.lock").open("a+b")
+    lock.seek(0)
+    if lock.read(1) == b"":
+        lock.write(b"0")
+        lock.flush()
+    lock.seek(0)
+    try:
+        msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
+    except OSError:
+        log("Another voice generation pass is already running")
+        return
+    try:
+        revision = sync_checkout()
+        storage = client()
+        state = load_state()
+        failures = state.get("review_required", {})
+        if not isinstance(failures, dict):
+            failures = {}
+        entries = []
+        for path in sorted((CHECKOUT / "blog").glob("*/index.html")):
+            slug = path.parent.name
+            if not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,95}", slug):
+                continue
+            manifest = build_manifest(path.read_text(encoding="utf-8"))
+            entries.append((len(grouped_text(manifest["chunks"])), slug, manifest))
+        ready, pending = [], []
+        for _, slug, manifest in sorted(entries):
+            (ready if is_ready(storage, slug, manifest) else pending).append((slug, manifest))
+        state.update({"checked_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                      "source_commit": revision, "total": len(entries), "ready": len(ready),
+                      "pending": [slug for slug, _ in pending], "review_required": failures})
+        save_state(state)
+        log(f"Published checkout: {revision[:12]}; ready {len(ready)}/{len(entries)}; pending {len(pending)}")
+        if args.inspect:
+            return
+        for slug, manifest in pending:
+            if args.idle_only and idle_seconds() < 180:
+                log("PC is active; remaining articles will retry later")
+                break
+            if failures.get(slug) == manifest["content_id"] and not args.retry_review:
+                log(f"Awaiting speech review: {slug}")
+                continue
+            args_for_child = [str(PYTHON), "-B", str(GENERATOR), slug, "--source-root", str(CHECKOUT), "--upload"]
+            if args.idle_only:
+                args_for_child.append("--yield-when-active")
+            log(f"Generating article: {slug}")
+            flags = getattr(subprocess, "CREATE_NO_WINDOW", 0) | getattr(subprocess, "BELOW_NORMAL_PRIORITY_CLASS", 0)
+            with LOG.open("a", encoding="utf-8", buffering=1) as output:
+                result = subprocess.run(args_for_child, cwd=str(ROOT), stdout=output, stderr=subprocess.STDOUT,
+                                        text=True, creationflags=flags, timeout=5400)
+            if result.returncode == 0:
+                failures.pop(slug, None)
+                state["ready"] += 1
+                state["pending"] = [value for value in state["pending"] if value != slug]
+                log(f"Audio uploaded: {slug}")
+            elif result.returncode == 10:
+                log("GPU unavailable or desktop activity resumed; will retry later")
+                break
+            elif result.returncode in (20, 30):
+                failures[slug] = manifest["content_id"]
+                log(f"Audio held for review or storage limit: {slug}")
+                if result.returncode == 30:
+                    break
+            else:
+                failures[slug] = manifest["content_id"]
+                log(f"Audio generation failed ({result.returncode}): {slug}")
+            state["review_required"] = failures
+            save_state(state)
+    finally:
+        lock.seek(0)
+        msvcrt.locking(lock.fileno(), msvcrt.LK_UNLCK, 1)
+        lock.close()
+
+
+if __name__ == "__main__":
+    LOG.parent.mkdir(parents=True, exist_ok=True)
+    with LOG.open("a", encoding="utf-8", buffering=1) as output:
+        original_out, original_err = sys.stdout, sys.stderr
+        try:
+            sys.stdout = sys.stderr = output
+            main()
+        except Exception as error:
+            log(f"Runner error: {type(error).__name__}: {error}")
+            raise
+        finally:
+            sys.stdout, sys.stderr = original_out, original_err

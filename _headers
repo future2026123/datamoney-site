@@ -22,3 +22,7 @@
   Cache-Control: no-store
   Referrer-Policy: no-referrer
   X-Robots-Tag: noindex, nofollow
+
+/blog/speech-manifests/*
+  Cache-Control: no-cache
+  X-Robots-Tag: noindex, nofollow

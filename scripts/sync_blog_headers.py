@@ -11,10 +11,13 @@ STYLESHEET = f'<link rel="stylesheet" href="/blog/header.css?v={CSS_VERSION}">'
 STYLESHEET_TAG = re.compile(r'''<link\s+rel=["']stylesheet["']\s+href=["']/blog/header\.css(?:\?[^"']*)?["']\s*/?>''', re.IGNORECASE)
 ARTICLE_ACTIONS_CSS_VERSION = hashlib.sha256((ROOT / "blog" / "article-actions.css").read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:8]
 ARTICLE_ACTIONS_JS_VERSION = hashlib.sha256((ROOT / "blog" / "article-actions.js").read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:8]
+ARTICLE_SPEECH_JS_VERSION = hashlib.sha256((ROOT / "blog" / "article-speech.js").read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:8]
 ARTICLE_ACTIONS_CSS = f'<link rel="stylesheet" href="/blog/article-actions.css?v={ARTICLE_ACTIONS_CSS_VERSION}">'
 ARTICLE_ACTIONS_JS = f'<script src="/blog/article-actions.js?v={ARTICLE_ACTIONS_JS_VERSION}" defer></script>'
+ARTICLE_SPEECH_JS = f'<script src="/blog/article-speech.js?v={ARTICLE_SPEECH_JS_VERSION}" defer></script>'
 ARTICLE_ACTIONS_CSS_TAG = re.compile(r'''<link\s+rel=["']stylesheet["']\s+href=["']/blog/article-actions\.css(?:\?[^"']*)?["']\s*/?>''', re.IGNORECASE)
 ARTICLE_ACTIONS_JS_TAG = re.compile(r'''<script\s+src=["']/blog/article-actions\.js(?:\?[^"']*)?["']\s+defer\s*></script\s*>''', re.IGNORECASE)
+ARTICLE_SPEECH_JS_TAG = re.compile(r'''<script\s+src=["']/blog/article-speech\.js(?:\?[^"']*)?["']\s+defer\s*></script\s*>''', re.IGNORECASE)
 ARTICLE_TITLE_CSS_VERSION = hashlib.sha256((ROOT / "blog" / "article-title.css").read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:8]
 ARTICLE_TITLE_CSS = f'<link rel="stylesheet" href="/blog/article-title.css?v={ARTICLE_TITLE_CSS_VERSION}">'
 ARTICLE_TITLE_CSS_TAG = re.compile(r'''<link\s+rel=["']stylesheet["']\s+href=["']/blog/article-title\.css(?:\?[^"']*)?["']\s*/?>''', re.IGNORECASE)
@@ -72,6 +75,22 @@ def synchronize(path: Path, fragment: str) -> bool:
         else:
             head_end = HEAD_END.search(updated)
             updated = updated[:head_end.start()] + ARTICLE_ACTIONS_JS + "\n" + updated[head_end.start():]
+        if ARTICLE_SPEECH_JS_TAG.search(updated):
+            updated = ARTICLE_SPEECH_JS_TAG.sub(ARTICLE_SPEECH_JS, updated)
+        else:
+            actions = ARTICLE_ACTIONS_JS_TAG.search(updated)
+            updated = updated[:actions.start()] + ARTICLE_SPEECH_JS + "\n" + updated[actions.start():]
+        speech = ARTICLE_SPEECH_JS_TAG.search(updated)
+        actions = ARTICLE_ACTIONS_JS_TAG.search(updated)
+        if speech.start() > actions.start():
+            end = speech.end()
+            if updated[end:end + 2] == "\r\n":
+                end += 2
+            elif updated[end:end + 1] == "\n":
+                end += 1
+            updated = updated[:speech.start()] + updated[end:]
+            actions = ARTICLE_ACTIONS_JS_TAG.search(updated)
+            updated = updated[:actions.start()] + ARTICLE_SPEECH_JS + "\n" + updated[actions.start():]
     if updated == original:
         return False
     path.write_text(updated, encoding="utf-8")
