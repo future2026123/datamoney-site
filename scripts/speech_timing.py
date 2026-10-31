@@ -26,9 +26,12 @@ def sentences(source):
     return result
 
 
-def timing_for(source, words, content_id, *, pieces=None):
+def timing_for(source, words, content_id, *, pieces=None, match_pieces=None):
     pieces = sentences(source) if pieces is None else pieces
-    expected_parts = [normalized(text) for text in pieces]
+    match_pieces = pieces if match_pieces is None else match_pieces
+    if len(match_pieces) != len(pieces):
+        raise ValueError("Spoken and displayed sentence counts differ")
+    expected_parts = [normalized(text) for text in match_pieces]
     expected = "".join(expected_parts)
     recognized = []
     word_for_char = []

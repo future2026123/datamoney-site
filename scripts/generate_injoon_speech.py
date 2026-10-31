@@ -17,6 +17,7 @@ from pathlib import Path
 
 from build_speech_manifests import article_parts, build_manifest
 from speech_timing import normalized, timing_for, timing_key
+from speech_pronunciation import prepare_pronunciation, unknown_financial_terms
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE = Path(r"D:\Tools\DataMoney-TTS\injoon-article\jobs")
@@ -48,6 +49,7 @@ def article_sentences(source):
 
 def prepare_spoken_text(text):
     """Speak ranges naturally and omit bracketed reference numbers."""
+    text = prepare_pronunciation(text)
     text = re.sub(r"(?<=[.!?。！？])\[\d{1,3}\](?=\s|$)", "", text)
     return re.sub(r"(?<![\d,])(\d+)\s*[~∼～]\s*(\d+)\s*(개월|년|월|주|일)",
                   lambda match: f"{match[1]}{match[3]}에서 {match[2]}{match[3]}", text)
@@ -79,7 +81,8 @@ def validate_cues(source, events, content_id):
     original = normalized(prepare_spoken_text("\n\n".join(article_parts(source))))
     if not original or difflib.SequenceMatcher(None, original, spoken, autojunk=False).ratio() < .995:
         raise ValueError("The speech service text does not match the article; review required")
-    timing = timing_for(source, events, content_id, pieces=expected)
+    timing = timing_for(source, events, content_id, pieces=expected,
+                        match_pieces=[prepare_spoken_text(item) for item in expected])
     cues = timing["cues"]
     if [item["text"] for item in cues] != expected:
         raise ValueError("Some article sentences could not be timed; review required")
@@ -158,6 +161,10 @@ def main():
     if manifest["voice"] != PROFILE:
         parser.error("The article does not select the InJoon voice profile")
     blocks = article_parts(source)
+    unknown = unknown_financial_terms(blocks)
+    if unknown:
+        print("Pronunciation review required before upload: " + ", ".join(unknown), flush=True)
+        raise SystemExit(20)
     text = prepare_spoken_text("\n\n".join(blocks))
     if len(blocks) < 2 or len(text) < 10 or len(text) > 40_000:
         parser.error("Unexpected article length")

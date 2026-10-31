@@ -18,9 +18,10 @@ import tempfile
 import unicodedata
 from pathlib import Path
 
-from build_speech_manifests import VOICE_PROFILE_ID, build_manifest
+from build_speech_manifests import VOICE_PROFILE_ID, article_parts, build_manifest, split_block
 from local_speech_storage import BUCKET, client, upload
-from speech_timing import timing_for, timing_key
+from speech_pronunciation import prepare_pronunciation, unknown_financial_terms
+from speech_timing import sentences, timing_for, timing_key
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOL_ROOT = Path(r"D:\Tools\DataMoney-TTS")
@@ -153,7 +154,14 @@ def main():
     if manifest["voice"] != VOICE_PROFILE_ID:
         print("This article uses a separately managed voice; local female generation is disabled.", flush=True)
         raise SystemExit(20)
-    groups = grouped_text(manifest["chunks"])
+    parts = article_parts(source_text)
+    unknown = unknown_financial_terms(parts)
+    if unknown and not args.alignment_only:
+        print("Pronunciation review required before upload: " + ", ".join(unknown), flush=True)
+        raise SystemExit(20)
+    spoken_chunks = [{"text": value} for part in parts
+                     for value in split_block(prepare_pronunciation(part))]
+    groups = grouped_text(spoken_chunks)
     chosen = groups[:args.max_groups] if args.max_groups else groups
     job = CACHE / "articles" / args.slug / manifest["content_id"]
     wavs = [] if args.alignment_only else [CACHE / "groups" / (group_hash(value) + ".wav") for value in chosen]
@@ -213,7 +221,10 @@ def main():
     if not review["passed"]:
         print("Audio requires review; it was not uploaded.", flush=True)
         raise SystemExit(20)
-    timing = timing_for(source_text, review["words"], manifest["content_id"])
+    visible_sentences = sentences(source_text)
+    timing = timing_for(source_text, review["words"], manifest["content_id"],
+                        pieces=visible_sentences,
+                        match_pieces=[prepare_pronunciation(item) for item in visible_sentences])
     timing_path = job / "sentence-timing-v1.json"
     timing_path.write_text(json.dumps(timing, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     print(f"Sentence timestamps aligned: {len(timing['cues'])}", flush=True)

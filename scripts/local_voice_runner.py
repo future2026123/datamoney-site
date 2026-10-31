@@ -31,7 +31,11 @@ INJOON_PROFILE = "ko-KR-InJoonNeural-v1"
 INJOON_PYTHON = TOOL_ROOT / "injoon-env" / "Scripts" / "python.exe"
 INJOON_GENERATOR = ROOT / "scripts" / "generate_injoon_speech.py"
 EXPECTED_REMOTE = "https://github.com/future2026123/datamoney-site.git"
-LOADED_BUILDER = hashlib.sha256((ROOT / "scripts" / "build_speech_manifests.py").read_bytes()).digest()
+MANIFEST_DEPENDENCIES = ("scripts/build_speech_manifests.py", "scripts/speech_pronunciation.py",
+                         "scripts/sync_blog_sidebars.py", "blog/article-speech.js")
+LOADED_MANIFEST_DEPENDENCIES = {
+    path: hashlib.sha256((ROOT / path).read_bytes()).digest() for path in MANIFEST_DEPENDENCIES
+}
 
 
 def log(message):
@@ -51,9 +55,10 @@ def sync_checkout():
         raise RuntimeError("The dedicated checkout contains changes; refusing to update it")
     git("fetch", "--quiet", "origin", "master")
     git("merge", "--ff-only", "origin/master")
-    deployed_builder = CHECKOUT / "scripts" / "build_speech_manifests.py"
-    if not deployed_builder.exists() or hashlib.sha256(deployed_builder.read_bytes()).digest() != LOADED_BUILDER:
-        raise RuntimeError("The speech manifest builder changed; retry on the next run")
+    for path, loaded_hash in LOADED_MANIFEST_DEPENDENCIES.items():
+        deployed = CHECKOUT / path
+        if not deployed.exists() or hashlib.sha256(deployed.read_bytes()).digest() != loaded_hash:
+            raise RuntimeError("Speech manifest dependencies changed; retry on the next run")
     return git("rev-parse", "HEAD")
 
 

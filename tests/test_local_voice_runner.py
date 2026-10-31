@@ -2,6 +2,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import shutil
 from pathlib import Path
 from unittest.mock import Mock, patch
 
@@ -56,6 +57,23 @@ class GeneratorWaitTests(unittest.TestCase):
              patch.object(runner.subprocess, "run", return_value=Mock(returncode=0)) as kill:
             self.assertEqual(runner.wait_for_generator(process, True), 10)
         self.assertEqual(kill.call_args.args[0], ["taskkill", "/PID", "1234", "/T", "/F"])
+
+    def test_checkout_refresh_retries_when_the_pronunciation_rules_changed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            checkout = Path(directory)
+            (checkout / '.git').mkdir()
+            for name in runner.MANIFEST_DEPENDENCIES:
+                target = checkout / name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(runner.ROOT / name, target)
+            (checkout / 'blog' / 'article-speech.js').write_text('changed', encoding='utf-8')
+            def fake_git(*args):
+                if args == ('remote', 'get-url', 'origin'):
+                    return runner.EXPECTED_REMOTE
+                return ''
+            with patch.object(runner, 'CHECKOUT', checkout), patch.object(runner, 'git', side_effect=fake_git):
+                with self.assertRaisesRegex(RuntimeError, 'dependencies changed'):
+                    runner.sync_checkout()
 
 
 if __name__ == "__main__":

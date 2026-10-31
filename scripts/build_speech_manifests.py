@@ -10,6 +10,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 from sync_blog_sidebars import Tree, VOID
+from speech_pronunciation import prepare_pronunciation
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "blog" / "speech-manifests"
@@ -231,9 +232,11 @@ def build_manifest(source):
             chunks.append({"id": digest, "text": value})
     # The public player only accepts an audio file generated from these exact
     # readable blocks. A harmless HTML/style edit does not invalidate it.
-    fingerprint = hashlib.sha256(
-        (voice + "\n" + "\n".join(item["id"] for item in chunks)).encode("utf-8")
-    ).hexdigest()
+    fingerprint_input = voice + "\n" + "\n".join(item["id"] for item in chunks)
+    spoken_text = "\n".join(prepare_pronunciation(part) for part in parts)
+    pronunciation_hash = hashlib.sha256(spoken_text.encode("utf-8")).hexdigest()
+    fingerprint_input += "\npronunciation-v1:" + pronunciation_hash
+    fingerprint = hashlib.sha256(fingerprint_input.encode("utf-8")).hexdigest()
     return {"version": 1, "voice": voice, "content_id": fingerprint,
             "title": parts[0], "chunks": chunks}
 

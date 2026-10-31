@@ -22,6 +22,16 @@ not spoken. When the article changes, the idle runner generates a new recording
 and timing file for its new content fingerprint before publishing its index.
 The existing female voice generator never handles an InJoon article.
 
+The pronunciation dictionary in `blog/article-speech.js` is shared by both
+generators and the device-voice fallback. It changes spoken text only: the
+article and its sentence highlighting retain the displayed spelling. An article
+fingerprint includes its transformed speech, so a pronunciation change cannot
+reuse a stale recording, even if a rule is later removed. Unlisted capitalized
+terms in Korean text are logged and generation is held for pronunciation
+review before uploading. Update the dictionary after checking each term; this
+conservative check can also flag an ordinary name or ticker. The check does not
+prove that every other word is pronounced correctly.
+
 The Qwen generator caches individual groups, verifies the entire recording with
 a local transcription model and checks number tokens before uploading. This
 automated check catches some omissions but does not guarantee pronunciation or

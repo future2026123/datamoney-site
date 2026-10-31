@@ -4,6 +4,62 @@
   const AUDIO_ORIGIN = 'https://audio.datamoney.kr';
   const HASH = /^[a-f0-9]{64}$/;
 
+  // Shared by the offline generators and device speech. Keep this JSON array
+  // machine-readable so every voice uses the same pronunciation rules.
+  const PRONUNCIATION_RULES = /* dm-pronunciations:start */
+  [
+    {"pattern":"S\\s*&\\s*P\\s*500", "spoken":"에스 엔 피 오백", "ignoreCase":true},
+    {"pattern":"S\\s*&\\s*P", "spoken":"에스 엔 피", "ignoreCase":true},
+    {"pattern":"PER", "spoken":"퍼"},
+    {"pattern":"per(?=[가-힣])", "spoken":"퍼", "ignoreCase":true},
+    {"pattern":"per(?=\\s+[가-힣])", "spoken":"퍼", "ignoreCase":true},
+    {"pattern":"PBR", "spoken":"피 비 알"},
+    {"pattern":"ETF", "spoken":"이 티 에프"},
+    {"pattern":"ETN", "spoken":"이 티 엔"},
+    {"pattern":"EPS", "spoken":"이 피 에스"},
+    {"pattern":"BPS", "spoken":"비 피 에스"},
+    {"pattern":"DPS", "spoken":"디 피 에스"},
+    {"pattern":"ROE", "spoken":"알 오 이"},
+    {"pattern":"ROA", "spoken":"알 오 에이"},
+    {"pattern":"ROIC", "spoken":"알 오 아이 씨"},
+    {"pattern":"GDP", "spoken":"지 디 피"},
+    {"pattern":"CPI", "spoken":"씨 피 아이"},
+    {"pattern":"PCE", "spoken":"피 씨 이"},
+    {"pattern":"FOMC", "spoken":"에프 오 엠 씨"},
+    {"pattern":"ISA", "spoken":"아이 에스 에이"},
+    {"pattern":"IRP", "spoken":"아이 알 피"},
+    {"pattern":"SEC", "spoken":"에스 이 씨"},
+    {"pattern":"AI", "spoken":"에이 아이"},
+    {"pattern":"GPU", "spoken":"지 피 유"},
+    {"pattern":"CMA", "spoken":"씨 엠 에이"},
+    {"pattern":"MMF", "spoken":"엠 엠 에프"},
+    {"pattern":"MMW", "spoken":"엠 엠 더블유"},
+    {"pattern":"RP", "spoken":"알 피"},
+    {"pattern":"ELS", "spoken":"이 엘 에스"},
+    {"pattern":"DLS", "spoken":"디 엘 에스"},
+    {"pattern":"CFD", "spoken":"씨 에프 디"},
+    {"pattern":"NAV", "spoken":"엔 에이 브이"},
+    {"pattern":"AUM", "spoken":"에이 유 엠"},
+    {"pattern":"MSCI", "spoken":"엠 에스 씨 아이"},
+    {"pattern":"KRX", "spoken":"케이 알 엑스"},
+    {"pattern":"FINRA", "spoken":"핀라"},
+    {"pattern":"FRED", "spoken":"프레드"},
+    {"pattern":"COFIX", "spoken":"코픽스"},
+    {"pattern":"SNS", "spoken":"에스 엔 에스"},
+    {"pattern":"KOSPI", "spoken":"코스피"},
+    {"pattern":"KOSDAQ", "spoken":"코스닥"},
+    {"pattern":"KODEX", "spoken":"코덱스"},
+    {"pattern":"TIGER", "spoken":"타이거"},
+    {"pattern":"NASDAQ", "spoken":"나스닥"},
+    {"pattern":"SPY", "spoken":"스파이"},
+    {"pattern":"QQQ", "spoken":"큐 큐 큐"}
+  ]
+  /* dm-pronunciations:end */;
+  window.prepareDataMoneySpeech = text => PRONUNCIATION_RULES.reduce((value, rule) => {
+    const pattern = new RegExp(`(^|[^A-Za-z0-9])(?:${rule.pattern})(?![A-Za-z0-9])`, rule.ignoreCase ? 'gi' : 'g');
+    return value.replace(pattern, (_, prefix) => prefix + rule.spoken);
+  }, String(text));
+
   // Resolve the spoken text to DOM ranges without changing links or markup.
   window.createDataMoneySpeechHighlighter = ({title, content, followInput}) => {
     const excluded = 'script, style, nav, aside, svg, noscript, iframe, figcaption, [hidden], [aria-hidden="true"], .dm-comments, .dm-references, .references, .reference-list, .references-list, .sources, .source-list, .sources-box, .source-box, .bibliography, .eyebrow';

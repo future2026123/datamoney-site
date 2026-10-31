@@ -185,7 +185,8 @@
         .map(value => value.trim()).filter(Boolean));
       if (!sentences.length) { announce('읽을 본문을 찾지 못했어요.'); return; }
       const chunks = sentences.flatMap((text, index) => {
-        const pieces = text.match(/.{1,220}(?:\s+|$)|.{1,220}/gu) || [text];
+        const spoken = window.prepareDataMoneySpeech ? window.prepareDataMoneySpeech(text) : text;
+        const pieces = spoken.match(/.{1,220}(?:\s+|$)|.{1,220}/gu) || [spoken];
         return pieces.map(value => ({text:value.trim(), index})).filter(value => value.text);
       });
       highlighter?.prepare(sentences.map(text => ({text})));

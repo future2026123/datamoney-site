@@ -53,6 +53,9 @@ jobs:
       - name: Test local speech player
         run: node tests/article-local-speech-ui.mjs
 
+      - name: Test shared speech pronunciation
+        run: node tests/speech-pronunciation-ui.mjs
+
       - name: Test article data and source excerpt format
         run: python3 -m unittest discover -s tests
 
