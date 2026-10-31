@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {DatabaseSync} from 'node:sqlite';
+const source=await readFile(new URL('../workers/article-engagement.js',import.meta.url));
+const {default:worker,ArticleEngagement}=await import(`data:text/javascript;base64,${source.toString('base64')}`);
+const db=new DatabaseSync(':memory:');
+const state={storage:{sql:{exec(sql,...args){const rows=db.prepare(sql).all(...args);return {toArray:()=>rows,one:()=>rows[0]};}},setAlarm:async()=>{}}};
+const obj=new ArticleEngagement(state), env={DM_COMMENT_ADMIN_KEY:'test-secret',ARTICLE_ENGAGEMENT:{idFromName:()=>'',get:()=>obj}};
+const base='https://datamoney.kr/api/article-engagement';
+async function call(path,{method='GET',body,headers={}}={}){const r=await worker.fetch(new Request(base+path,{method,headers:{origin:'https://datamoney.kr',...headers},...(body?{body:JSON.stringify(body)}:{})}),env);return {status:r.status,headers:r.headers,data:await r.json()};}
+const answers={loss:2,anxiety:1,horizon:0,reaction:3,buffer:1};
+assert.equal((await call('/_survey',{method:'POST',body:{answers}})).status,400);
+assert.equal(db.prepare('SELECT COUNT(*) n FROM survey_answers').get().n,0);
+const submitted=await call('/_survey',{method:'POST',body:{consent:true,answers}});
+assert.equal(submitted.status,200); const cookie=submitted.headers.get('set-cookie').split(';')[0];
+assert.ok(cookie.startsWith('dm_survey_visitor='));
+await call('/_survey',{method:'POST',headers:{cookie},body:{consent:true,answers:{...answers,loss:0}}});
+assert.equal(db.prepare('SELECT COUNT(*) n FROM survey_answers').get().n,1);
+assert.equal(db.prepare('SELECT loss FROM survey_answers').get().loss,2);
+assert.equal((await call('/_admin/survey',{headers:{'x-article-admin':'authorized'}})).status,401);
+const admin=await call('/_admin/survey',{headers:{authorization:'Bearer test-secret'}});
+assert.equal(admin.status,200); assert.equal(admin.data.items[0].participants,1); assert.equal(admin.data.items[0].loss,2);
+assert.ok(!JSON.stringify(admin.data).includes(cookie));
+assert.equal((await call('/_survey',{method:'DELETE',headers:{cookie}})).status,200);
+assert.equal(db.prepare('SELECT COUNT(*) n FROM survey_answers').get().n,0);
+assert.equal((await call('/_survey',{method:'POST',body:{consent:true,answers:{...answers,loss:4}}})).status,400);
+console.log('Consent, daily deduplication, protected aggregates and deletion: passed');

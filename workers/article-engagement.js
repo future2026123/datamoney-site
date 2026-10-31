@@ -1,7 +1,11 @@
 const ROUTE = /^\/api\/article-engagement\/([a-z0-9][a-z0-9-]{0,95})(?:\/(reaction|comments)(?:\/([1-9]\d*)(?:\/(vote))?)?)?\/?$/;
 const ADMIN_ROUTE = /^\/api\/article-engagement\/_admin\/comments(?:\/([1-9]\d*)(?:\/(approve))?)?\/?$/;
 const CONFIG_PATH = '/api/article-engagement/_config';
+const SURVEY_PATH = '/api/article-engagement/_survey';
+const SURVEY_ADMIN_PATH = '/api/article-engagement/_admin/survey';
 const COOKIE = 'dm_article_visitor';
+const SURVEY_COOKIE = 'dm_survey_visitor';
+const YEAR = 365 * 86400000;
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -14,10 +18,10 @@ function json(data, status = 200) {
   });
 }
 
-function visitorFrom(request) {
+function visitorFrom(request, cookieName = COOKIE) {
   const cookies = (request.headers.get('cookie') || '').split(';');
-  const item = cookies.map(value => value.trim()).find(value => value.startsWith(`${COOKIE}=`));
-  const value = item ? item.slice(COOKIE.length + 1) : '';
+  const item = cookies.map(value => value.trim()).find(value => value.startsWith(`${cookieName}=`));
+  const value = item ? item.slice(cookieName.length + 1) : '';
   return /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(value) ? value : '';
 }
 
@@ -31,11 +35,11 @@ async function secureEqual(actual, expected) {
   return diff === 0;
 }
 
-async function rateIdentifier(ip, secret) {
+async function rateIdentifier(ip, secret, rotate = true) {
   if (!ip || !secret) return '';
   const encoder = new TextEncoder();
   const key = await crypto.subtle.importKey('raw', encoder.encode(secret), {name: 'HMAC', hash: 'SHA-256'}, false, ['sign']);
-  const date = new Date().toISOString().slice(0, 10);
+  const date = rotate ? new Date().toISOString().slice(0, 10) : 'survey-v1';
   const hash = await crypto.subtle.sign('HMAC', key, encoder.encode(`${date}:${ip}`));
   return [...new Uint8Array(hash)].map(value => value.toString(16).padStart(2, '0')).join('');
 }
@@ -69,13 +73,15 @@ export default {
     }
     const adminRoute = url.pathname.match(ADMIN_ROUTE);
     const route = url.pathname.match(ROUTE);
-    if (!adminRoute && !route) return json({error: 'Not found'}, 404);
+    const survey = url.pathname === SURVEY_PATH;
+    const surveyAdmin = url.pathname === SURVEY_ADMIN_PATH;
+    if (!adminRoute && !route && !survey && !surveyAdmin) return json({error: 'Not found'}, 404);
     if (!['GET', 'POST', 'DELETE'].includes(request.method)) return json({error: 'Method not allowed'}, 405);
     if (request.method !== 'GET' && request.headers.get('origin') !== url.origin) {
       return json({error: 'Invalid origin'}, 403);
     }
     if (!env.ARTICLE_ENGAGEMENT) return json({error: 'Service unavailable'}, 503);
-    if (adminRoute) {
+    if (adminRoute || surveyAdmin) {
       if (!env.DM_COMMENT_ADMIN_KEY) return json({error: 'Administrator access unavailable'}, 503);
       const token = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
       if (!await secureEqual(token, env.DM_COMMENT_ADMIN_KEY)) return json({error: 'Not authorized'}, 401);
@@ -86,6 +92,23 @@ export default {
       headers.delete('x-article-rate');
       const id = env.ARTICLE_ENGAGEMENT.idFromName('datamoney');
       return env.ARTICLE_ENGAGEMENT.get(id).fetch(new Request(request, {headers}));
+    }
+    if (survey) {
+      if (!['POST', 'DELETE'].includes(request.method)) return json({error: 'Method not allowed'}, 405);
+      if (!env.DM_COMMENT_ADMIN_KEY) return json({error: 'Service unavailable'}, 503);
+      let visitor = visitorFrom(request, SURVEY_COOKIE);
+      if (!visitor && request.method === 'DELETE') return json({ok: true});
+      const newVisitor = !visitor;
+      if (!visitor) visitor = crypto.randomUUID();
+      const headers = new Headers(request.headers);
+      headers.delete('x-article-admin');
+      headers.set('x-survey-visitor', await rateIdentifier(visitor, env.DM_COMMENT_ADMIN_KEY, false));
+      const id = env.ARTICLE_ENGAGEMENT.idFromName('datamoney');
+      const response = await env.ARTICLE_ENGAGEMENT.get(id).fetch(new Request(request, {headers}));
+      const resultHeaders = new Headers(response.headers);
+      if (newVisitor && response.ok) resultHeaders.append('set-cookie', `${SURVEY_COOKIE}=${visitor}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=31536000`);
+      if (request.method === 'DELETE' && response.ok) resultHeaders.append('set-cookie', `${SURVEY_COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`);
+      return new Response(response.body, {status: response.status, headers: resultHeaders});
     }
     const [, , action, commentId] = route;
     if (request.method === 'POST' && action === 'comments' && !commentId) {
@@ -134,6 +157,7 @@ export class ArticleEngagement {
     if (!columns.has('status')) this.sql.exec("ALTER TABLE comments ADD COLUMN status TEXT NOT NULL DEFAULT 'published'");
     this.sql.exec('CREATE TABLE IF NOT EXISTS comment_votes (article TEXT NOT NULL, comment_id INTEGER NOT NULL, visitor TEXT NOT NULL, value INTEGER NOT NULL CHECK (value IN (-1, 1)), PRIMARY KEY (article, comment_id, visitor))');
     this.sql.exec('CREATE TABLE IF NOT EXISTS comment_rate (identity TEXT NOT NULL, created_at INTEGER NOT NULL)');
+    this.sql.exec('CREATE TABLE IF NOT EXISTS survey_answers (visitor TEXT NOT NULL, day TEXT NOT NULL, created_at INTEGER NOT NULL, loss INTEGER NOT NULL, anxiety INTEGER NOT NULL, horizon INTEGER NOT NULL, reaction INTEGER NOT NULL, buffer INTEGER NOT NULL, PRIMARY KEY(visitor, day))');
     this.sql.exec('CREATE INDEX IF NOT EXISTS comments_article_id ON comments (article, id DESC)');
     this.sql.exec('CREATE INDEX IF NOT EXISTS comments_parent_id ON comments (article, parent_id, id)');
     this.sql.exec('CREATE INDEX IF NOT EXISTS comments_visitor_time ON comments (visitor, created_at DESC)');
@@ -150,6 +174,30 @@ export class ArticleEngagement {
 
   async fetch(request) {
     const url = new URL(request.url);
+    if (url.pathname === SURVEY_ADMIN_PATH && request.headers.get('x-article-admin') === 'authorized' && request.method === 'GET') {
+      const rows = this.sql.exec('SELECT day, COUNT(*) AS participants, AVG(loss) AS loss, AVG(anxiety) AS anxiety, AVG(horizon) AS horizon, AVG(reaction) AS reaction, AVG(buffer) AS buffer FROM survey_answers GROUP BY day ORDER BY day DESC LIMIT 365').toArray();
+      return json({version: 1, items: rows});
+    }
+    if (url.pathname === SURVEY_PATH) {
+      const visitor = request.headers.get('x-survey-visitor');
+      if (!visitor) return json({error: 'Not authorized'}, 403);
+      if (request.method === 'DELETE') {
+        this.sql.exec('DELETE FROM survey_answers WHERE visitor = ?', visitor);
+        return json({ok: true});
+      }
+      if (request.method !== 'POST') return json({error: 'Method not allowed'}, 405);
+      const raw = await request.text();
+      if (raw.length > 1024) return json({error: 'Invalid input'}, 400);
+      let input;
+      try { input = JSON.parse(raw); } catch (_) { return json({error: 'Invalid input'}, 400); }
+      const fields = ['loss', 'anxiety', 'horizon', 'reaction', 'buffer'];
+      if (input?.consent !== true || !fields.every(key => Number.isInteger(input.answers?.[key]) && input.answers[key] >= 0 && input.answers[key] <= 3)) return json({error: 'Invalid input'}, 400);
+      const now = Date.now();
+      const day = new Date(now + 9 * 3600000).toISOString().slice(0, 10);
+      this.sql.exec('INSERT INTO survey_answers (visitor, day, created_at, loss, anxiety, horizon, reaction, buffer) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(visitor, day) DO NOTHING', visitor, day, now, ...fields.map(key => input.answers[key]));
+      await this.state.storage.setAlarm(now + 61000);
+      return json({ok: true});
+    }
     const admin = url.pathname.match(ADMIN_ROUTE);
     if (admin && request.headers.get('x-article-admin') === 'authorized') {
       return this.moderate(request, url, admin);
@@ -302,7 +350,10 @@ export class ArticleEngagement {
   async alarm() {
     const now = Date.now();
     this.sql.exec('DELETE FROM comment_rate WHERE created_at <= ?', now - 60000);
+    this.sql.exec('DELETE FROM survey_answers WHERE created_at <= ?', now - YEAR);
     const next = this.sql.exec('SELECT MIN(created_at) AS time FROM comment_rate').one().time;
-    if (next !== null) await this.state.storage.setAlarm(Math.max(now + 1000, next + 61000));
+    const surveyNext = this.sql.exec('SELECT MIN(created_at) AS time FROM survey_answers').one().time;
+    const deadlines = [next === null ? null : next + 61000, surveyNext === null ? null : surveyNext + YEAR].filter(value => value !== null);
+    if (deadlines.length) await this.state.storage.setAlarm(Math.max(now + 1000, Math.min(...deadlines)));
   }
 }

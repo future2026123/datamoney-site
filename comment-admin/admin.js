@@ -89,6 +89,21 @@
     more.disabled = true;
     status.textContent = '';
     try {
+      if (currentStatus === 'survey') {
+        const response = await fetch('/api/article-engagement/_admin/survey', {cache:'no-store', headers:{authorization:`Bearer ${key}`}});
+        if (!response.ok) { const error = new Error('Request failed'); error.status=response.status; throw error; }
+        const data = await response.json();
+        list.replaceChildren();
+        data.items.forEach(row => {
+          const item=document.createElement('li'); item.className='comment';
+          const title=document.createElement('strong'); title.textContent=`${row.day} · ${row.participants}명`;
+          const detail=document.createElement('p'); detail.className='comment-body';
+          detail.textContent=`평균 (0~3): 손익 ${row.loss.toFixed(2)} / 불안 ${row.anxiety.toFixed(2)} / 필요 시기 ${row.horizon.toFixed(2)} / 하락 대응 ${row.reaction.toFixed(2)} / 비상금 ${row.buffer.toFixed(2)}`;
+          item.append(title,detail); list.append(item);
+        });
+        empty.hidden=!!data.items.length; empty.textContent='동의한 응답이 아직 없습니다.';
+        more.hidden=true; panel.hidden=false; login.hidden=true; keyInput.value=''; return;
+      }
       const params = new URLSearchParams({status:currentStatus});
       if (append && nextBefore) params.set('before', String(nextBefore));
       const data = await request(`?${params}`);
