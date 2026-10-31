@@ -47,6 +47,11 @@
   .data-table .green { color:#059669; font-weight:700; }
   .video-box { border-radius:22px; overflow:hidden; margin:28px 0; background:#000; aspect-ratio:16/9; position:relative; }
   .video-box iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
+  .article figure.source-excerpt { margin:1.8em 0 2.4em; padding:20px 22px; border:1px solid #dfe7f2; background:#f7f9fc; border-radius:15px; }
+  .article figure.source-excerpt .excerpt-label { display:block; margin-bottom:10px; font-size:12px; font-weight:700; color:#65758b; }
+  .article figure.source-excerpt > p.translation { margin:14px 0 0; font-size:16px; line-height:1.8; color:#253953; }
+  .article figure.source-excerpt figcaption { padding:12px 0 0; font-size:13px; line-height:1.6; color:#617089; overflow-wrap:anywhere; }
+  @media(max-width:600px) { .article figure.source-excerpt { padding:16px 14px; } }
   .aside { display:grid; gap:16px; }
   .aside-card { padding:22px; position:sticky; top:18px; }
   .aside-card h3 { margin:0 0 12px; font-size:20px; letter-spacing:-.03em; }
@@ -59,6 +64,7 @@
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6705155374292160" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="/blog/header.css?v=11c66c07">
 <link rel="stylesheet" href="/blog/article-title.css?v=7ec1ef5c">
+<link rel="stylesheet" href="/blog/source-excerpt.css?v=18981397">
 <link rel="stylesheet" href="/blog/article-actions.css?v=c5a69071">
 <script src="/blog/article-actions.js?v=5b5b8fee" defer></script>
 <link rel="stylesheet" href="/blog/sidebar.css?v=a101426d">
@@ -105,12 +111,55 @@
 
 
 
+        <div class="highlight"><strong>제목 속 숫자를 먼저 바로잡습니다</strong><p>3,357원은 실제 커버드콜 ETF의 수익률이나 미래 예측이 아닙니다. 2010년부터 2024년 말까지의 지수 수익률에 <b>연 20% 분배를 가정한 계산</b>에서 남은 평가액입니다. 원문은 15년으로 설명하며, 옵션 전략을 계산에 포함하지 않았습니다. 이미 받은 분배금은 이 잔액에 포함되지 않으므로 전체 손실이 66%라는 뜻도 아닙니다.</p></div>
+
         <!-- 유튜브 영상 iframe -->
         <div class="video-box">
           <iframe src="https://www.youtube.com/embed/rGwarer6JzQ" title="커버드콜 ETF에 1만원 넣으면 14년 뒤 3,357원 남습니다" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
         </div>
 
-        <p>커버드콜 ETF에 1만원을 넣으면 14년 뒤 3,357원이 남습니다.</p><p>월배당 20%를 받는 사이, 원금의 66%가 증발했습니다.</p>
+        <p>매달 들어오는 분배금이 크면 투자 성과도 좋을까요? 이 글은 영상에서 다룬 커버드콜 ETF의 분배금, 남은 투자금, 총수익률과 세금을 나누어 살펴봅니다. 영상의 일부 수치와 표현은 아래 원문과 공식 자료를 기준으로 보완했습니다.</p>
+
+        <h2>3,357원은 어떤 계산에서 나왔을까</h2>
+        <p>한국경제는 S&amp;P 500 총수익지수를 바탕으로 2010년에 1만원을 투자하고, 해마다 일정한 비율을 분배한다고 가정했습니다. 2024년 12월 31일 기준으로 계산한 잔액은 아래와 같습니다.</p>
+        <table class="data-table"><thead><tr><th scope="col">가정한 연 분배율</th><th scope="col">계산상 남은 평가액</th></tr></thead><tbody><tr><td>10%</td><td>15,334원</td></tr><tr><td>15%</td><td>7,186원</td></tr><tr><td>20%</td><td>3,357원</td></tr></tbody></table>
+        <p>이 표는 가정한 분배율에 따라 <strong>계좌에 남는 금액이 어떻게 달라질 수 있는지</strong> 보여줍니다. 분배금을 합산하거나 재투자한 총수익률은 표에 제시되지 않았습니다. 원문도 옵션 전략을 포함하지 않은 가정이라고 밝히므로, 이 숫자만으로 특정 ETF의 실적을 판단할 수 없습니다.</p>
+        <figure class="source-figure source-excerpt">
+          <span class="excerpt-label">기사 원문 일부 발췌</span>
+          <img src="/blog/covered-call-etf-principal/hankyung-source-20250119.png" alt="연 10%, 15%, 20%의 분배를 가정한 뒤 각각 15,334원, 7,186원, 3,357원이 남는다는 한국경제 기사 원문" loading="lazy" style="display:block;width:100%;height:auto;background:white;">
+          <p class="source-context">한국경제는 국내 경제신문입니다. 영상 제목의 숫자가 실제 상품 성과인지 확인하기 위해 계산의 출처와 가정 기간을 살펴봤습니다.</p>
+          <figcaption>한국경제, 「분배율만 보다간 큰코…알아야 돈 버는 커버드콜 ETF」 (2025. 1. 19.) · <a href="https://www.hankyung.com/article/2025011956731" target="_blank" rel="noopener noreferrer">원문 보기 ↗</a></figcaption>
+        </figure>
+
+        <h2>커버드콜은 어떻게 분배금을 만들까</h2>
+        <p>커버드콜은 주식이나 지수에 투자하면서 콜옵션을 매도해 프리미엄을 받는 전략입니다. 대신 시장이 크게 오를 때 상승분의 일부를 포기할 수 있습니다. 옵션 프리미엄이 하락을 일부 완충할 수는 있지만, 투자금 손실을 막아주지는 않습니다.</p>
+        <p>예를 들어 QYLD는 나스닥100 관련 주식을 보유하고 해당 지수의 콜옵션을 매도합니다. 다른 상품은 옵션을 매도하는 비중이나 행사가격, 만기를 다르게 정합니다. 따라서 이름이 모두 커버드콜 ETF라고 해서 수익과 위험이 같지는 않습니다.</p>
+        <figure class="source-figure source-excerpt">
+          <span class="excerpt-label">운용사 원문 일부 발췌</span>
+          <img src="/blog/covered-call-etf-principal/globalx-source.png" alt="Covered call writing can limit the upside potential of the underlying security" loading="lazy" style="display:block;width:100%;height:auto;">
+          <p class="translation"><strong>번역</strong> &nbsp;“커버드콜 매도는 기초자산의 상승 가능성을 제한할 수 있습니다.”</p>
+          <p class="source-context">글로벌X는 QYLD를 운용하는 자산운용사입니다. 옵션 프리미엄을 받는 대신 어떤 상승 여력을 포기할 수 있는지 확인하기 위해 상품 설명을 인용했습니다.</p>
+          <figcaption>Global X, Nasdaq 100 Covered Call ETF · <a href="https://www.globalxetfs.com/funds/qyld" target="_blank" rel="noopener noreferrer">원문 보기 ↗</a></figcaption>
+        </figure>
+
+        <h2>상품마다 옵션을 파는 방식이 다르다</h2>
+        <p>영상에서는 커버드콜을 세대로 나누어 설명합니다. 투자할 때는 이름보다 실제 운용 방식을 확인하는 편이 도움이 됩니다.</p>
+        <ul><li><strong>매도 비중:</strong> 주식 보유액에 비해 옵션을 얼마나 파는지에 따라 분배 재원과 상승 참여 여지가 달라집니다.</li><li><strong>행사가격:</strong> 현재 지수와 가까운 가격의 옵션인지, 그보다 높은 가격의 옵션인지에 따라 프리미엄과 상승 참여 범위가 달라집니다.</li><li><strong>옵션 만기:</strong> 매일 또는 매월 등 옵션을 새로 매도하는 주기가 다를 수 있습니다. 만기가 짧다고 원금이 보장되는 것은 아닙니다.</li></ul>
+        <p>예를 들어 글로벌X는 QYLD와 달리 QYLG의 경우 포트폴리오 가치의 약 절반에 대해 콜옵션을 매도한다고 설명합니다. <a href="https://www.globalxetfs.com/funds/qyld" target="_blank" rel="noopener noreferrer">운용사 상품 안내</a>에서 각 상품의 최신 전략과 위험을 확인할 수 있습니다.</p>
+
+        <h2>분배율과 총수익률은 다르다</h2>
+        <p>분배율은 지급된 금액을 살펴보는 지표이고, 총수익률은 투자 가치의 변동과 분배금을 함께 고려한 성과입니다. 화면에 보이는 가격이 떨어졌더라도 받은 분배금을 더한 결과는 다를 수 있고, 반대로 분배금이 많아도 가격 하락을 합치면 손실일 수 있습니다.</p>
+        <p>비교할 때는 같은 기간의 총수익률인지, 분배금 재투자를 가정했는지, 보수·세금과 환율을 어떻게 반영했는지 함께 확인해야 합니다. 영상에 나오는 상품 간 과거 차이는 선택한 기간과 기준에 따른 결과이며 앞으로 반복된다는 뜻은 아닙니다. 다른 상품과의 수익 차이인 기회비용을 실제 손실에 다시 더하면 손익을 중복 계산할 수 있습니다.</p>
+        <p>분배금에 원금환급에 해당하는 금액이 포함될 수도 있습니다. 다만 운용사의 미국 세법상 분류만으로 한국 투자자의 실제 손실이나 세금을 단정할 수는 없습니다. 투자한 상품의 분배금 구성과 본인에게 적용되는 과세를 따로 확인해야 합니다.</p>
+
+        <h2>세금은 내 소득과 계좌에 따라 달라진다</h2>
+        <p>분배금을 확인할 때는 다른 이자·배당소득과 합산되는 금액도 살펴보세요. 국세청은 일반적인 금융소득이 연 2천만원을 넘으면 다른 소득과 합산해 종합과세될 수 있다고 설명합니다. 소득의 종류와 원천징수 여부, 예외에 따라 신고 방식이 달라질 수 있습니다.</p>
+        <p>영상처럼 기준을 넘었다는 이유만으로 모든 금융소득에 최고세율이 일괄 적용되는 것은 아닙니다. 국내·해외 상장 여부와 계좌 종류에 따라서도 세금이 달라지므로, 실제 신고 전에는 해당 연도의 규정과 본인의 상황을 확인하세요.</p>
+        <figure class="source-figure source-excerpt"><span class="excerpt-label">국세청 안내 원문 일부 발췌</span><img src="/blog/covered-call-etf-principal/nts-source.png" alt="집합투자기구의 이익과 금융소득 종합과세에 관한 국세청 안내 원문" loading="lazy" style="display:block;width:100%;height:auto;background:white;"><p class="source-context">국세청은 세금 신고와 과세 기준을 안내하는 국가기관입니다. 집합투자기구의 이익과 금융소득 종합과세 기준을 확인하기 위해 안내 자료를 참고했습니다. 자료는 2025년 신고 기준이므로 현재의 세법과 상품별 과세 방식은 별도로 확인해야 합니다.</p><figcaption>국세청, 「2025년 신고안내 해외주식과 세금」 6쪽 · <a href="https://taxlaw.nts.go.kr/downloadPDFFile.do?fleId=300000000001047678&amp;fleSn=923559" target="_blank" rel="noopener noreferrer">원문 보기 ↗</a></figcaption></figure>
+
+        <h2>매수 전에 확인할 세 가지</h2>
+        <ol><li><strong>분배금의 내용:</strong> 최근 분배율뿐 아니라 지급액의 변동과 재원을 확인합니다.</li><li><strong>총수익과 전략:</strong> 분배금을 포함한 성과를 같은 기간에 비교하고 옵션 매도 비중·행사가격·만기를 살펴봅니다.</li><li><strong>세금과 사용 계획:</strong> 분배금을 생활비로 쓸지 재투자할지 정하고, 본인의 다른 금융소득과 계좌에 따른 세금을 확인합니다.</li></ol>
+        <p>커버드콜 ETF를 고를 때 중요한 것은 높은 분배율 하나가 아닙니다. 지금 필요한 현금흐름과 포기할 수 있는 상승 여력, 감당할 수 있는 가격 변동을 함께 따져보세요.</p>
 
 
 <details class="dm-original-sidebar"><summary>이 글의 참고 정보</summary><aside class="aside">
