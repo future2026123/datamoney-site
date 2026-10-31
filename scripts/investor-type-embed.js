@@ -29,6 +29,7 @@
     top.append(close);
     const frame = document.createElement('iframe');
     frame.title = '데이터머니 투자 성향 테스트';
+    frame.scrolling = 'no';
     frame.src = '/tools/investor-type/?embed=1';
     panel.append(top, frame);
     original.setAttribute('data-investor-original-hidden', '');
@@ -37,11 +38,12 @@
     frame.addEventListener('load', () => {
       try {
         const doc = frame.contentDocument;
-        const resize = () => { frame.style.height = Math.max(400, doc.body.scrollHeight + 2) + 'px'; };
+        const content = doc.querySelector('.shell');
+        const resize = () => { frame.style.height = Math.max(400, Math.ceil(content.getBoundingClientRect().height) + 4) + 'px'; };
         doc.querySelectorAll('a[href="/privacy/"]').forEach(link => { link.target = '_top'; });
         if (window.ResizeObserver) {
           observer = new ResizeObserver(resize);
-          observer.observe(doc.body);
+          observer.observe(content);
         }
         doc.querySelectorAll('img').forEach(img => img.addEventListener('load', resize));
         frame.contentWindow.addEventListener('resize', resize);

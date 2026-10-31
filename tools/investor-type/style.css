@@ -35,6 +35,7 @@ body { font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", sans-s
 }
 
 /* Inside a blog article or the home page, the surrounding blog supplies the shell. */
+html.dm-embedded, html.dm-embedded body { overflow: hidden; }
 html.dm-embedded body { background: transparent; }
 html.dm-embedded .shell { max-width: none; padding: 0; }
 html.dm-embedded .shell > header { display: none; }
