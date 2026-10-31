@@ -28,6 +28,9 @@ jobs:
       - name: Test private comment security
         run: node tests/private-comments.mjs
 
+      - name: Test keyboard back navigation
+        run: node tests/back-navigation.mjs
+
       - name: Test investor survey
         run: |
           node tests/investor-survey.mjs
