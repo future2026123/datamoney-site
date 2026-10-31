@@ -28,6 +28,7 @@ assert.equal((await call('/_email/request',{body:{...input,email:'bad\n@example.
 assert.equal((await call('/_email/request',{body:input})).status,200);
 assert.equal(sent.length,1);
 assert.deepEqual(sent[0].to,['reader@example.com']);
+assert.ok(sent[0].text.includes('살펴보는 부엉이 (뇌지컬형)'));
 const token=sent[0].text.match(/\/account\/result\/#([a-f0-9]{64})/)[1];
 const row=db.prepare('SELECT * FROM email_results').get();
 assert.notEqual(row.token_hash,token,'the emailed bearer token must not be stored in plaintext');

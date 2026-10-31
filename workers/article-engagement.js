@@ -7,10 +7,10 @@ const SURVEY_ADMIN_PATH = '/api/article-engagement/_admin/survey';
 const EMAIL_PATH = '/api/article-engagement/_email/';
 const EMAIL_ADMIN_PATH = '/api/article-engagement/_admin/email-subscribers';
 const EMAIL_TYPES = [
-  {name:'차근차근 거북이',short:'안정형'}, {name:'꼼꼼한 다람쥐',short:'절약형'},
-  {name:'감각적인 고양이',short:'감각형'}, {name:'귀 쫑긋 토끼',short:'추격형'},
-  {name:'소신 있는 늑대',short:'독립형'}, {name:'살펴보는 부엉이',short:'분석형'},
-  {name:'눈치 빠른 여우',short:'기회형'}, {name:'도전하는 사자',short:'도전형'}
+  {name:'차근차근 거북이',short:'존버형'}, {name:'꼼꼼한 다람쥐',short:'짠테크형'},
+  {name:'감각적인 고양이',short:'촉형'}, {name:'귀 쫑긋 토끼',short:'포모형'},
+  {name:'소신 있는 늑대',short:'알빠롱형'}, {name:'살펴보는 부엉이',short:'뇌지컬형'},
+  {name:'눈치 빠른 여우',short:'줍줍형'}, {name:'도전하는 사자',short:'야수형'}
 ];
 const EMAIL_ANXIETY = ['거의 없음','가끔 신경 쓰임','자주 걱정됨','일상에 영향'];
 const EMAIL_REACTION = ['거의 없음','가끔 생각남','자주 생각남','당장 팔고 싶음'];
