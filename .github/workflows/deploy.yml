@@ -30,6 +30,12 @@ jobs:
       - name: Synchronize article thumbnails
         run: python3 scripts/sync_blog_thumbnails.py
 
+      - name: Test article structured data
+        run: python3 -m unittest discover -s tests
+
+      - name: Add article structured data
+        run: python3 scripts/ensure_article_schema.py
+
       - name: Synchronize blog footers
         run: python3 scripts/sync_blog_footers.py
 
