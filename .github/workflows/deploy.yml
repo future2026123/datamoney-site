@@ -36,6 +36,7 @@ jobs:
           node tests/investor-survey.mjs
           node tests/investor-ui.mjs
           node tests/investor-embed-reload.mjs
+          node tests/investor-email.mjs
 
       - name: Synchronize blog navigation
         run: python3 scripts/sync_blog_headers.py
@@ -89,6 +90,9 @@ jobs:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: deploy --config wrangler.article-engagement.toml
+          postCommands: printf '%s' "$RESEND_API_KEY" | wrangler secret put RESEND_API_KEY --config wrangler.article-engagement.toml
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
 
       - name: Deploy to Cloudflare Pages
         if: github.event_name != 'schedule' || steps.popular.outputs.updated == 'true' || steps.ai_traffic.outputs.updated == 'true'

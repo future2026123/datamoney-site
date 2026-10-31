@@ -58,14 +58,14 @@
   }
   $('character-sheet').addEventListener('load',()=>{if(result&&!$('result').hidden)drawCard();});
   if(document.fonts)document.fonts.ready.then(()=>{if(result&&!$('result').hidden)drawCard();}).catch(()=>{});
-  async function finish(){
+  function finish(){
     finishing=true;$('quiz-status').textContent='결과를 준비하고 있어요.';let message='';
     const baseline=[answers.risk,answers.approach,answers.social];
     const day=new Date(Date.now()+9*3600000).toISOString().slice(0,10), key='dm_survey_aggregate_day';
     let alreadySent=false;try{alreadySent=localStorage.getItem(key)===day;}catch(_){}
     if(!alreadySent){
-      try{const current=Object.fromEntries(['loss','anxiety','horizon','reaction','buffer'].map(key=>[key,answers[key]]));const response=await fetch('/api/article-engagement/_survey-aggregate',{method:'POST',credentials:'omit',headers:{'content-type':'application/json'},body:JSON.stringify({baseline,answers:current})});if(!response.ok)throw new Error();try{localStorage.setItem(key,day);}catch(_){}}
-      catch(_){}
+      const current=Object.fromEntries(['loss','anxiety','horizon','reaction','buffer'].map(key=>[key,answers[key]]));
+      fetch('/api/article-engagement/_survey-aggregate',{method:'POST',credentials:'omit',headers:{'content-type':'application/json'},body:JSON.stringify({baseline,answers:current})}).then(response=>{if(response.ok)try{localStorage.setItem(key,day);}catch(_){}}).catch(()=>{});
     }
     result=types[4*baseline[0]+2*baseline[1]+baseline[2]];
     $('character-image').setAttribute('viewBox',result.art.join(' '));$('character-image').setAttribute('aria-label',`${result.name} 캐릭터`);
@@ -73,6 +73,8 @@
     $('anxiety-result').textContent=['거의 없음','가끔 신경 쓰임','자주 걱정됨','일상에 영향'][answers.anxiety];
     $('sell-result').textContent=['거의 없음','가끔 생각남','자주 생각남','당장 팔고 싶음'][answers.reaction];
     $('notice').textContent=message;show('result');drawCard();$('result-title').focus();finishing=false;$('quiz-status').textContent='';
+    const tipCode=answers.horizon>=2?0:answers.buffer>=2?1:answers.anxiety>=2?2:answers.reaction>=2?3:answers.loss>=2?4:5;
+    if(typeof window.dmOnInvestorResult==='function') window.dmOnInvestorResult({typeCode:4*baseline[0]+2*baseline[1]+baseline[2],anxiety:answers.anxiety,reaction:answers.reaction,tipCode});
   }
   $('save').addEventListener('click',()=>{const a=document.createElement('a');a.href=$('canvas').toDataURL('image/png');a.download='datamoney-investor-type.png';a.click();});
   $('share').addEventListener('click',async()=>{

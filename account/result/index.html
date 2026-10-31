@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+<script>try{if(/^#[a-f0-9]{64}$/.test(location.hash)){sessionStorage.setItem('dm-investor-result-token',location.hash.slice(1));history.replaceState(null,'',location.pathname);}}catch(e){}</script>
+<title>저장한 투자 성향 결과 | 데이터머니</title>
+<link rel="icon" href="/favicon.ico?v=2">
+<link rel="stylesheet" href="result.css?v=20261031-1">
+<script src="result.js?v=20261031-1" defer></script>
+</head><body>
+<div class="wrap">
+  <header><a href="/">데이터<span>머니</span></a></header>
+  <main>
+    <section id="confirm" class="card">
+      <p class="eyebrow">데이터머니 투자 성향 테스트</p>
+      <h1>이메일을 확인하고<br>저장한 결과를 열어 보세요</h1>
+      <p>확인하면 저장된 결과를 다시 볼 수 있고 신청할 때 선택한 소식 수신이 시작됩니다.</p>
+      <button id="open" class="primary" type="button">내 결과 확인하기</button>
+      <p id="confirm-status" role="status"></p>
+    </section>
+    <section id="saved" hidden>
+      <div class="card result-card">
+        <p class="eyebrow">저장한 나의 투자 캐릭터</p>
+        <p id="saved-date" class="muted"></p>
+        <h1 id="saved-name"></h1><p id="saved-tag" class="tag"></p><p id="saved-description"></p>
+        <h2>지금 나의 투자 심리</h2>
+        <div class="mood"><p>최근 불안감<strong id="saved-anxiety"></strong></p><p>최근 매도 충동<strong id="saved-reaction"></strong></p></div>
+        <h2>나의 강점</h2><p id="saved-strength"></p>
+        <h2>이럴 때 주의</h2><p id="saved-caution"></p>
+        <h2>지금 나에게 필요한 한 가지</h2><p id="saved-tip"></p>
+        <p class="muted">자기 점검용 결과이며 검증된 심리검사나 투자 권유가 아닙니다.</p>
+        <button id="compare" class="primary" type="button">다시 검사하고 이전 결과와 비교하기</button>
+        <p class="muted">같은 기기의 이 브라우저에서 이어서 검사해 주세요. 새 결과를 저장하려면 검사 후 이메일을 다시 신청해 주세요.</p>
+      </div>
+      <div class="card">
+        <h2>이메일 수신 관리</h2>
+        <p class="muted">선택한 항목의 수신을 각각 철회할 수 있습니다. 새로 수신하려면 테스트 결과 화면에서 신청해 주세요.</p>
+        <form id="preferences">
+          <label><input id="news" type="checkbox"> 새로운 무료 검사 소식</label>
+          <label><input id="report" type="checkbox"> 월간 데이터머니 금융 리포트</label>
+          <button class="secondary" type="submit">수신 설정 저장</button>
+        </form>
+        <p id="preferences-status" role="status"></p>
+        <hr>
+        <button id="delete" class="link-button" type="button">데이터머니에 저장된 이메일과 결과 삭제</button>
+        <p class="muted">발송 서비스의 이메일 및 발송 기록은 해당 서비스의 보관 기간이 적용됩니다. 자세한 내용은 개인정보처리방침을 확인해 주세요.</p>
+        <p id="delete-status" role="status"></p>
+      </div>
+    </section>
+  </main>
+  <footer><a href="/privacy/">개인정보처리방침</a><span>© 데이터머니</span></footer>
+</div></body></html>

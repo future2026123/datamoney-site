@@ -4,6 +4,20 @@ const CONFIG_PATH = '/api/article-engagement/_config';
 const SURVEY_PATH = '/api/article-engagement/_survey';
 const SURVEY_AGGREGATE_PATH = '/api/article-engagement/_survey-aggregate';
 const SURVEY_ADMIN_PATH = '/api/article-engagement/_admin/survey';
+const EMAIL_PATH = '/api/article-engagement/_email/';
+const EMAIL_ADMIN_PATH = '/api/article-engagement/_admin/email-subscribers';
+const EMAIL_TYPES = [
+  {name:'차근차근 거북이',short:'안정형'}, {name:'꼼꼼한 다람쥐',short:'절약형'},
+  {name:'감각적인 고양이',short:'감각형'}, {name:'귀 쫑긋 토끼',short:'추격형'},
+  {name:'소신 있는 늑대',short:'독립형'}, {name:'살펴보는 부엉이',short:'분석형'},
+  {name:'눈치 빠른 여우',short:'기회형'}, {name:'도전하는 사자',short:'도전형'}
+];
+const EMAIL_ANXIETY = ['거의 없음','가끔 신경 쓰임','자주 걱정됨','일상에 영향'];
+const EMAIL_REACTION = ['거의 없음','가끔 생각남','자주 생각남','당장 팔고 싶음'];
+async function emailTokenHash(token) {
+  const hash = await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token));
+  return [...new Uint8Array(hash)].map(n=>n.toString(16).padStart(2,'0')).join('');
+}
 const COOKIE = 'dm_article_visitor';
 const SURVEY_COOKIE = 'dm_survey_visitor';
 const YEAR = 365 * 86400000;
@@ -77,7 +91,9 @@ export default {
     const survey = url.pathname === SURVEY_PATH;
     const surveyAggregate = url.pathname === SURVEY_AGGREGATE_PATH;
     const surveyAdmin = url.pathname === SURVEY_ADMIN_PATH;
-    if (!adminRoute && !route && !survey && !surveyAdmin && !surveyAggregate) return json({error: 'Not found'}, 404);
+    const emailAdmin = url.pathname === EMAIL_ADMIN_PATH;
+    const emailRoute = /^\/api\/article-engagement\/_email\/(request|open|preferences|delete)$/.test(url.pathname);
+    if (!adminRoute && !route && !survey && !surveyAdmin && !surveyAggregate && !emailRoute && !emailAdmin) return json({error: 'Not found'}, 404);
     if (!['GET', 'POST', 'DELETE'].includes(request.method)) return json({error: 'Method not allowed'}, 405);
     if (request.method !== 'GET' && request.headers.get('origin') !== url.origin) {
       return json({error: 'Invalid origin'}, 403);
@@ -90,7 +106,7 @@ export default {
       const headers = new Headers({'content-type':'application/json'});
       return env.ARTICLE_ENGAGEMENT.get(id).fetch(new Request(request, {headers}));
     }
-    if (adminRoute || surveyAdmin) {
+    if (adminRoute || surveyAdmin || emailAdmin) {
       if (!env.DM_COMMENT_ADMIN_KEY) return json({error: 'Administrator access unavailable'}, 503);
       const token = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
       if (!await secureEqual(token, env.DM_COMMENT_ADMIN_KEY)) return json({error: 'Not authorized'}, 401);
@@ -99,6 +115,16 @@ export default {
       headers.set('x-article-admin', 'authorized');
       headers.delete('x-article-visitor');
       headers.delete('x-article-rate');
+      const id = env.ARTICLE_ENGAGEMENT.idFromName('datamoney');
+      return env.ARTICLE_ENGAGEMENT.get(id).fetch(new Request(request, {headers}));
+    }
+    if (emailRoute) {
+      if (request.method !== 'POST') return json({error: 'Method not allowed'}, 405);
+      if (!env.DM_COMMENT_ADMIN_KEY || !env.RESEND_API_KEY) return json({error: 'Email service unavailable'}, 503);
+      if ((Number(request.headers.get('content-length')) || 0) > 2048) return json({error: 'Invalid input'}, 400);
+      const rate = await rateIdentifier(request.headers.get('cf-connecting-ip'), env.DM_COMMENT_ADMIN_KEY);
+      if (!rate) return json({error: 'Service unavailable'}, 503);
+      const headers = new Headers({'content-type':'application/json', 'x-email-rate':rate});
       const id = env.ARTICLE_ENGAGEMENT.idFromName('datamoney');
       return env.ARTICLE_ENGAGEMENT.get(id).fetch(new Request(request, {headers}));
     }
@@ -155,8 +181,9 @@ export default {
 };
 
 export class ArticleEngagement {
-  constructor(state) {
+  constructor(state, env = {}) {
     this.state = state;
+    this.env = env;
     this.sql = state.storage.sql;
     this.sql.exec('CREATE TABLE IF NOT EXISTS reactions (article TEXT NOT NULL, visitor TEXT NOT NULL, PRIMARY KEY (article, visitor))');
     this.sql.exec('CREATE TABLE IF NOT EXISTS comments (id INTEGER PRIMARY KEY AUTOINCREMENT, article TEXT NOT NULL, visitor TEXT NOT NULL, nickname TEXT NOT NULL, body TEXT NOT NULL, created_at INTEGER NOT NULL, parent_id INTEGER, deleted_at INTEGER)');
@@ -176,6 +203,9 @@ export class ArticleEngagement {
     this.sql.exec('CREATE INDEX IF NOT EXISTS comments_visitor_time ON comments (visitor, created_at DESC)');
     this.sql.exec('CREATE INDEX IF NOT EXISTS comments_status_id ON comments (status, id DESC)');
     this.sql.exec('CREATE INDEX IF NOT EXISTS comment_rate_identity_time ON comment_rate (identity, created_at DESC)');
+    this.sql.exec('CREATE TABLE IF NOT EXISTS email_results (token_hash TEXT PRIMARY KEY, email TEXT NOT NULL, type_code INTEGER NOT NULL, anxiety INTEGER NOT NULL, reaction INTEGER NOT NULL, tip_code INTEGER NOT NULL, test_news INTEGER NOT NULL, monthly_report INTEGER NOT NULL, created_at INTEGER NOT NULL, confirmed_at INTEGER)');
+    this.sql.exec('CREATE INDEX IF NOT EXISTS email_results_email ON email_results (email, created_at)');
+    this.sql.exec('CREATE TABLE IF NOT EXISTS email_rate (identity TEXT NOT NULL, created_at INTEGER NOT NULL)');
   }
 
   summary(article, visitor) {
@@ -187,6 +217,11 @@ export class ArticleEngagement {
 
   async fetch(request) {
     const url = new URL(request.url);
+    if (url.pathname === EMAIL_ADMIN_PATH && request.headers.get('x-article-admin') === 'authorized' && request.method === 'GET') {
+      const items = this.sql.exec('SELECT email, MAX(test_news) AS test_news, MAX(monthly_report) AS monthly_report, MAX(confirmed_at) AS confirmed_at FROM email_results WHERE confirmed_at IS NOT NULL AND created_at > ? GROUP BY email HAVING MAX(test_news) = 1 OR MAX(monthly_report) = 1 ORDER BY confirmed_at DESC LIMIT 5000', Date.now() - YEAR).toArray();
+      return json({items});
+    }
+    if (url.pathname.startsWith(EMAIL_PATH)) return this.email(request, url);
     if (url.pathname === SURVEY_ADMIN_PATH && request.headers.get('x-article-admin') === 'authorized' && request.method === 'GET') {
       const rows = this.sql.exec('SELECT day, version, type_code, COUNT(*) AS participants, AVG(loss) AS loss, AVG(anxiety) AS anxiety, AVG(horizon) AS horizon, AVG(reaction) AS reaction, AVG(buffer) AS buffer FROM survey_answers GROUP BY day, version, type_code ORDER BY day DESC, version DESC, type_code LIMIT 3300').toArray();
       const totals = this.sql.exec('SELECT day, 3 AS version, type_code, participants, 1.0*loss/participants AS loss, 1.0*anxiety/participants AS anxiety, 1.0*horizon/participants AS horizon, 1.0*reaction/participants AS reaction, 1.0*buffer/participants AS buffer FROM survey_aggregates ORDER BY day DESC LIMIT 3300').toArray();
@@ -342,6 +377,64 @@ export class ArticleEngagement {
     return json({error: 'Not found'}, 404);
   }
 
+  async email(request, url) {
+    if (request.method !== 'POST') return json({error:'Method not allowed'},405);
+    const raw = await request.text();
+    if (raw.length > 2048) return json({error:'Invalid input'},400);
+    let input;
+    try { input = JSON.parse(raw); } catch (_) { return json({error:'Invalid input'},400); }
+    const now=Date.now(), action=url.pathname.slice(EMAIL_PATH.length);
+    this.sql.exec('DELETE FROM email_rate WHERE created_at <= ?', now - 86400000);
+    this.sql.exec('DELETE FROM email_results WHERE (confirmed_at IS NULL AND created_at <= ?) OR created_at <= ?', now - 2*86400000, now - YEAR);
+    if (action === 'request') {
+      const email=typeof input.email === 'string' ? input.email.trim().toLowerCase() : '';
+      const validEmail=email.length <= 254 && /^[a-z0-9.!#$%&'*+\/=?^_{|}~-]+@[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?\.[a-z]{2,63}$/i.test(email) && !email.includes('..');
+      const isInt=(value,max)=>Number.isInteger(value)&&value>=0&&value<=max;
+      if (!validEmail || input.consent !== true || !isInt(input.typeCode,7) || !isInt(input.anxiety,3) || !isInt(input.reaction,3) || !isInt(input.tipCode,5) || typeof input.testNews !== 'boolean' || typeof input.monthlyReport !== 'boolean') return json({error:'Invalid input'},400);
+      const identity=request.headers.get('x-email-rate');
+      if (!identity || !this.env.RESEND_API_KEY) return json({error:'Service unavailable'},503);
+      const recent=this.sql.exec('SELECT COUNT(*) AS n FROM email_rate WHERE identity = ? AND created_at > ?',identity,now-15*60000).one().n;
+      const emailRecent=this.sql.exec('SELECT COUNT(*) AS n FROM email_results WHERE email = ? AND created_at > ?',email,now-86400000).one().n;
+      const total=this.sql.exec('SELECT COUNT(*) AS n FROM email_rate WHERE created_at > ?',now-86400000).one().n;
+      if (recent>=3 || emailRecent>=3 || total>=90) return json({error:'Too many requests'},429);
+      const bytes=crypto.getRandomValues(new Uint8Array(32));
+      const token=[...bytes].map(n=>n.toString(16).padStart(2,'0')).join('');
+      const hash=await emailTokenHash(token);
+      this.sql.exec('INSERT INTO email_rate (identity,created_at) VALUES (?,?)',identity,now);
+      this.sql.exec('INSERT INTO email_results (token_hash,email,type_code,anxiety,reaction,tip_code,test_news,monthly_report,created_at) VALUES (?,?,?,?,?,?,?,?,?)',hash,email,input.typeCode,input.anxiety,input.reaction,input.tipCode,+input.testNews,+input.monthlyReport,now);
+      await this.state.storage.setAlarm(now+61000);
+      const link='https://datamoney.kr/account/result/#'+token;
+      const type=EMAIL_TYPES[input.typeCode], anxiety=EMAIL_ANXIETY[input.anxiety], reaction=EMAIL_REACTION[input.reaction];
+      const body='안녕하세요. 데이터머니입니다.\n\n나의 투자 성향 결과: '+type.name+' ('+type.short+')\n최근 불안감: '+anxiety+'\n최근 매도 충동: '+reaction+'\n\n아래 링크에서 이메일을 확인하고 전체 결과를 저장해 보세요. 다음 검사 결과와도 비교할 수 있습니다.\n'+link+'\n\n이 링크는 본인만 보관해 주세요. 확인 전에는 선택한 소식 수신이 시작되지 않습니다. 요청하지 않으셨다면 이 메일을 무시해 주세요.\n\n문의: sys247365@gmail.com\n데이터머니 https://datamoney.kr';
+      let sent=false;
+      try {
+        const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{authorization:'Bearer '+this.env.RESEND_API_KEY,'content-type':'application/json'},body:JSON.stringify({from:'데이터머니 <hello@send.datamoney.kr>',to:[email],subject:'[데이터머니] 나의 투자 성향 결과를 확인해 주세요',text:body})});
+        sent=response.ok;
+      } catch (_) {}
+      if (!sent) { this.sql.exec('DELETE FROM email_results WHERE token_hash = ?',hash); return json({error:'Email delivery unavailable'},502); }
+      return json({ok:true});
+    }
+    const token=typeof input.token === 'string' ? input.token : '';
+    if (!/^[a-f0-9]{64}$/.test(token)) return json({error:'Invalid link'},400);
+    const hash=await emailTokenHash(token);
+    const row=this.sql.exec('SELECT * FROM email_results WHERE token_hash = ?',hash).toArray()[0];
+    if (!row || now-row.created_at >= YEAR || (!row.confirmed_at && now-row.created_at >= 2*86400000)) return json({error:'Link expired'},404);
+    if (action === 'open') {
+      if (!row.confirmed_at) this.sql.exec('UPDATE email_results SET confirmed_at = ? WHERE token_hash = ?',now,hash);
+      const subscriptions=this.sql.exec('SELECT MAX(test_news) AS test_news, MAX(monthly_report) AS monthly_report FROM email_results WHERE email = ? AND confirmed_at IS NOT NULL AND created_at > ?',row.email,now-YEAR).one();
+      return json({result:{typeCode:row.type_code,anxiety:row.anxiety,reaction:row.reaction,tipCode:row.tip_code,createdAt:row.created_at},subscriptions:{testNews:!!subscriptions.test_news,monthlyReport:!!subscriptions.monthly_report}});
+    }
+    if (!row.confirmed_at) return json({error:'Not confirmed'},403);
+    if (action === 'preferences') {
+      if (typeof input.testNews !== 'boolean' || typeof input.monthlyReport !== 'boolean') return json({error:'Invalid input'},400);
+      if (!input.testNews) this.sql.exec('UPDATE email_results SET test_news = 0 WHERE email = ?',row.email);
+      if (!input.monthlyReport) this.sql.exec('UPDATE email_results SET monthly_report = 0 WHERE email = ?',row.email);
+      return json({ok:true});
+    }
+    if (action === 'delete') { this.sql.exec('DELETE FROM email_results WHERE email = ?',row.email); return json({ok:true}); }
+    return json({error:'Not found'},404);
+  }
+
   async moderate(request, url, match) {
     const [, rawId, action] = match;
     if (request.method === 'GET' && !rawId) {
@@ -382,9 +475,13 @@ export class ArticleEngagement {
     const now = Date.now();
     this.sql.exec('DELETE FROM comment_rate WHERE created_at <= ?', now - 60000);
     this.sql.exec('DELETE FROM survey_answers WHERE created_at <= ?', now - YEAR);
+    this.sql.exec('DELETE FROM email_rate WHERE created_at <= ?', now - 86400000);
+    this.sql.exec('DELETE FROM email_results WHERE (confirmed_at IS NULL AND created_at <= ?) OR created_at <= ?', now - 2*86400000, now - YEAR);
     const next = this.sql.exec('SELECT MIN(created_at) AS time FROM comment_rate').one().time;
     const surveyNext = this.sql.exec('SELECT MIN(created_at) AS time FROM survey_answers').one().time;
-    const deadlines = [next === null ? null : next + 61000, surveyNext === null ? null : surveyNext + YEAR].filter(value => value !== null);
+    const emailNext = this.sql.exec('SELECT MIN(CASE WHEN confirmed_at IS NULL THEN created_at + ? ELSE created_at + ? END) AS time FROM email_results', 2*86400000, YEAR).one().time;
+    const emailRateNext = this.sql.exec('SELECT MIN(created_at) AS time FROM email_rate').one().time;
+    const deadlines = [next === null ? null : next + 61000, surveyNext === null ? null : surveyNext + YEAR, emailNext, emailRateNext === null ? null : emailRateNext + 86400000].filter(value => value !== null);
     if (deadlines.length) await this.state.storage.setAlarm(Math.max(now + 1000, Math.min(...deadlines)));
   }
 }
