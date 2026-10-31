@@ -46,16 +46,18 @@
   }
   function drawCard(){
     const c=$('canvas'),x=c.getContext('2d'); x.fillStyle='#f4f7fc';x.fillRect(0,0,1080,1350);
-    x.fillStyle='#305cdb';x.fillRect(0,0,1080,24);x.font='bold 42px sans-serif';x.fillText('데이터머니',80,120);
-    x.fillStyle='#586b83';x.font='34px sans-serif';x.fillText('나의 투자 캐릭터',80,235);
-    x.fillStyle='#14233c';x.font='bold 64px sans-serif';x.fillText(result.name,80,330,920);
-    x.fillStyle='#305cdb';x.font='bold 36px sans-serif';x.fillText(result.tag,80,405,920);
+    const family='"Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif';
+    x.fillStyle='#305cdb';x.fillRect(0,0,1080,24);x.font=`700 42px ${family}`;x.fillText('데이터머니',80,120);
+    x.fillStyle='#586b83';x.font=`400 34px ${family}`;x.fillText('나의 투자 캐릭터',80,235);
+    x.fillStyle='#14233c';x.font=`700 64px ${family}`;x.fillText(result.name,80,330,920);
+    x.fillStyle='#305cdb';x.font=`700 36px ${family}`;x.fillText(result.tag,80,405,920);
     const sheet=$('character-sheet');
     if(sheet.complete&&sheet.naturalWidth){const [sx,sy,sw,sh]=result.art;const scale=Math.min(600/sw,540/sh);x.drawImage(sheet,sx,sy,sw,sh,(1080-sw*scale)/2,450,sw*scale,sh*scale);}
-    x.fillStyle='#ccd9e9';x.fillRect(80,1080,920,3);x.fillStyle='#526782';x.font='32px sans-serif';x.fillText('나의 투자 캐릭터 알아보기',80,1160);x.fillText('datamoney.kr/tools/investor-type/',80,1230);
+    x.fillStyle='#ccd9e9';x.fillRect(80,1080,920,3);x.fillStyle='#526782';x.font=`400 32px ${family}`;x.fillText('나의 투자 캐릭터 알아보기',80,1160);x.fillText('datamoney.kr/tools/investor-type/',80,1230);
     $('card-preview').src=c.toDataURL('image/png');
   }
   $('character-sheet').addEventListener('load',()=>{if(result&&!$('result').hidden)drawCard();});
+  if(document.fonts)document.fonts.ready.then(()=>{if(result&&!$('result').hidden)drawCard();}).catch(()=>{});
   async function finish(){
     finishing=true;$('quiz-status').textContent='결과를 준비하고 있어요.';let message='';
     const baseline=[answers.risk,answers.approach,answers.social];

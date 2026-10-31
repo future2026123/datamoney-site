@@ -16,3 +16,19 @@
 .mood-panel .eyebrow{margin:0}.mood-panel h3{margin:8px 0 18px;font-size:22px;letter-spacing:-.04em}
 .mood-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mood-grid div{padding:16px;border-radius:12px;background:#f1f6ff}.mood-grid span,.mood-grid strong{display:block}.mood-grid span{font-size:13px;color:#526782}.mood-grid strong{margin-top:7px;font-size:18px;color:#2854bb}.mood-panel>p:last-child{margin:16px 0 0;color:#687c95;font-size:12px;line-height:1.6}
 @media(max-width:760px){.hero-animals{min-height:0;height:auto;overflow:visible;margin:10px 0 18px}.hero-animals img{border-radius:16px}.hero-animals .art-badge{right:-5px;bottom:-10px}.result-character{height:210px}.mood-panel{padding:20px}}
+
+/* Match the blog article font, heading hierarchy and body text. */
+body { font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; font-size: 17px; line-height: 27px; color: #182338; overflow-wrap: anywhere; }
+.hero h1, .result-hero h2 { color: #101319; font-size: 30px; font-weight: 700; line-height: 42px; letter-spacing: normal; }
+.hero h1 em { color: inherit; }
+.panel h2 { color: #12284a; font-size: 26px; font-weight: 700; line-height: 1.4; letter-spacing: -.03em; }
+.hero .lead, .index-story p, .consent-box strong, .question-hint, .choice,
+.result-hero p:last-child, .result-details p { font-size: 17px; line-height: 27px; letter-spacing: 0; }
+.hero .lead { color: #5c6674; }
+.index-story strong, .result-details h3, .mood-panel h3, .share-area > p:first-child { color: #12284a; font-size: 18px; font-weight: 700; line-height: 1.5; letter-spacing: 0; }
+.consent-box small, .consent-box p, .mood-panel > p:last-child, .disclaimer { font-size: 14px; line-height: 1.6; }
+.mood-grid span { font-size: 14px; line-height: 1.5; }
+.mood-grid strong, .tagline { font-size: 17px; line-height: 27px; }
+@media (max-width: 560px) {
+  .hero h1, .result-hero h2 { font-size: 26px; line-height: 1.4; }
+}
