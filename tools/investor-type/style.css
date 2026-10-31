@@ -33,3 +33,20 @@ body { font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", sans-s
 @media (max-width: 560px) {
   .hero h1, .result-hero h2 { font-size: 26px; line-height: 1.4; }
 }
+
+/* Inside a blog article or the home page, the surrounding blog supplies the shell. */
+html.dm-embedded body { background: transparent; }
+html.dm-embedded .shell { max-width: none; padding: 0; }
+html.dm-embedded .shell > header { display: none; }
+html.dm-embedded main { min-height: 0; padding: 0; }
+html.dm-embedded .hero { grid-template-columns: 1fr; gap: 14px; }
+html.dm-embedded .hero-copy { display: contents; }
+html.dm-embedded .hero-copy > .eyebrow { order: 0; margin-bottom: 0; }
+html.dm-embedded .hero-copy > h1 { order: 1; margin: 7px 0 0; }
+html.dm-embedded .hero-copy > .lead { order: 2; }
+html.dm-embedded .hero-art { order: 3; min-height: 0; height: auto; margin: 10px 0 18px; }
+html.dm-embedded .index-story { order: 4; }
+html.dm-embedded .consent-box { order: 5; }
+html.dm-embedded .hero .primary { order: 6; }
+html.dm-embedded .hero .hint { order: 7; }
+html.dm-embedded .result-details { grid-template-columns: 1fr; }
