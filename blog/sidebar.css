@@ -103,6 +103,10 @@ body:has(.dm-article-heading, article.dm-post) > .dm-sidebar-shell { margin-top:
 }
 @media (max-width: 760px) {
   .dm-shared-sidebar .investor-test-banner { display: none; }
+  body:has(.dm-shared-sidebar) .dm-site-header { padding-bottom: 0; }
+  body:has(.dm-shared-sidebar) .blog-layout { margin-top: 16px; }
+  body:has(.dm-article-heading) > .wrap > :is(.article-shell, .dm-heading-layout, .dm-sidebar-shell) { margin-top: 16px; }
+  body:has(.dm-article-heading, article.dm-post) > .dm-sidebar-shell { margin-top: 16px; }
 }
 @media (max-width: 380px) {
   .dm-shared-sidebar .dm-channel-links :is(a, button) { gap: 6px; padding: 9px 8px; font-size: 12px; }
