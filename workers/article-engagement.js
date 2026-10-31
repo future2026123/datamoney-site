@@ -158,6 +158,9 @@ export class ArticleEngagement {
     this.sql.exec('CREATE TABLE IF NOT EXISTS comment_votes (article TEXT NOT NULL, comment_id INTEGER NOT NULL, visitor TEXT NOT NULL, value INTEGER NOT NULL CHECK (value IN (-1, 1)), PRIMARY KEY (article, comment_id, visitor))');
     this.sql.exec('CREATE TABLE IF NOT EXISTS comment_rate (identity TEXT NOT NULL, created_at INTEGER NOT NULL)');
     this.sql.exec('CREATE TABLE IF NOT EXISTS survey_answers (visitor TEXT NOT NULL, day TEXT NOT NULL, created_at INTEGER NOT NULL, loss INTEGER NOT NULL, anxiety INTEGER NOT NULL, horizon INTEGER NOT NULL, reaction INTEGER NOT NULL, buffer INTEGER NOT NULL, PRIMARY KEY(visitor, day))');
+    const surveyColumns = new Set(this.sql.exec('PRAGMA table_info(survey_answers)').toArray().map(column => column.name));
+    if (!surveyColumns.has('version')) this.sql.exec('ALTER TABLE survey_answers ADD COLUMN version INTEGER NOT NULL DEFAULT 1');
+    if (!surveyColumns.has('type_code')) this.sql.exec('ALTER TABLE survey_answers ADD COLUMN type_code INTEGER');
     this.sql.exec('CREATE INDEX IF NOT EXISTS comments_article_id ON comments (article, id DESC)');
     this.sql.exec('CREATE INDEX IF NOT EXISTS comments_parent_id ON comments (article, parent_id, id)');
     this.sql.exec('CREATE INDEX IF NOT EXISTS comments_visitor_time ON comments (visitor, created_at DESC)');
@@ -175,8 +178,8 @@ export class ArticleEngagement {
   async fetch(request) {
     const url = new URL(request.url);
     if (url.pathname === SURVEY_ADMIN_PATH && request.headers.get('x-article-admin') === 'authorized' && request.method === 'GET') {
-      const rows = this.sql.exec('SELECT day, COUNT(*) AS participants, AVG(loss) AS loss, AVG(anxiety) AS anxiety, AVG(horizon) AS horizon, AVG(reaction) AS reaction, AVG(buffer) AS buffer FROM survey_answers GROUP BY day ORDER BY day DESC LIMIT 365').toArray();
-      return json({version: 1, items: rows});
+      const rows = this.sql.exec('SELECT day, version, type_code, COUNT(*) AS participants, AVG(loss) AS loss, AVG(anxiety) AS anxiety, AVG(horizon) AS horizon, AVG(reaction) AS reaction, AVG(buffer) AS buffer FROM survey_answers GROUP BY day, version, type_code ORDER BY day DESC, version DESC, type_code LIMIT 3300').toArray();
+      return json({version: 2, items: rows});
     }
     if (url.pathname === SURVEY_PATH) {
       const visitor = request.headers.get('x-survey-visitor');
@@ -192,9 +195,13 @@ export class ArticleEngagement {
       try { input = JSON.parse(raw); } catch (_) { return json({error: 'Invalid input'}, 400); }
       const fields = ['loss', 'anxiety', 'horizon', 'reaction', 'buffer'];
       if (input?.consent !== true || !fields.every(key => Number.isInteger(input.answers?.[key]) && input.answers[key] >= 0 && input.answers[key] <= 3)) return json({error: 'Invalid input'}, 400);
+      const version = input.version === undefined ? 1 : input.version;
+      if (version !== 1 && version !== 2) return json({error: 'Invalid input'}, 400);
+      if (version === 2 && (!Array.isArray(input.baseline) || input.baseline.length !== 3 || !input.baseline.every(value => value === 0 || value === 1))) return json({error: 'Invalid input'}, 400);
+      const typeCode = version === 2 ? 4 * input.baseline[0] + 2 * input.baseline[1] + input.baseline[2] : null;
       const now = Date.now();
       const day = new Date(now + 9 * 3600000).toISOString().slice(0, 10);
-      this.sql.exec('INSERT INTO survey_answers (visitor, day, created_at, loss, anxiety, horizon, reaction, buffer) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(visitor, day) DO NOTHING', visitor, day, now, ...fields.map(key => input.answers[key]));
+      this.sql.exec('INSERT INTO survey_answers (visitor, day, created_at, loss, anxiety, horizon, reaction, buffer, version, type_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(visitor, day) DO NOTHING', visitor, day, now, ...fields.map(key => input.answers[key]), version, typeCode);
       await this.state.storage.setAlarm(now + 61000);
       return json({ok: true});
     }
