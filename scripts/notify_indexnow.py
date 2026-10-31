@@ -17,9 +17,9 @@ KEY_FILE = ROOT / "indexnow-key.txt"
 ENDPOINT = "https://api.indexnow.org/indexnow"
 TOOL_URLS = {
     'investor-type': '/tools/investor-type/',
-    "etf_calculator": "/tools/etf-calculator",
-    "tax_simulator": "/tools/tax-simulator",
-    "dividend_calculator": "/tools/dividend-calculator",
+    "etf_calculator": "/tools/etf_calculator/",
+    "tax_simulator": "/tools/tax_simulator/",
+    "dividend_calculator": "/tools/dividend_calculator/",
 }
 
 
