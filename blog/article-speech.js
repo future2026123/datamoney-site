@@ -210,7 +210,21 @@
       }
     };
     const clear = () => { active = false; current = -1; clearVisual(); };
-    return {prepare, show, clear};
+    const indexAtPoint = (x, y, target) => {
+      if (!target || ![title, content].some(root => root?.contains(target))) return -1;
+      const caret = document.caretPositionFromPoint?.(x, y);
+      const fallback = !caret && document.caretRangeFromPoint?.(x, y);
+      const node = caret?.offsetNode || fallback?.startContainer;
+      const offset = caret ? caret.offset : fallback?.startOffset;
+      if (!node || node.nodeType !== 3) return -1;
+      const refs = textIndex().refs;
+      let at = refs.findIndex(ref => ref && ref.node === node && ref.offset === offset);
+      if (at < 0 && offset === node.length) {
+        at = refs.findIndex(ref => ref && ref.node === node && ref.offset === offset - 1);
+      }
+      return at < 0 ? -1 : matches.findIndex(match => match && at >= match.start && at < match.end);
+    };
+    return {prepare, show, clear, indexAtPoint};
   };
 
   window.initDataMoneyArticleSpeech = ({toolbar, speechButton, onUnavailable, highlighter}) => {
@@ -358,6 +372,14 @@
     }));
     document.addEventListener('click', event => {
       if (!menu.hidden && !event.target.closest('.dm-speech-wrap')) closeMenu(false);
+      if (!playing || !cues.length || typeof highlighter?.indexAtPoint !== 'function' ||
+          event.defaultPrevented || (event.button != null && event.button !== 0) ||
+          event.target.closest('a, button, input, select, textarea, [contenteditable], label') ||
+          !window.getSelection?.()?.isCollapsed) return;
+      const index = highlighter.indexAtPoint(event.clientX, event.clientY, event.target);
+      if (index < 0 || !cues[index]) return;
+      audio.currentTime = cues[index].start;
+      syncHighlight();
     });
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && !menu.hidden) closeMenu(true);

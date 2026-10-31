@@ -25,6 +25,7 @@ async function scenario(remoteId, includeHighlighter = false) {
   const toolbar = {querySelector: () => menu};
   const document = create();
   const fakeWindow = create();
+  fakeWindow.getSelection = () => ({isCollapsed:true});
   const storage = new Map();
   const localStorage = {getItem: key => storage.get(key), setItem: (key, value) => storage.set(key, value)};
   const fetched = [];
@@ -32,7 +33,8 @@ async function scenario(remoteId, includeHighlighter = false) {
     entries:[], shown:[], clears:0,
     prepare(entries) { this.entries = entries; },
     show(index) { this.shown.push(index); },
-    clear() { this.clears++; }
+    clear() { this.clears++; },
+    indexAtPoint(x, y, target) { return target.sentenceIndex ?? -1; }
   } : null;
   const fetch = async url => {
     fetched.push(String(url));
@@ -61,7 +63,7 @@ async function scenario(remoteId, includeHighlighter = false) {
   await new Promise(resolve => setTimeout(resolve, 0));
   button.fire('click');
   await new Promise(resolve => setTimeout(resolve, 0));
-  return {button, menu, play, feedback, audio, speeds, storage, fetched, fallbackCount, highlighter};
+  return {button, menu, play, feedback, audio, speeds, storage, fetched, fallbackCount, highlighter, document, fakeWindow};
 }
 
 const good = await scenario(id);
@@ -103,6 +105,38 @@ assert.equal(timed.highlighter.shown.at(-1), 1, 'the final sentence remains high
 timed.audio.currentTime = 2.2;
 timed.audio.fire('seeked');
 assert.equal(timed.highlighter.shown.at(-1), 0, 'seeking backward into a gap restores the previous sentence');
+const sentence = {sentenceIndex:1, closest:() => null};
+timed.document.fire('click', {target:sentence, button:0, clientX:20, clientY:30});
+assert.equal(timed.audio.currentTime, 2.5, 'clicking a sentence seeks to its start');
+assert.equal(timed.highlighter.shown.at(-1), 1, 'clicking updates the highlight immediately');
+timed.fakeWindow.getSelection = () => ({isCollapsed:false});
+timed.document.fire('click', {target:{...sentence, sentenceIndex:0}, button:0});
+assert.equal(timed.audio.currentTime, 2.5, 'selecting text does not seek');
+timed.fakeWindow.getSelection = () => ({isCollapsed:true});
+timed.document.fire('click', {target:{sentenceIndex:0, closest:selector => selector.includes('a, button') ? {} : null}, button:0});
+assert.equal(timed.audio.currentTime, 2.5, 'clicking a link does not seek');
 timed.play.fire('click');
 assert.equal(timed.highlighter.clears, 1, 'stopping audio clears the highlight');
+timed.document.fire('click', {target:{...sentence, sentenceIndex:0}, button:0});
+assert.equal(timed.audio.currentTime, 2.5, 'clicking after playback stops does not seek');
+
+// Exercise the actual text-position mapping, including text split across inline elements.
+const paragraph = {closest: selector => selector.startsWith('p, li') ? paragraph : null};
+const first = {nodeType:3, data:'첫 문장. ', length:6, parentElement:paragraph};
+const second = {nodeType:3, data:'두 번째 문장.', length:8, parentElement:paragraph};
+const root = {contains: target => target === paragraph};
+const positionWindow = create({getSelection:() => ({isCollapsed:true})});
+const positionDocument = {
+  createTreeWalker() {
+    const nodes = [first, second];
+    return {nextNode: () => nodes.shift() || null};
+  },
+  caretPositionFromPoint(x) { return x === 1 ? {offsetNode:first, offset:1} : {offsetNode:second, offset:2}; }
+};
+vm.runInNewContext(source, {window:positionWindow, document:positionDocument, RegExp, String});
+const locator = positionWindow.createDataMoneySpeechHighlighter({title:null, content:root, followInput:null});
+locator.prepare([{text:'첫 문장.'}, {text:'두 번째 문장.'}]);
+assert.equal(locator.indexAtPoint(1, 0, paragraph), 0, 'first sentence maps from its text node');
+assert.equal(locator.indexAtPoint(2, 0, paragraph), 1, 'second sentence maps from its text node');
+assert.equal(locator.indexAtPoint(1, 0, {}), -1, 'clicks outside the article are ignored');
 console.log('Local speech UI: on-demand playback, speed, stop, and changed-content protection passed');
