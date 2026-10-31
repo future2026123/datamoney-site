@@ -7,3 +7,8 @@
 .dm-post figure.source-excerpt .translation strong { color:#193f7a; }
 .dm-post figure.source-excerpt figcaption { padding:12px 0 0; font-size:13px; line-height:1.6; color:#617089; overflow-wrap:anywhere; }
 @media(max-width:600px) { .dm-post figure.source-excerpt { padding:16px 14px; } .dm-post figure.source-excerpt blockquote.research-excerpt { padding:16px; } }
+
+/* 글 끝의 참고자료는 본문보다 작고 간결하게 표시한다. */
+.dm-post .dm-references { margin-top: 32px; padding-top: 20px; border-top: 1px solid #dfe7f2; }
+.dm-post .dm-references h3 { margin: 0 0 12px; font-size: 17px; line-height: 1.5; color: #253953; }
+.dm-post:has(> .dm-article-heading) .dm-references p:not(.note) { margin: 0 0 8px; font-size: 13px; line-height: 1.6; color: #617089; overflow-wrap: anywhere; }

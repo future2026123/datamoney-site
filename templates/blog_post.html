@@ -42,7 +42,7 @@
 <script src="/scripts/popular-posts.js?v=f2e9082d" defer></script>
 <script src="/scripts/investment-quotes.js?v=504bb17e" defer></script>
 <link rel="stylesheet" href="/blog/article-title.css?v=f379ff92">
-<link rel="stylesheet" href="/blog/source-excerpt.css?v=4c69087f">
+<link rel="stylesheet" href="/blog/source-excerpt.css?v=ac510ee5">
 <link rel="stylesheet" href="/blog/footer.css?v=3900f634">
 <script src="/scripts/sticky-article-sidebar.js?v=b1cc0f06" defer></script>
 </head>
@@ -72,6 +72,7 @@
 <article class="dm-post">
   <div class="dm-article-heading"><h1>{{POST_TITLE}}</h1><div class="dm-article-byline"><span>데이터머니</span><span>{{POST_DATE}}</span><span>읽는 시간 {{POST_READ_MINUTES}}분</span></div></div>
   <!-- 자료 원문 인용은 templates/blog_source_excerpt.html을 참고해 관련 본문 바로 뒤에 배치한다. -->
+  <!-- 글 끝 참고자료는 <section class="dm-references">로 묶어 작은 글씨로 표시한다. -->
   {{POST_CONTENT}}
 </article>
 <!-- dm-shared-sidebar:start -->
