@@ -136,7 +136,7 @@ body.dm-dark-theme .dm-site-header .dm-site-nav a { background: #fff; }
 body.dm-header-flush .dm-site-header { margin-top: 18px; }
 .dm-site-header a:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
 @media (max-width: 760px) {
-  .dm-site-header { grid-template-columns: minmax(0, 1fr) auto; gap: 10px 12px; }
+  .dm-site-header { position: static; top: auto; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 12px; }
   .dm-site-header .dm-brand { grid-column: 1; grid-row: 1; }
   .dm-site-header .dm-site-nav { grid-column: 2; grid-row: 1; }
   .dm-site-header .dm-header-search { grid-column: 1 / -1; grid-row: 2; }
