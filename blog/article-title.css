@@ -57,7 +57,7 @@
 
 :is(.article, article:has(> .dm-article-heading), main.dm-article-page,
     .dm-article-page .content-grid main, .dm-article-page .hero-copy)
-    :is(p, li):not(.section-kicker, .source, .source-citation, .note, .eyebrow, .subtitle, .source-scroll-hint) {
+    :is(p, li):not(.section-kicker, .source, .source-citation, .note, .eyebrow, .subtitle, .source-scroll-hint, :where(.dm-comments p, .dm-comments li)) {
   font-size: 17px;
   line-height: 27px;
   letter-spacing: 0;
