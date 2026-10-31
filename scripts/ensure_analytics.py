@@ -9,20 +9,25 @@ MARKER = b"<!-- DataMoney Google Analytics -->"
 END_MARKER = b"<!-- End DataMoney Google Analytics -->"
 TAG = b"""<!-- DataMoney Google Analytics -->
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('consent', 'default', {
-    'ad_storage': 'denied',
-    'ad_user_data': 'denied',
-    'ad_personalization': 'denied',
-    'analytics_storage': 'denied',
-    'region': ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH','AX','GF','GP','MQ','RE','YT','MF'],
-    'wait_for_update': 500
-  });
-  gtag('js', new Date());
-  gtag('config', 'G-91YCD2SBLM');
+  if (window.location.hostname === 'datamoney.kr' || window.location.hostname === 'www.datamoney.kr') {
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function(){window.dataLayer.push(arguments);};
+    window.gtag('consent', 'default', {
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied',
+      'analytics_storage': 'denied',
+      'region': ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH','AX','GF','GP','MQ','RE','YT','MF'],
+      'wait_for_update': 500
+    });
+    window.gtag('js', new Date());
+    window.gtag('config', 'G-91YCD2SBLM');
+    var analyticsScript = document.createElement('script');
+    analyticsScript.async = true;
+    analyticsScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-91YCD2SBLM';
+    document.head.appendChild(analyticsScript);
+  }
 </script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-91YCD2SBLM"></script>
 <!-- End DataMoney Google Analytics -->"""
 HEAD_OPEN = re.compile(br"<head(?:\s[^>]*)?>", re.IGNORECASE)
 HEAD_CLOSE = re.compile(br"</head\s*>", re.IGNORECASE)
