@@ -10,10 +10,12 @@ from sync_blog_sidebars import Tree, apply_edits
 ROOT = Path(__file__).resolve().parents[1]
 FRAGMENT = ROOT / "templates" / "blog_footer.html"
 CSS = ROOT / "blog" / "footer.css"
+TOP_SCRIPT = ROOT / "scripts" / "back-to-top.js"
 START = "<!-- dm-shared-footer:start -->"
 END = "<!-- dm-shared-footer:end -->"
 HEAD_END = re.compile(r"</head\s*>", re.IGNORECASE)
 CSS_TAG = re.compile(r'''<link\s+rel=["']stylesheet["']\s+href=["']/blog/footer\.css(?:\?[^"']*)?["']\s*/?>''', re.IGNORECASE)
+TOP_SCRIPT_TAG = re.compile(r'''<script\s+src=["']/scripts/back-to-top\.js(?:\?[^"']*)?["']\s+defer\s*></script\s*>''', re.IGNORECASE)
 
 
 def footer_destination(tree, path):
@@ -80,6 +82,15 @@ def synchronize(path, fragment):
         if not head_end:
             raise ValueError(f"Missing closing head: {path}")
         updated = updated[:head_end.start()] + stylesheet + "\n" + updated[head_end.start():]
+    script_version = hashlib.sha256(TOP_SCRIPT.read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:8]
+    script = f'<script src="/scripts/back-to-top.js?v={script_version}" defer></script>'
+    if TOP_SCRIPT_TAG.search(updated):
+        updated = TOP_SCRIPT_TAG.sub(script, updated)
+    else:
+        head_end = HEAD_END.search(updated)
+        if not head_end:
+            raise ValueError(f"Missing closing head: {path}")
+        updated = updated[:head_end.start()] + script + "\n" + updated[head_end.start():]
     if updated == original:
         return False
     path.write_text(updated, encoding="utf-8")
