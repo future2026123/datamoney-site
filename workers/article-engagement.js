@@ -1,6 +1,6 @@
 import {AUTH_CONFIG_PATH, AUTH_LOGIN_PATH, AUTH_LOGOUT_PATH, getGoogleAdminConfig, googleAdminLogin, googleAdminLogout, googleAdminMode, hasGoogleAdminSession} from './admin-auth.js';
 
-const ROUTE = /^\/api\/article-engagement\/([a-z0-9][a-z0-9-]{0,95})(?:\/(reaction|comments)(?:\/([1-9]\d*)(?:\/(vote))?)?)?\/?$/;
+const ROUTE = /^\/api\/article-engagement\/([a-z0-9][a-z0-9-]{0,95})(?:\/(reaction|comments|feedback)(?:\/([1-9]\d*)(?:\/(vote))?)?)?\/?$/;
 const ADMIN_ROUTE = /^\/api\/article-engagement\/_admin\/comments(?:\/([1-9]\d*)(?:\/(approve))?)?\/?$/;
 const CONFIG_PATH = '/api/article-engagement/_config';
 const SURVEY_PATH = '/api/article-engagement/_survey';
@@ -10,6 +10,8 @@ const EMAIL_PATH = '/api/article-engagement/_email/';
 const EMAIL_ADMIN_PATH = '/api/article-engagement/_admin/email-subscribers';
 const EMAIL_RESULT_CARD_BASE = 'https://datamoney.kr/tools/investor-type/result-cards/20261101/';
 const EMAIL_RESULT_CARD_ASSET_BASE = 'https://datamoney-tools.pages.dev/tools/investor-type/result-cards/20261101/';
+const FEEDBACK_ADMIN_PATH = '/api/article-engagement/_admin/feedback';
+const FEEDBACK_ADMIN_ROUTE = /^\/api\/article-engagement\/_admin\/feedback(?:\/([1-9]\d*))?\/?$/;
 const EMAIL_TYPES = [
   {name:'차근차근 거북이',short:'존버형'}, {name:'꼼꼼한 다람쥐',short:'짠테크형'},
   {name:'감각적인 고양이',short:'촉형'}, {name:'귀 쫑긋 토끼',short:'포모형'},
@@ -111,11 +113,12 @@ export default {
     const surveyAggregate = url.pathname === SURVEY_AGGREGATE_PATH;
     const surveyAdmin = url.pathname === SURVEY_ADMIN_PATH;
     const emailAdmin = url.pathname === EMAIL_ADMIN_PATH;
+    const feedbackAdmin = url.pathname.match(FEEDBACK_ADMIN_ROUTE);
     const emailRoute = /^\/api\/article-engagement\/_email\/(request|open|preferences|delete)$/.test(url.pathname);
     const authConfig = url.pathname === AUTH_CONFIG_PATH;
     const authLogin = url.pathname === AUTH_LOGIN_PATH;
     const authLogout = url.pathname === AUTH_LOGOUT_PATH;
-    if (!adminRoute && !route && !survey && !surveyAdmin && !surveyAggregate && !emailRoute && !emailAdmin && !authConfig && !authLogin && !authLogout) return json({error: 'Not found'}, 404);
+    if (!adminRoute && !route && !survey && !surveyAdmin && !surveyAggregate && !emailRoute && !emailAdmin && !feedbackAdmin && !authConfig && !authLogin && !authLogout) return json({error: 'Not found'}, 404);
     if (!['GET', 'POST', 'DELETE'].includes(request.method)) return json({error: 'Method not allowed'}, 405);
     if (request.method !== 'GET' && request.headers.get('origin') !== url.origin) {
       return json({error: 'Invalid origin'}, 403);
@@ -131,7 +134,7 @@ export default {
       const headers = new Headers({'content-type':'application/json'});
       return env.ARTICLE_ENGAGEMENT.get(id).fetch(new Request(request, {headers}));
     }
-    if (adminRoute || surveyAdmin || emailAdmin) {
+    if (adminRoute || surveyAdmin || emailAdmin || feedbackAdmin) {
       const mode = googleAdminMode(env);
       if (mode === 'unavailable') return json({error: 'Administrator access unavailable'}, 503);
       if (mode === 'enabled') {
@@ -180,6 +183,8 @@ export default {
       return new Response(response.body, {status: response.status, headers: resultHeaders});
     }
     const [, , action, commentId] = route;
+    if (action === 'feedback' && (request.method !== 'POST' || commentId)) return json({error: 'Method not allowed'}, 405);
+    if (action === 'feedback' && ((Number(request.headers.get('content-length')) || 0) > 4096)) return json({error: 'Invalid input'}, 400);
     if (request.method === 'POST' && action === 'comments' && !commentId) {
       if (!!env.TURNSTILE_SITEKEY !== !!env.TURNSTILE_SECRET) return json({error: 'Verification unavailable'}, 503);
       if (env.TURNSTILE_SECRET) {
@@ -198,10 +203,16 @@ export default {
     const headers = new Headers(request.headers);
     headers.delete('x-article-admin');
     headers.delete('x-article-rate');
+    headers.delete('x-feedback-rate');
     headers.set('x-article-visitor', visitor);
     if (request.method === 'POST' && action === 'comments' && !commentId) {
       const identifier = await rateIdentifier(request.headers.get('cf-connecting-ip'), env.DM_COMMENT_ADMIN_KEY);
       if (identifier) headers.set('x-article-rate', identifier);
+    }
+    if (request.method === 'POST' && action === 'feedback') {
+      const identifier = await rateIdentifier(request.headers.get('cf-connecting-ip'), env.DM_COMMENT_ADMIN_KEY);
+      if (!identifier) return json({error: 'Service unavailable'}, 503);
+      headers.set('x-feedback-rate', identifier);
     }
     const forwarded = new Request(request, {headers});
     const id = env.ARTICLE_ENGAGEMENT.idFromName('datamoney');
@@ -227,6 +238,9 @@ export class ArticleEngagement {
     if (!columns.has('status')) this.sql.exec("ALTER TABLE comments ADD COLUMN status TEXT NOT NULL DEFAULT 'published'");
     this.sql.exec('CREATE TABLE IF NOT EXISTS comment_votes (article TEXT NOT NULL, comment_id INTEGER NOT NULL, visitor TEXT NOT NULL, value INTEGER NOT NULL CHECK (value IN (-1, 1)), PRIMARY KEY (article, comment_id, visitor))');
     this.sql.exec('CREATE TABLE IF NOT EXISTS comment_rate (identity TEXT NOT NULL, created_at INTEGER NOT NULL)');
+    this.sql.exec('CREATE TABLE IF NOT EXISTS article_feedback (id INTEGER PRIMARY KEY AUTOINCREMENT, article TEXT NOT NULL, visitor TEXT NOT NULL, choice TEXT NOT NULL, body TEXT NOT NULL DEFAULT \'\', created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, UNIQUE(article, visitor))');
+    this.sql.exec('CREATE TABLE IF NOT EXISTS feedback_rate (identity TEXT NOT NULL, created_at INTEGER NOT NULL)');
+    this.sql.exec('CREATE INDEX IF NOT EXISTS feedback_rate_identity_time ON feedback_rate (identity, created_at DESC)');
     this.sql.exec('CREATE TABLE IF NOT EXISTS survey_answers (visitor TEXT NOT NULL, day TEXT NOT NULL, created_at INTEGER NOT NULL, loss INTEGER NOT NULL, anxiety INTEGER NOT NULL, horizon INTEGER NOT NULL, reaction INTEGER NOT NULL, buffer INTEGER NOT NULL, PRIMARY KEY(visitor, day))');
     this.sql.exec('CREATE TABLE IF NOT EXISTS survey_aggregates (day TEXT NOT NULL, type_code INTEGER NOT NULL, participants INTEGER NOT NULL, loss INTEGER NOT NULL, anxiety INTEGER NOT NULL, horizon INTEGER NOT NULL, reaction INTEGER NOT NULL, buffer INTEGER NOT NULL, PRIMARY KEY(day, type_code))');
     const surveyColumns = new Set(this.sql.exec('PRAGMA table_info(survey_answers)').toArray().map(column => column.name));
@@ -251,6 +265,18 @@ export class ArticleEngagement {
 
   async fetch(request) {
     const url = new URL(request.url);
+    const feedbackAdmin = url.pathname.match(FEEDBACK_ADMIN_ROUTE);
+    if (feedbackAdmin && request.headers.get('x-article-admin') === 'authorized' && request.method === 'DELETE' && feedbackAdmin[1]) {
+      this.sql.exec('DELETE FROM article_feedback WHERE id = ?', Number(feedbackAdmin[1]));
+      return json({ok:true});
+    }
+    if (url.pathname === FEEDBACK_ADMIN_PATH && request.headers.get('x-article-admin') === 'authorized' && request.method === 'GET') {
+      const before = Number(url.searchParams.get('before')) || Number.MAX_SAFE_INTEGER;
+      const items = this.sql.exec('SELECT id, article, choice, body, created_at, updated_at FROM article_feedback WHERE id < ? ORDER BY id DESC LIMIT 51', before).toArray();
+      const totals = this.sql.exec("SELECT article, SUM(CASE WHEN choice='helpful' THEN 1 ELSE 0 END) AS helpful, SUM(CASE WHEN choice='difficult' THEN 1 ELSE 0 END) AS difficult, SUM(CASE WHEN choice='disappointing' THEN 1 ELSE 0 END) AS disappointing FROM article_feedback GROUP BY article ORDER BY MAX(updated_at) DESC LIMIT 1000").toArray();
+      const nextBefore = items.length > 50 ? items[49].id : null;
+      return json({items:items.slice(0, 50), totals, nextBefore});
+    }
     if (url.pathname === EMAIL_ADMIN_PATH && request.headers.get('x-article-admin') === 'authorized' && request.method === 'GET') {
       const items = this.sql.exec('SELECT email, MAX(test_news) AS test_news, MAX(monthly_report) AS monthly_report, MAX(confirmed_at) AS confirmed_at FROM email_results WHERE confirmed_at IS NOT NULL AND created_at > ? GROUP BY email HAVING MAX(test_news) = 1 OR MAX(monthly_report) = 1 ORDER BY confirmed_at DESC LIMIT 5000', Date.now() - YEAR).toArray();
       return json({items});
@@ -307,6 +333,24 @@ export class ArticleEngagement {
     const [, article, action, commentId, subaction] = match;
     const visitor = request.headers.get('x-article-visitor') || '';
     if (request.method === 'GET' && !action) return json(this.summary(article, visitor));
+
+    if (request.method === 'POST' && action === 'feedback' && !commentId) {
+      const rate = request.headers.get('x-feedback-rate');
+      if (!visitor || !rate) return json({error:'Not authorized'}, 403);
+      const raw = await request.text();
+      if (raw.length > 2048) return json({error:'Invalid input'}, 400);
+      let input;
+      try { input = JSON.parse(raw); } catch (_) { return json({error:'Invalid input'}, 400); }
+      if (!['helpful', 'difficult', 'disappointing'].includes(input?.choice) ||
+          (input.body !== undefined && (typeof input.body !== 'string' || input.body.length > 500))) return json({error:'Invalid input'}, 400);
+      const now = Date.now();
+      this.sql.exec('DELETE FROM feedback_rate WHERE created_at < ?', now - 3600000);
+      if (this.sql.exec('SELECT COUNT(*) AS n FROM feedback_rate WHERE identity = ?', rate).one().n >= 30) return json({error:'Too many requests'}, 429);
+      this.sql.exec('INSERT INTO feedback_rate (identity, created_at) VALUES (?, ?)', rate, now);
+      this.sql.exec('INSERT INTO article_feedback (article, visitor, choice, body, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(article, visitor) DO UPDATE SET choice=excluded.choice, body=CASE WHEN ? THEN excluded.body ELSE article_feedback.body END, updated_at=excluded.updated_at', article, visitor, input.choice, (input.body || '').trim(), now, now, input.body !== undefined ? 1 : 0);
+      await this.state.storage.setAlarm(now + 61000);
+      return json({ok:true});
+    }
 
     if (request.method === 'POST' && action === 'reaction' && !commentId) {
       if (!visitor) return json({error: 'Not authorized'}, 403);
@@ -523,12 +567,16 @@ export class ArticleEngagement {
     this.sql.exec('DELETE FROM comment_rate WHERE created_at <= ?', now - 60000);
     this.sql.exec('DELETE FROM survey_answers WHERE created_at <= ?', now - YEAR);
     this.sql.exec('DELETE FROM email_rate WHERE created_at <= ?', now - 86400000);
+    this.sql.exec('DELETE FROM feedback_rate WHERE created_at <= ?', now - 3600000);
+    this.sql.exec('DELETE FROM article_feedback WHERE updated_at <= ?', now - YEAR);
     this.sql.exec('DELETE FROM email_results WHERE (confirmed_at IS NULL AND created_at <= ?) OR created_at <= ?', now - 2*86400000, now - YEAR);
     const next = this.sql.exec('SELECT MIN(created_at) AS time FROM comment_rate').one().time;
     const surveyNext = this.sql.exec('SELECT MIN(created_at) AS time FROM survey_answers').one().time;
     const emailNext = this.sql.exec('SELECT MIN(CASE WHEN confirmed_at IS NULL THEN created_at + ? ELSE created_at + ? END) AS time FROM email_results', 2*86400000, YEAR).one().time;
     const emailRateNext = this.sql.exec('SELECT MIN(created_at) AS time FROM email_rate').one().time;
-    const deadlines = [next === null ? null : next + 61000, surveyNext === null ? null : surveyNext + YEAR, emailNext, emailRateNext === null ? null : emailRateNext + 86400000].filter(value => value !== null);
+    const feedbackNext = this.sql.exec('SELECT MIN(updated_at) AS time FROM article_feedback').one().time;
+    const feedbackRateNext = this.sql.exec('SELECT MIN(created_at) AS time FROM feedback_rate').one().time;
+    const deadlines = [next === null ? null : next + 61000, surveyNext === null ? null : surveyNext + YEAR, emailNext, emailRateNext === null ? null : emailRateNext + 86400000, feedbackNext === null ? null : feedbackNext + YEAR, feedbackRateNext === null ? null : feedbackRateNext + 3600000].filter(value => value !== null);
     if (deadlines.length) await this.state.storage.setAlarm(Math.max(now + 1000, Math.min(...deadlines)));
   }
 }

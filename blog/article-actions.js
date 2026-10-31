@@ -333,6 +333,56 @@
   const reactionButtons = [reactionButton, endReaction];
   const setReactionDisabled = value => reactionButtons.forEach(item => { item.disabled = value; });
   const endpoint = `/api/article-engagement/${slug}`;
+  const feedback = document.createElement('section');
+  feedback.className = 'dm-feedback';
+  feedback.setAttribute('aria-labelledby', 'dm-feedback-title');
+  feedback.innerHTML = `<h2 id="dm-feedback-title">이 글, 어떠셨나요?</h2>
+    <div class="dm-feedback-choices" role="group" aria-label="글 평가">
+      <button type="button" data-feedback-choice="helpful" aria-pressed="false">도움됐어요</button>
+      <button type="button" data-feedback-choice="difficult" aria-pressed="false">어려웠어요</button>
+      <button type="button" data-feedback-choice="disappointing" aria-pressed="false">아쉬워요</button>
+    </div>
+    <p class="dm-feedback-status" role="status" aria-live="polite"></p>
+    <form class="dm-feedback-form" hidden>
+      <label for="dm-feedback-body">더 남기고 싶은 의견이 있나요? <span>(선택)</span></label>
+      <textarea id="dm-feedback-body" maxlength="500" rows="3" placeholder="의견을 자유롭게 남겨 주세요."></textarea>
+      <div class="dm-feedback-form-footer"><span>의견은 운영자만 확인합니다.</span><button type="submit">의견 보내기</button></div>
+    </form>`;
+  endActions.after(feedback);
+  const choices = [...feedback.querySelectorAll('[data-feedback-choice]')];
+  const feedbackStatus = feedback.querySelector('.dm-feedback-status');
+  const feedbackForm = feedback.querySelector('.dm-feedback-form');
+  const feedbackBody = feedback.querySelector('#dm-feedback-body');
+  const feedbackSubmit = feedbackForm.querySelector('button');
+  let feedbackChoice = '';
+  const sendFeedback = async (choice, body) => {
+    const data = {choice};
+    if (body !== undefined) data.body = body;
+    const response = await fetch(endpoint + '/feedback', {method:'POST', credentials:'same-origin', headers:{'content-type':'application/json'}, body:JSON.stringify(data)});
+    if (!response.ok) { const error = new Error('Feedback failed'); error.status = response.status; throw error; }
+  };
+  choices.forEach(choice => choice.addEventListener('click', async () => {
+    choices.forEach(item => { item.disabled = true; });
+    feedbackSubmit.disabled = true;
+    try {
+      await sendFeedback(choice.dataset.feedbackChoice);
+      feedbackChoice = choice.dataset.feedbackChoice;
+      choices.forEach(item => item.setAttribute('aria-pressed', String(item === choice)));
+      feedbackForm.hidden = false;
+      feedbackStatus.textContent = '평가를 보내주셔서 고맙습니다.';
+    } catch (error) { feedbackStatus.textContent = error.status === 429 ? '잠시 후 다시 시도해 주세요.' : '평가를 보내지 못했어요. 다시 시도해 주세요.'; }
+    finally { choices.forEach(item => { item.disabled = false; }); feedbackSubmit.disabled = false; }
+  }));
+  feedbackForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    const body = feedbackBody.value.trim();
+    if (!body) { feedbackStatus.textContent = '남기고 싶은 의견을 적어 주세요.'; feedbackBody.focus(); return; }
+    feedbackSubmit.disabled = true;
+    choices.forEach(item => { item.disabled = true; });
+    try { await sendFeedback(feedbackChoice, body); feedbackStatus.textContent = '의견을 보내주셔서 고맙습니다.'; }
+    catch (error) { feedbackStatus.textContent = error.status === 429 ? '잠시 후 다시 시도해 주세요.' : '의견을 보내지 못했어요. 다시 시도해 주세요.'; }
+    finally { feedbackSubmit.disabled = false; choices.forEach(item => { item.disabled = false; }); }
+  });
   const request = async (path, options) => {
     const response = await fetch(endpoint + path, {credentials: 'same-origin', ...options});
     if (!response.ok) {

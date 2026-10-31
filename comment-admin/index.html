@@ -51,8 +51,8 @@
   <div class="wrap">
     <header><a href="/blog/"><img class="dm-inline-logo" src="/blog/datamoney-logo-display.png?v=20261031-round" width="28" height="28" alt="">데이터<span>머니</span></a><a class="home" href="/blog/">블로그로 돌아가기</a></header>
     <main>
-      <h1>댓글 관리</h1>
-      <p class="intro">검토가 필요한 댓글과 운영자만 볼 수 있는 비밀댓글을 확인하고 관리할 수 있습니다.</p>
+      <h1>댓글과 피드백 관리</h1>
+      <p class="intro">댓글과 독자가 남긴 비공개 피드백을 확인할 수 있습니다.</p>
       <form id="admin-login">
         <div class="key-field"><label for="admin-key">관리자 접속키</label><input id="admin-key" type="password" autocomplete="off" required></div>
         <button class="primary" type="submit">열기</button>
@@ -68,15 +68,17 @@
           <button type="button" data-status="pending" aria-pressed="true">검토 대기</button>
           <button type="button" data-status="published" aria-pressed="false">공개 댓글</button>
           <button type="button" data-status="private" aria-pressed="false">비밀댓글</button>
+          <button type="button" data-status="feedback" aria-pressed="false">글 피드백</button>
           <button type="button" data-status="survey" aria-pressed="false">투자 심리 응답</button>
           <button type="button" data-status="subscribers" aria-pressed="false">이메일 구독</button>
         </div>
+        <div id="feedback-summary" hidden></div>
         <p class="status" id="admin-empty" hidden></p>
         <ul class="comments" id="admin-comments"></ul>
         <button class="more" id="admin-more" type="button" hidden>더 보기</button>
       </section>
     </main>
   </div>
-  <script src="/comment-admin/admin.js?v=20261031-google" defer></script>
+  <script src="/comment-admin/admin.js?v=20261101-feedback" defer></script>
 </body>
 </html>

@@ -31,6 +31,8 @@ jobs:
       - name: Test private comment security
         run: |
           node tests/private-comments.mjs
+          node tests/article-feedback.mjs
+          node tests/article-feedback-ui.mjs
           node tests/google-admin-auth.mjs
           node tests/google-admin-ui.mjs
 

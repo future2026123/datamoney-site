@@ -64,7 +64,7 @@
 
   // Resolve the spoken text to DOM ranges without changing links or markup.
   window.createDataMoneySpeechHighlighter = ({title, content, followInput}) => {
-    const excluded = 'script, style, nav, aside, svg, noscript, iframe, figcaption, [hidden], [aria-hidden="true"], .dm-comments, .dm-references, .references, .reference-list, .references-list, .sources, .source-list, .sources-box, .source-box, .bibliography, .eyebrow';
+    const excluded = 'script, style, nav, aside, svg, noscript, iframe, figcaption, [hidden], [aria-hidden="true"], .dm-end-actions, .dm-feedback, .dm-comments, .dm-references, .references, .reference-list, .references-list, .sources, .source-list, .sources-box, .source-box, .bibliography, .eyebrow';
     const block = 'p, li, h1, h2, h3, h4, blockquote, th, td, div';
     const customHighlights = window.CSS?.highlights && typeof window.Highlight === 'function';
     let items = [], matches = [], ranges = [], active = false, current = -1, marks = [], currentRange = null;

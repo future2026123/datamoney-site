@@ -10,7 +10,7 @@ const tick = () => new Promise(resolve => setTimeout(resolve, 0));
 const response = (status, data = {}) => ({ok:status === 200, status, json:async () => data});
 const emptyList = {items:[], nextBefore:null};
 
-function setup({existingSession=false, google=true, legacyAllowed=false} = {}) {
+function setup({existingSession=false, google=true, legacyAllowed=false, feedback=false} = {}) {
   const dom = new JSDOM(html, {url:'https://datamoney.kr/comment-admin/', runScripts:'outside-only'});
   let authorized = existingSession;
   let googleConfig;
@@ -23,7 +23,10 @@ function setup({existingSession=false, google=true, legacyAllowed=false} = {}) {
       authorized = true;
       return response(200, {ok:true});
     }
-    if (authorized || options.headers?.authorization === 'Bearer test-key') return response(200, emptyList);
+    if (authorized || options.headers?.authorization === 'Bearer test-key') {
+      if (url.includes('/_admin/feedback?') && feedback) return response(200, {items:[{id:1,article:'test-article',choice:'helpful',body:'<img src=x onerror=alert(1)>',updated_at:Date.now()}], totals:[{article:'test-article',helpful:1,difficult:0,disappointing:0}],nextBefore:null});
+      return response(200, emptyList);
+    }
     return response(401);
   };
   dom.window.google = {accounts:{id:{initialize:config => {googleConfig = config;}, renderButton:element => {element.textContent = 'Google button';}}}};
@@ -46,6 +49,15 @@ existing.expire();
 existing.dom.window.document.querySelector('[data-status=private]').click();
 await tick();
 assert.match(existing.dom.window.document.querySelector('#admin-status').textContent, /로그인이 만료/);
+
+const feedbackPage = setup({existingSession:true, feedback:true});
+await tick();
+feedbackPage.dom.window.document.querySelector('[data-status=feedback]').click();
+await tick();
+const feedbackDocument = feedbackPage.dom.window.document;
+assert.match(feedbackDocument.querySelector('#feedback-summary').textContent, /도움됐어요 1/);
+assert.match(feedbackDocument.querySelector('#admin-comments').textContent, /<img src=x/);
+assert.equal(feedbackDocument.querySelector('#admin-comments img'), null, 'reader input remains text in the admin panel');
 
 for (const legacyAllowed of [true, false]) {
   const page = setup({legacyAllowed});

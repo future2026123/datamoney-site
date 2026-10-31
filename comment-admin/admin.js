@@ -7,6 +7,7 @@
   const list = document.getElementById('admin-comments');
   const empty = document.getElementById('admin-empty');
   const more = document.getElementById('admin-more');
+  const feedbackSummary = document.getElementById('feedback-summary');
   const googleLogin = document.getElementById('google-login');
   const googleSignin = document.getElementById('google-signin');
   const signout = document.getElementById('admin-signout');
@@ -16,6 +17,17 @@
   let googleSession = false;
   let currentStatus = 'pending';
   let nextBefore = null;
+  let articleTitles;
+
+  const loadArticleTitles = async () => {
+    if (articleTitles) return articleTitles;
+    try {
+      const response = await fetch('/blog/tags-index.json', {cache:'no-cache'});
+      const data = await response.json();
+      articleTitles = new Map((data.articles || []).map(article => [article.path, article.title]));
+    } catch (_) { articleTitles = new Map(); }
+    return articleTitles;
+  };
 
   const authHeaders = () => key ? {authorization: `Bearer ${key}`} : {};
   const request = async (path = '', options = {}) => {
@@ -93,7 +105,52 @@
   const load = async (append, silent = false) => {
     more.disabled = true;
     status.textContent = '';
+    feedbackSummary.hidden = currentStatus !== 'feedback';
     try {
+      if (currentStatus === 'feedback') {
+        const params = new URLSearchParams();
+        if (append && nextBefore) params.set('before', String(nextBefore));
+        const response = await fetch('/api/article-engagement/_admin/feedback?' + params, {cache:'no-store', headers:authHeaders()});
+        if (!response.ok) { const error = new Error('Request failed'); error.status=response.status; throw error; }
+        const data = await response.json();
+        const titles = await loadArticleTitles();
+        if (!append) {
+          list.replaceChildren(); feedbackSummary.replaceChildren();
+          const heading = document.createElement('strong'); heading.textContent = '글별 평가'; feedbackSummary.append(heading);
+          data.totals.forEach(row => {
+            const line = document.createElement('p'); line.className = 'comment-header';
+            const link = document.createElement('a'); link.href = `/blog/${encodeURIComponent(row.article)}/`; link.textContent = titles.get(`/blog/${row.article}/`) || row.article;
+            const counts = document.createElement('span'); counts.textContent = `도움됐어요 ${row.helpful} · 어려웠어요 ${row.difficult} · 아쉬워요 ${row.disappointing}`;
+            line.append(link, counts); feedbackSummary.append(line);
+          });
+        }
+        const labels = {helpful:'도움됐어요', difficult:'어려웠어요', disappointing:'아쉬워요'};
+        data.items.forEach(row => {
+          const item = document.createElement('li'); item.className = 'comment';
+          const header = document.createElement('div'); header.className = 'comment-header';
+          const choice = document.createElement('strong'); choice.textContent = labels[row.choice] || row.choice;
+          const date = document.createElement('time'); date.dateTime = new Date(row.updated_at).toISOString();
+          date.textContent = new Intl.DateTimeFormat('ko-KR', {dateStyle:'medium', timeStyle:'short', timeZone:'Asia/Seoul'}).format(new Date(row.updated_at));
+          const link = document.createElement('a'); link.href = `/blog/${encodeURIComponent(row.article)}/`; link.textContent = titles.get(`/blog/${row.article}/`) || row.article;
+          header.append(choice, date, link); item.append(header);
+          if (row.body) { const text = document.createElement('p'); text.className = 'comment-body'; text.textContent = row.body; item.append(text); }
+          const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = '삭제';
+          remove.addEventListener('click', async () => {
+            if (!window.confirm('이 피드백을 삭제할까요?')) return;
+            remove.disabled = true;
+            try {
+              const result = await fetch('/api/article-engagement/_admin/feedback/' + row.id, {method:'DELETE', cache:'no-store', headers:authHeaders()});
+              if (!result.ok) throw new Error('Delete failed');
+              await load(false); status.textContent = '피드백을 삭제했습니다.';
+            } catch (_) { status.textContent = '삭제하지 못했습니다. 다시 시도해 주세요.'; remove.disabled = false; }
+          });
+          item.append(remove);
+          list.append(item);
+        });
+        nextBefore = data.nextBefore; more.hidden = !nextBefore;
+        empty.hidden = !!list.children.length; empty.textContent = '아직 글 피드백이 없습니다.';
+        panel.hidden = false; login.hidden = true; keyInput.value = ''; return;
+      }
       if (currentStatus === 'subscribers') {
         const response = await fetch('/api/article-engagement/_admin/email-subscribers', {cache:'no-store', headers:authHeaders()});
         if (!response.ok) { const error = new Error('Request failed'); error.status=response.status; throw error; }
