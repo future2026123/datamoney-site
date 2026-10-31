@@ -7,6 +7,10 @@
 /tools/*
   Cache-Control: public, max-age=3600
 
+# Revalidate the test document so updated characters appear promptly.
+/tools/investor-type/
+  Cache-Control: no-cache
+
 /comment-admin/*
   Cache-Control: no-store
   X-Robots-Tag: noindex, nofollow

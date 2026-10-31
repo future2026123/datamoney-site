@@ -62,6 +62,7 @@
 .dm-shared-sidebar .quote-panel { padding: 18px; }
 .dm-shared-sidebar .quote-card { margin-top: 10px; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
 .dm-shared-sidebar .quote-mark { display: block; height: 27px; color: #2563eb; font-family: Georgia,serif; font-size: 40px; font-weight: 700; line-height: 1; }
+.dm-shared-sidebar .quote-current { display: flow-root; }
 .dm-shared-sidebar .quote-card blockquote { margin: 4px 0 12px; padding: 0; border: 0; background: transparent; color: #0f172a; font-size: 17px; font-weight: 700; line-height: 1.65; word-break: keep-all; overflow-wrap: anywhere; }
 .dm-shared-sidebar .quote-original { margin: 0 0 8px; color: #64748b; font-size: 13px; line-height: 1.65; overflow-wrap: anywhere; }
 .dm-shared-sidebar .quote-review-note { margin: -3px 0 6px; color: #64748b; font-size: 11px; line-height: 1.4; }

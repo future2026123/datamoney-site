@@ -823,6 +823,54 @@
     author.textContent = quote.author;
   }
 
+  // Reserve the height of the longest quote at the current width so the button
+  // stays put without truncating or adding an inner scrollbar to the text.
+  const quoteBody = text.closest(".quote-current");
+  function reserveQuoteHeight() {
+    if (!quoteBody || !quoteBody.isConnected) return;
+    const width = quoteBody.getBoundingClientRect().width;
+    if (!width) return;
+    const ruler = document.createElement("div");
+    ruler.setAttribute("aria-hidden", "true");
+    Object.assign(ruler.style, {
+      position: "absolute", left: "-10000px", top: "0", width: `${width}px`,
+      visibility: "hidden", pointerEvents: "none"
+    });
+    const samples = quotes.map(quote => {
+      const sample = quoteBody.cloneNode(true);
+      sample.removeAttribute("aria-live");
+      sample.removeAttribute("aria-atomic");
+      sample.querySelectorAll("[id]").forEach(node => node.removeAttribute("id"));
+      sample.style.minHeight = "0";
+      sample.style.height = "auto";
+      sample.querySelector("blockquote").textContent = quote.text;
+      sample.querySelector(".quote-original").textContent = quote.original;
+      sample.querySelector(".quote-review-note").hidden = quote.sourceVerified;
+      sample.querySelector(".quote-meta span").textContent = quote.author;
+      ruler.appendChild(sample);
+      return sample;
+    });
+    quoteBody.parentElement.appendChild(ruler);
+    const height = Math.ceil(Math.max(...samples.map(sample => sample.getBoundingClientRect().height)));
+    ruler.remove();
+    quoteBody.style.minHeight = `${height}px`;
+  }
+  let measurementFrame = 0;
+  function scheduleQuoteHeight() {
+    if (measurementFrame) cancelAnimationFrame(measurementFrame);
+    measurementFrame = requestAnimationFrame(() => { measurementFrame = 0; reserveQuoteHeight(); });
+  }
   button.addEventListener("click", showAnotherQuote);
   showAnotherQuote();
+  reserveQuoteHeight();
+  if (quoteBody && window.ResizeObserver) {
+    let previousWidth = 0;
+    new ResizeObserver(entries => {
+      const width = entries[0].contentRect.width;
+      if (Math.abs(width - previousWidth) > .5) { previousWidth = width; scheduleQuoteHeight(); }
+    }).observe(quoteBody);
+  } else {
+    window.addEventListener("resize", scheduleQuoteHeight);
+  }
+  if (document.fonts) document.fonts.ready.then(scheduleQuoteHeight).catch(() => {});
 })();

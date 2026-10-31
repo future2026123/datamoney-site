@@ -37,7 +37,7 @@
     const frame = document.createElement('iframe');
     frame.title = '데이터머니 투자 성향 테스트';
     frame.scrolling = 'no';
-    frame.src = '/tools/investor-type/?embed=1';
+    frame.src = '/tools/investor-type/?embed=1&v=20261031-characters';
     panel.append(top, frame);
     original.setAttribute('data-investor-original-hidden', '');
     layout.insertBefore(panel, original);
