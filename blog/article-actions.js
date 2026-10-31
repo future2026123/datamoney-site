@@ -266,13 +266,15 @@
         <form class="dm-comment-form">
           <div class="dm-comment-reply-context" hidden><span></span><button class="dm-comment-cancel" type="button">답글 취소</button></div>
           <label for="dm-comment-body">댓글 남기기</label>
-          <textarea id="dm-comment-body" name="body" maxlength="600" placeholder="의견을 남겨 주세요." required></textarea>
-          <p class="dm-comment-policy">링크나 연락처가 포함된 댓글은 검토 후 공개될 수 있습니다.</p>
-          <label class="dm-comment-private"><input id="dm-comment-private" type="checkbox" disabled> 운영자만 보기 (비밀댓글)</label>
-          <p class="dm-comment-policy">비밀댓글은 운영자만 볼 수 있으며 등록 후 댓글 목록에 표시되지 않습니다.</p>
+          <textarea id="dm-comment-body" name="body" maxlength="600" placeholder="의견을 남겨 주세요." aria-describedby="dm-comment-moderation" required></textarea>
           <div class="dm-comment-input-row">
-            <div class="dm-comment-name-field"><label for="dm-comment-name">닉네임</label><input id="dm-comment-name" name="nickname" maxlength="20" autocomplete="nickname" required></div>
+            <div class="dm-comment-name-field"><label for="dm-comment-name">닉네임</label><input id="dm-comment-name" name="nickname" maxlength="20" autocomplete="nickname" placeholder="닉네임 입력" required></div>
+            <label class="dm-comment-private"><input id="dm-comment-private" type="checkbox" aria-describedby="dm-comment-private-help" disabled> 운영자만 보기 (비밀댓글)</label>
             <button class="dm-comment-submit" type="submit">댓글 등록</button>
+          </div>
+          <div class="dm-comment-guidance">
+            <p class="dm-comment-policy" id="dm-comment-moderation">링크나 연락처가 포함된 댓글은 검토 후 공개될 수 있습니다.</p>
+            <p class="dm-comment-policy" id="dm-comment-private-help">비밀댓글은 운영자만 볼 수 있으며 등록 후 댓글 목록에 표시되지 않습니다.</p>
           </div>
           <div class="dm-comment-verification" hidden></div>
           <p class="dm-comment-verification-notice" role="status" aria-live="polite"></p>
