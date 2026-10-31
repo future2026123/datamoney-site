@@ -2,6 +2,7 @@ const ROUTE = /^\/api\/article-engagement\/([a-z0-9][a-z0-9-]{0,95})(?:\/(reacti
 const ADMIN_ROUTE = /^\/api\/article-engagement\/_admin\/comments(?:\/([1-9]\d*)(?:\/(approve))?)?\/?$/;
 const CONFIG_PATH = '/api/article-engagement/_config';
 const SURVEY_PATH = '/api/article-engagement/_survey';
+const SURVEY_AGGREGATE_PATH = '/api/article-engagement/_survey-aggregate';
 const SURVEY_ADMIN_PATH = '/api/article-engagement/_admin/survey';
 const COOKIE = 'dm_article_visitor';
 const SURVEY_COOKIE = 'dm_survey_visitor';
@@ -74,13 +75,21 @@ export default {
     const adminRoute = url.pathname.match(ADMIN_ROUTE);
     const route = url.pathname.match(ROUTE);
     const survey = url.pathname === SURVEY_PATH;
+    const surveyAggregate = url.pathname === SURVEY_AGGREGATE_PATH;
     const surveyAdmin = url.pathname === SURVEY_ADMIN_PATH;
-    if (!adminRoute && !route && !survey && !surveyAdmin) return json({error: 'Not found'}, 404);
+    if (!adminRoute && !route && !survey && !surveyAdmin && !surveyAggregate) return json({error: 'Not found'}, 404);
     if (!['GET', 'POST', 'DELETE'].includes(request.method)) return json({error: 'Method not allowed'}, 405);
     if (request.method !== 'GET' && request.headers.get('origin') !== url.origin) {
       return json({error: 'Invalid origin'}, 403);
     }
     if (!env.ARTICLE_ENGAGEMENT) return json({error: 'Service unavailable'}, 503);
+    if (surveyAggregate) {
+      if (request.method !== 'POST') return json({error: 'Method not allowed'}, 405);
+      if ((Number(request.headers.get('content-length')) || 0) > 1024) return json({error: 'Invalid input'}, 400);
+      const id = env.ARTICLE_ENGAGEMENT.idFromName('datamoney');
+      const headers = new Headers({'content-type':'application/json'});
+      return env.ARTICLE_ENGAGEMENT.get(id).fetch(new Request(request, {headers}));
+    }
     if (adminRoute || surveyAdmin) {
       if (!env.DM_COMMENT_ADMIN_KEY) return json({error: 'Administrator access unavailable'}, 503);
       const token = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
@@ -158,6 +167,7 @@ export class ArticleEngagement {
     this.sql.exec('CREATE TABLE IF NOT EXISTS comment_votes (article TEXT NOT NULL, comment_id INTEGER NOT NULL, visitor TEXT NOT NULL, value INTEGER NOT NULL CHECK (value IN (-1, 1)), PRIMARY KEY (article, comment_id, visitor))');
     this.sql.exec('CREATE TABLE IF NOT EXISTS comment_rate (identity TEXT NOT NULL, created_at INTEGER NOT NULL)');
     this.sql.exec('CREATE TABLE IF NOT EXISTS survey_answers (visitor TEXT NOT NULL, day TEXT NOT NULL, created_at INTEGER NOT NULL, loss INTEGER NOT NULL, anxiety INTEGER NOT NULL, horizon INTEGER NOT NULL, reaction INTEGER NOT NULL, buffer INTEGER NOT NULL, PRIMARY KEY(visitor, day))');
+    this.sql.exec('CREATE TABLE IF NOT EXISTS survey_aggregates (day TEXT NOT NULL, type_code INTEGER NOT NULL, participants INTEGER NOT NULL, loss INTEGER NOT NULL, anxiety INTEGER NOT NULL, horizon INTEGER NOT NULL, reaction INTEGER NOT NULL, buffer INTEGER NOT NULL, PRIMARY KEY(day, type_code))');
     const surveyColumns = new Set(this.sql.exec('PRAGMA table_info(survey_answers)').toArray().map(column => column.name));
     if (!surveyColumns.has('version')) this.sql.exec('ALTER TABLE survey_answers ADD COLUMN version INTEGER NOT NULL DEFAULT 1');
     if (!surveyColumns.has('type_code')) this.sql.exec('ALTER TABLE survey_answers ADD COLUMN type_code INTEGER');
@@ -179,7 +189,21 @@ export class ArticleEngagement {
     const url = new URL(request.url);
     if (url.pathname === SURVEY_ADMIN_PATH && request.headers.get('x-article-admin') === 'authorized' && request.method === 'GET') {
       const rows = this.sql.exec('SELECT day, version, type_code, COUNT(*) AS participants, AVG(loss) AS loss, AVG(anxiety) AS anxiety, AVG(horizon) AS horizon, AVG(reaction) AS reaction, AVG(buffer) AS buffer FROM survey_answers GROUP BY day, version, type_code ORDER BY day DESC, version DESC, type_code LIMIT 3300').toArray();
-      return json({version: 2, items: rows});
+      const totals = this.sql.exec('SELECT day, 3 AS version, type_code, participants, 1.0*loss/participants AS loss, 1.0*anxiety/participants AS anxiety, 1.0*horizon/participants AS horizon, 1.0*reaction/participants AS reaction, 1.0*buffer/participants AS buffer FROM survey_aggregates ORDER BY day DESC LIMIT 3300').toArray();
+      const items = [...rows, ...totals].sort((a,b) => b.day.localeCompare(a.day) || b.version-a.version || (a.type_code ?? -1)-(b.type_code ?? -1));
+      return json({version: 3, items});
+    }
+    if (url.pathname === SURVEY_AGGREGATE_PATH && request.method === 'POST') {
+      const raw = await request.text();
+      if (raw.length > 1024) return json({error: 'Invalid input'}, 400);
+      let input;
+      try { input = JSON.parse(raw); } catch (_) { return json({error: 'Invalid input'}, 400); }
+      const fields = ['loss','anxiety','horizon','reaction','buffer'];
+      if (!Array.isArray(input?.baseline) || input.baseline.length !== 3 || !input.baseline.every(value => value === 0 || value === 1) || !fields.every(key => Number.isInteger(input.answers?.[key]) && input.answers[key] >= 0 && input.answers[key] <= 3)) return json({error: 'Invalid input'}, 400);
+      const typeCode = 4*input.baseline[0] + 2*input.baseline[1] + input.baseline[2];
+      const day = new Date(Date.now() + 9*3600000).toISOString().slice(0,10);
+      this.sql.exec('INSERT INTO survey_aggregates (day,type_code,participants,loss,anxiety,horizon,reaction,buffer) VALUES (?,?,1,?,?,?,?,?) ON CONFLICT(day,type_code) DO UPDATE SET participants=participants+1,loss=loss+excluded.loss,anxiety=anxiety+excluded.anxiety,horizon=horizon+excluded.horizon,reaction=reaction+excluded.reaction,buffer=buffer+excluded.buffer', day,typeCode,...fields.map(key => input.answers[key]));
+      return json({ok:true});
     }
     if (url.pathname === SURVEY_PATH) {
       const visitor = request.headers.get('x-survey-visitor');

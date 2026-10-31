@@ -23,7 +23,7 @@
     {name:'눈치 빠른 여우',short:'기회형',art:[1170,60,345,455],tag:'흐름 속에서 가능성을 먼저 보는 편',description:'변화가 생기면 나만의 감각으로 기회를 찾아보려는 모습이 보여요.',strength:'새로운 상황에서 선택지를 빠르게 발견할 수 있어요.',caution:'기회가 매력적으로 보여도 손실 가능성과 자금 계획을 확인해요.'},
     {name:'도전하는 사자',short:'야수형',art:[15,75,405,455],tag:'새로운 기회를 보면 마음이 움직이는 편',description:'시장 변화와 사람들의 이야기에 관심을 가지며 기회를 적극적으로 살펴봐요.',strength:'새로운 가능성을 열린 마음으로 탐색할 수 있어요.',caution:'주변 분위기가 뜨거울수록 감당 가능한 위험을 먼저 정해 보세요.'}
   ];
-  const answers={}; let step=0,result=null,consented=false,finishing=false;
+  const answers={}; let step=0,result=null,finishing=false;
   const screens=['intro','quiz','result'];
   const show=id=>{screens.forEach(name=>{$(name).hidden=name!==id;});window.scrollTo(0,0);};
   function renderQuestion(){
@@ -34,7 +34,7 @@
     q.choices.forEach((label,value)=>{const b=document.createElement('button');b.className='choice';b.type='button';b.textContent=label;b.addEventListener('click',()=>{if(finishing)return;answers[q.key]=value;if(++step<questions.length)renderQuestion();else finish();});box.append(b);});
     $('question-title').focus();
   }
-  $('start').addEventListener('click',()=>{consented=$('agree').checked;step=0;show('quiz');renderQuestion();});
+  $('start').addEventListener('click',()=>{step=0;show('quiz');renderQuestion();});
   $('back').addEventListener('click',()=>{if(!finishing&&step>0){step--;renderQuestion();}});
   function tip(){
     if(answers.horizon>=2)return '가까운 시기에 써야 할 돈이 시장 변동에 얼마나 노출돼 있는지 확인해 보세요.';
@@ -61,10 +61,12 @@
   async function finish(){
     finishing=true;$('quiz-status').textContent='결과를 준비하고 있어요.';let message='';
     const baseline=[answers.risk,answers.approach,answers.social];
-    if(consented){
-      try{const current=Object.fromEntries(['loss','anxiety','horizon','reaction','buffer'].map(key=>[key,answers[key]]));const response=await fetch('/api/article-engagement/_survey',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({consent:true,version:2,baseline,answers:current})});if(!response.ok)throw new Error();message='응답을 지표 연구에 전달했어요. 같은 브라우저의 같은 날 첫 응답만 반영됩니다.';}
-      catch(_){message='응답을 저장하지 못했어요. 결과는 아래에서 확인할 수 있습니다.';}
-    }
+    const day=new Date(Date.now()+9*3600000).toISOString().slice(0,10), key='dm_survey_aggregate_day';
+    let alreadySent=false;try{alreadySent=localStorage.getItem(key)===day;}catch(_){}
+    if(!alreadySent){
+      try{const current=Object.fromEntries(['loss','anxiety','horizon','reaction','buffer'].map(key=>[key,answers[key]]));const response=await fetch('/api/article-engagement/_survey-aggregate',{method:'POST',credentials:'omit',headers:{'content-type':'application/json'},body:JSON.stringify({baseline,answers:current})});if(!response.ok)throw new Error();try{localStorage.setItem(key,day);}catch(_){}message='응답이 투자 심리 통계에 반영됐어요.';}
+      catch(_){message='통계에 반영하지 못했어요. 결과는 아래에서 확인할 수 있습니다.';}
+    }else message='오늘 이 브라우저의 첫 번째 응답이 통계에 반영됐어요.';
     result=types[4*baseline[0]+2*baseline[1]+baseline[2]];
     $('character-image').setAttribute('viewBox',result.art.join(' '));$('character-image').setAttribute('aria-label',`${result.name} 캐릭터`);
     $('result-title').textContent=result.name;$('tagline').textContent=`${result.short} · ${result.tag}`;$('description').textContent=result.description;$('strength').textContent=result.strength;$('caution').textContent=result.caution;$('tip').textContent=tip();
@@ -78,6 +80,6 @@
     try{if(navigator.share){const blob=await new Promise(resolve=>$('canvas').toBlob(resolve,'image/png'));const file=blob&&new File([blob],'datamoney-result.png',{type:'image/png'});if(file&&navigator.canShare?.({files:[file]}))data.files=[file];await navigator.share(data);}else{await navigator.clipboard.writeText(`${data.text} ${data.url}`);$('notice').textContent='테스트 링크를 복사했어요. 친구에게 보내 보세요.';}}
     catch(error){if(error.name!=='AbortError')$('notice').textContent=`주소를 복사해 공유해 주세요: ${data.url}`;}
   });
-  $('again').addEventListener('click',()=>{step=0;$('agree').checked=false;show('intro');$('start').focus();});
-  $('delete-data').addEventListener('click',async()=>{if(!confirm('이 브라우저로 보낸 투자 유형 응답을 모두 삭제할까요?'))return;try{const r=await fetch('/api/article-engagement/_survey',{method:'DELETE',credentials:'same-origin'});if(!r.ok)throw new Error();alert('이 브라우저의 응답을 삭제했습니다.');}catch(_){alert('삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.');}});
+  $('again').addEventListener('click',()=>{step=0;show('intro');$('start').focus();});
+  $('delete-data').addEventListener('click',async()=>{if(!confirm('이 브라우저에서 이전에 동의해 저장한 개별 응답을 삭제할까요? 합산된 통계는 개별 삭제할 수 없습니다.'))return;try{const r=await fetch('/api/article-engagement/_survey',{method:'DELETE',credentials:'same-origin'});if(!r.ok)throw new Error();alert('이전에 동의해 저장한 응답 삭제 요청을 처리했습니다.');}catch(_){alert('삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.');}});
 })();

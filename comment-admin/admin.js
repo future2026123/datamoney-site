@@ -97,12 +97,12 @@
         const typeNames = ['거북이','다람쥐','고양이','토끼','늑대','부엉이','여우','사자'];
         data.items.forEach(row => {
           const item=document.createElement('li'); item.className='comment';
-          const title=document.createElement('strong'); title.textContent=`${row.day} · ${row.version === 2 ? typeNames[row.type_code] + ' 유형' : '이전 설문'} · ${row.participants}명`;
+          const title=document.createElement('strong'); title.textContent=`${row.day} · ${row.version >= 2 ? typeNames[row.type_code] + ' 유형' : '이전 설문'} · ${row.participants}${row.version === 3 ? '건 (집계)' : '명'}`;
           const detail=document.createElement('p'); detail.className='comment-body';
-          detail.textContent=`답변 평균 (0~3): 손익 ${row.loss.toFixed(2)} / 불안 ${row.anxiety.toFixed(2)} / 필요 시기 ${row.horizon.toFixed(2)} / ${row.version === 2 ? '매도 충동' : '하락 대응'} ${row.reaction.toFixed(2)} / 비상금 ${row.buffer.toFixed(2)}`;
+          detail.textContent=`답변 평균 (0~3): 손익 ${row.loss.toFixed(2)} / 불안 ${row.anxiety.toFixed(2)} / 필요 시기 ${row.horizon.toFixed(2)} / ${row.version >= 2 ? '매도 충동' : '하락 대응'} ${row.reaction.toFixed(2)} / 비상금 ${row.buffer.toFixed(2)}`;
           item.append(title,detail); list.append(item);
         });
-        empty.hidden=!!data.items.length; empty.textContent='동의한 응답이 아직 없습니다.';
+        empty.hidden=!!data.items.length; empty.textContent='집계된 응답이 아직 없습니다.';
         more.hidden=true; panel.hidden=false; login.hidden=true; keyInput.value=''; return;
       }
       const params = new URLSearchParams({status:currentStatus});

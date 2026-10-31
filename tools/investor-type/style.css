@@ -16,6 +16,7 @@
 .mood-panel .eyebrow{margin:0}.mood-panel h3{margin:8px 0 18px;font-size:22px;letter-spacing:-.04em}
 .mood-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mood-grid div{padding:16px;border-radius:12px;background:#f1f6ff}.mood-grid span,.mood-grid strong{display:block}.mood-grid span{font-size:13px;color:#526782}.mood-grid strong{margin-top:7px;font-size:18px;color:#2854bb}.mood-panel>p:last-child{margin:16px 0 0;color:#687c95;font-size:12px;line-height:1.6}
 @media(max-width:760px){.hero-animals{min-height:0;height:auto;overflow:visible;margin:10px 0 18px}.hero-animals img{border-radius:16px}.hero-animals .art-badge{right:-5px;bottom:-10px}.result-character{height:210px}.mood-panel{padding:20px}}
+.data-notice strong{display:block;color:#294e9c}.data-notice p{margin:8px 0 0}
 
 /* Match the blog article font, heading hierarchy and body text. */
 body { font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; font-size: 17px; line-height: 27px; color: #182338; overflow-wrap: anywhere; }

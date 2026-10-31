@@ -34,4 +34,12 @@ assert.equal(v2Admin.data.items[0].version,2);assert.equal(v2Admin.data.items[0]
 assert.equal((await call('/_survey',{method:'POST',body:{consent:true,version:2,baseline:[1,4,1],answers}})).status,400);
 assert.equal((await call('/_survey',{method:'DELETE',headers:{cookie:v2Cookie}})).status,200);
 assert.equal(db.prepare('SELECT COUNT(*) n FROM survey_answers').get().n,0);
+const aggregate=await call('/_survey-aggregate',{method:'POST',headers:{cookie:'dm_survey_visitor=11111111-1111-4111-8111-111111111111'},body:{baseline:[1,0,1],answers}});
+assert.equal(aggregate.status,200);assert.equal(aggregate.headers.get('set-cookie'),null);
+assert.equal(db.prepare('SELECT COUNT(*) n FROM survey_answers').get().n,0,'aggregate submissions must not create individual rows');
+const aggregateRow=db.prepare('SELECT * FROM survey_aggregates').get();assert.equal(aggregateRow.type_code,5);assert.equal(aggregateRow.participants,1);assert.equal(aggregateRow.anxiety,1);
+await call('/_survey-aggregate',{method:'POST',body:{baseline:[1,0,1],answers:{...answers,anxiety:3}}});
+const aggregateAdmin=await call('/_admin/survey',{headers:{authorization:'Bearer test-secret'}});
+assert.equal(aggregateAdmin.data.items[0].version,3);assert.equal(aggregateAdmin.data.items[0].participants,2);assert.equal(aggregateAdmin.data.items[0].anxiety,2);
+assert.equal((await call('/_survey-aggregate',{method:'POST',body:{baseline:[1,9,1],answers}})).status,400);
 console.log('Consent, daily deduplication, protected aggregates and deletion: passed');
