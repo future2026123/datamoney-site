@@ -1,4 +1,6 @@
 /* 본문 중간에 넣는 연구·자료 원문 인용 상자 */
+:is(.article, .dm-post) figure.source-figure.source-excerpt > p.source-context { margin: 0 0 12px; color: #344a66; font-size: 14px; line-height: 1.7; word-break: keep-all; }
+:is(.article, .dm-post) figure.source-figure.source-excerpt > p.source-context strong { color: #193f7a; }
 .dm-post figure.source-excerpt { margin:1.8em 0 2.4em; padding:20px 22px; border:1px solid #dfe7f2; background:#f7f9fc; border-radius:15px; }
 .dm-post figure.source-excerpt .excerpt-label { display:block; margin-bottom:10px; font-size:12px; font-weight:700; color:#65758b; }
 .dm-post figure.source-excerpt blockquote.research-excerpt { margin:14px 0 16px; padding:20px 22px; border:1px solid #e1e6ed; border-radius:8px; background:#fff; color:#151515; text-align:left; }
