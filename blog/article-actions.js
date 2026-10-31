@@ -287,18 +287,19 @@
     attachDeviceSpeech();
   }
 
-  button('share').addEventListener('click', async () => {
+  const shareArticle = async notify => {
     const data = {title: document.title, url: document.querySelector('link[rel="canonical"]')?.href || location.href};
     if (navigator.share) {
       try { await navigator.share(data); return; } catch (error) { if (error.name === 'AbortError') return; }
     }
     try {
       await navigator.clipboard.writeText(data.url);
-      announce('링크를 복사했어요.');
+      notify('링크를 복사했어요.');
     } catch (_) {
       window.prompt('이 글의 주소를 복사해 주세요.', data.url);
     }
-  });
+  };
+  button('share').addEventListener('click', () => shareArticle(announce));
   button('print').addEventListener('click', () => window.print());
 
   const reactionButton = button('reaction');
@@ -309,6 +310,28 @@
   reactionButton.disabled = true;
   commentsButton.disabled = true;
   if (!slug || !content) return;
+  const endActions = document.createElement('div');
+  endActions.className = 'dm-end-actions';
+  endActions.setAttribute('role', 'group');
+  endActions.setAttribute('aria-label', '글 반응과 공유');
+  endActions.innerHTML = `<button type="button" class="dm-end-action" data-end-reaction aria-pressed="false" disabled><span aria-hidden="true">👍</span><span>좋아요</span><span data-end-count></span></button>
+    <button type="button" class="dm-end-action" data-end-share><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 5.5V3l7 5.5-7 5.4v-2.8C8.5 11.1 6 13 5 16c0-6.4 2.5-10.5 8-10.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 13.5V19H4V9h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>공유하기</span></button>
+    <span class="dm-end-status" role="status" aria-live="polite"></span>`;
+  const references = content.querySelector(':scope > .dm-references');
+  if (references) references.before(endActions);
+  else content.append(endActions);
+  const endReaction = endActions.querySelector('[data-end-reaction]');
+  const endCount = endActions.querySelector('[data-end-count]');
+  const endStatus = endActions.querySelector('.dm-end-status');
+  let endStatusTimer;
+  const announceEnd = message => {
+    endStatus.textContent = message;
+    clearTimeout(endStatusTimer);
+    endStatusTimer = setTimeout(() => { endStatus.textContent = ''; }, 3500);
+  };
+  endActions.querySelector('[data-end-share]').addEventListener('click', () => shareArticle(announceEnd));
+  const reactionButtons = [reactionButton, endReaction];
+  const setReactionDisabled = value => reactionButtons.forEach(item => { item.disabled = value; });
   const endpoint = `/api/article-engagement/${slug}`;
   const request = async (path, options) => {
     const response = await fetch(endpoint + path, {credentials: 'same-origin', ...options});
@@ -321,37 +344,42 @@
   };
   const updateCounts = data => {
     reactionCount.textContent = Number(data.reactions).toLocaleString('ko-KR');
+    endCount.textContent = reactionCount.textContent;
     commentCount.textContent = Number(data.comments).toLocaleString('ko-KR');
     reactionButton.setAttribute('aria-pressed', String(!!data.reacted));
+    endReaction.setAttribute('aria-pressed', String(!!data.reacted));
+    endReaction.setAttribute('aria-label', `좋아요 ${reactionCount.textContent}개`);
     reactionButton.setAttribute('aria-label', `유익해요 ${reactionCount.textContent}개`);
     commentsButton.setAttribute('aria-label', `댓글 ${commentCount.textContent}개 보기`);
   };
   const loadSummary = async () => {
     try {
       updateCounts(await request(''));
-      reactionButton.disabled = false;
+      setReactionDisabled(false);
       commentsButton.disabled = false;
     } catch (_) {
       reactionButton.title = '반응을 불러오지 못했어요';
+      endReaction.title = '반응을 불러오지 못했어요';
       commentsButton.title = '댓글을 불러오지 못했어요';
       setTimeout(async () => {
         try {
           updateCounts(await request(''));
           reactionButton.title = '유익해요';
+          endReaction.title = '좋아요';
           commentsButton.title = '댓글 보기';
-          reactionButton.disabled = false;
+          setReactionDisabled(false);
           commentsButton.disabled = false;
         } catch (_) {}
       }, 5000);
     }
   };
   loadSummary();
-  reactionButton.addEventListener('click', async () => {
-    reactionButton.disabled = true;
+  reactionButtons.forEach(item => item.addEventListener('click', async () => {
+    setReactionDisabled(true);
     try { updateCounts(await request('/reaction', {method: 'POST'})); }
-    catch (_) { announce('반응을 저장하지 못했어요. 다시 시도해 주세요.'); }
-    finally { reactionButton.disabled = false; }
-  });
+    catch (_) { (item === endReaction ? announceEnd : announce)('반응을 저장하지 못했어요. 다시 시도해 주세요.'); }
+    finally { setReactionDisabled(false); }
+  }));
 
   let commentsSection;
   let nextBefore = null;
