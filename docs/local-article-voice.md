@@ -36,8 +36,9 @@ are immutable and must never be reused for different recordings.
   credentials or put them in the site.
 - Task Scheduler runs `scripts/local_voice_runner.py --idle-only` under the
   logged-in user. It starts after three minutes without input, requires 6 GiB
-  free GPU memory, and stops between groups when desktop activity resumes.
-  The PC must be on and signed in. Partial groups are retained for retry.
+  free GPU memory, and stops the generator promptly when desktop activity
+  resumes. The PC must be on and signed in. Completed groups are retained for
+  retry; a group interrupted in progress is regenerated.
 - To inspect without generating, use the TTS environment's Python with
   `-B scripts/local_voice_runner.py --inspect`. Items in `review_required`
   are not retried automatically for the same article fingerprint. Review the

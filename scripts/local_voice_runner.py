@@ -86,6 +86,26 @@ def is_ready(storage, slug, manifest):
             current.get("audio") == f"audio/articles/{slug}/{manifest['content_id']}.mp3")
 
 
+def wait_for_generator(process, idle_only):
+    """Wait without imposing an article-length limit; stop promptly for desktop activity."""
+    while True:
+        try:
+            return process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            if not idle_only or idle_seconds() >= 30:
+                continue
+            log("Desktop activity resumed; stopping the current audio group")
+            # On Windows a venv launcher can have a separate Python child. Stop
+            # the whole dedicated generator tree, not just the launcher.
+            result = subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                                    capture_output=True, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+                                    timeout=20)
+            if result.returncode and process.poll() is None:
+                raise RuntimeError("Could not stop the generator after desktop activity resumed")
+            process.wait(timeout=15)
+            return 10
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--idle-only", action="store_true")
@@ -148,24 +168,25 @@ def main():
             log(f"Generating article: {slug}")
             flags = getattr(subprocess, "CREATE_NO_WINDOW", 0) | getattr(subprocess, "BELOW_NORMAL_PRIORITY_CLASS", 0)
             with LOG.open("a", encoding="utf-8", buffering=1) as output:
-                result = subprocess.run(args_for_child, cwd=str(ROOT), stdout=output, stderr=subprocess.STDOUT,
-                                        text=True, creationflags=flags, timeout=5400)
-            if result.returncode == 0:
+                process = subprocess.Popen(args_for_child, cwd=str(ROOT), stdout=output, stderr=subprocess.STDOUT,
+                                           text=True, creationflags=flags)
+                result = wait_for_generator(process, args.idle_only)
+            if result == 0:
                 failures.pop(slug, None)
                 state["ready"] += 1
                 state["pending"] = [value for value in state["pending"] if value != slug]
                 log(f"Audio uploaded: {slug}")
-            elif result.returncode == 10:
+            elif result == 10:
                 log("GPU unavailable or desktop activity resumed; will retry later")
                 break
-            elif result.returncode in (20, 30):
+            elif result in (20, 30):
                 failures[slug] = manifest["content_id"]
                 log(f"Audio held for review or storage limit: {slug}")
-                if result.returncode == 30:
+                if result == 30:
                     break
             else:
                 failures[slug] = manifest["content_id"]
-                log(f"Audio generation failed ({result.returncode}): {slug}")
+                log(f"Audio generation failed ({result}): {slug}")
             state["review_required"] = failures
             save_state(state)
     finally:
