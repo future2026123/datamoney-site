@@ -78,11 +78,15 @@
 .dm-speech-speeds legend { margin-bottom: 8px; color: #667386; font-size: 13px; font-weight: 600; }
 .dm-speech-speeds label { display: inline-flex; align-items: center; gap: 5px; color: #27374e; font-size: 14px; cursor: pointer; }
 .dm-speech-speeds input { accent-color: #2563eb; }
+.dm-speech-follow { display: flex; align-items: center; gap: 7px; margin: 0 0 15px; color: #27374e; font-size: 14px; cursor: pointer; }
+.dm-speech-follow input { accent-color: #2563eb; }
 .dm-speech-play { width: 100%; min-height: 42px; border: 0; border-radius: 8px; background: #2563eb; color: #fff; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
 .dm-speech-play:disabled { opacity: .55; cursor: wait; }
 .dm-speech-menu :is(button, input):focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
 .dm-article-actions .dm-speech-feedback { margin: 9px 0 0; color: #667386; font-size: 12px; line-height: 1.45; }
 .dm-speech-feedback:empty { display: none; }
+::highlight(dm-speech-reading) { background-color: #fff0a6; }
+mark.dm-speech-reading { background-color: #fff0a6; color: inherit; }
 .dm-actions-status { position: absolute; z-index: 25; top: calc(100% + 5px); right: 0; padding: 7px 10px; border: 1px solid #e1e7ef; border-radius: 8px; background: #fff; color: #334155; font-size: 13px; font-weight: 400; line-height: 1.4; box-shadow: 0 6px 18px rgba(15, 23, 42, .1); }
 .dm-actions-status:empty { display: none; }
 .dm-comments { margin-top: 48px; padding-top: 26px; border-top: 1px solid #e7ebf0; font-size: 14px; line-height: 1.5; scroll-margin-top: 120px; }

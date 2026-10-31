@@ -12,7 +12,7 @@ const create = extra => ({
 });
 const id = 'a'.repeat(64);
 
-async function scenario(remoteId) {
+async function scenario(remoteId, includeHighlighter = false) {
   const play = create({disabled: true});
   const close = create();
   const feedback = create();
@@ -28,15 +28,26 @@ async function scenario(remoteId) {
   const storage = new Map();
   const localStorage = {getItem: key => storage.get(key), setItem: (key, value) => storage.set(key, value)};
   const fetched = [];
+  const highlighter = includeHighlighter ? {
+    entries:[], shown:[], clears:0,
+    prepare(entries) { this.entries = entries; },
+    show(index) { this.shown.push(index); },
+    clear() { this.clears++; }
+  } : null;
   const fetch = async url => {
     fetched.push(String(url));
     if (String(url).startsWith('/blog/speech-manifests/')) {
       return Response.json({version:1, voice:'female-v1', content_id:id});
     }
+    if (String(url).endsWith('-cues-v1.json')) {
+      return Response.json({version:1, content_id:id, cues:[
+        {text:'첫 문장입니다.', start:0, end:2}, {text:'두 번째 문장입니다.', start:2.5, end:5}
+      ]});
+    }
     return Response.json({version:1, voice:'female-v1', content_id:remoteId,
       audio:`audio/articles/test-article/${remoteId}.mp3`});
   };
-  const audio = create({src:'', playbackRate:1, plays:0, pauses:0,
+  const audio = create({src:'', currentTime:0, playbackRate:1, plays:0, pauses:0,
     play() { this.plays++; return Promise.resolve(); },
     pause() { this.pauses++; },
     removeAttribute(name) { if (name === 'src') this.src = ''; }, load() {}
@@ -46,11 +57,11 @@ async function scenario(remoteId) {
   vm.runInNewContext(source, {window:fakeWindow, document, location:{pathname:'/blog/test-article/'},
     Audio, fetch, localStorage, Promise, Number, Array, RegExp});
   let fallbackCount = 0;
-  fakeWindow.initDataMoneyArticleSpeech({toolbar, speechButton:button, onUnavailable: () => { fallbackCount++; }});
+  fakeWindow.initDataMoneyArticleSpeech({toolbar, speechButton:button, highlighter, onUnavailable: () => { fallbackCount++; }});
   await new Promise(resolve => setTimeout(resolve, 0));
   button.fire('click');
   await new Promise(resolve => setTimeout(resolve, 0));
-  return {button, menu, play, feedback, audio, speeds, storage, fetched, fallbackCount};
+  return {button, menu, play, feedback, audio, speeds, storage, fetched, fallbackCount, highlighter};
 }
 
 const good = await scenario(id);
@@ -73,4 +84,19 @@ assert.equal(stale.play.disabled, true, 'old audio must not play after article t
 assert.equal(stale.fallbackCount, 1, 'unconverted articles retain their existing reader during rollout');
 assert.match(stale.feedback.textContent, /준비/);
 assert.equal(stale.audio.plays, 0);
+
+const timed = await scenario(id, true);
+assert.equal(timed.highlighter.entries.length, 2, 'timings are prepared for the matching recording');
+assert.equal(timed.fetched.length, 3, 'metadata and timing load without fetching the MP3');
+timed.play.fire('click');
+timed.audio.fire('playing');
+assert.equal(timed.highlighter.shown.at(-1), 0, 'the first sentence highlights when playback starts');
+timed.audio.currentTime = 2.2;
+timed.audio.fire('timeupdate');
+assert.equal(timed.highlighter.shown.at(-1), -1, 'a silent gap does not show the wrong sentence');
+timed.audio.currentTime = 3;
+timed.audio.fire('timeupdate');
+assert.equal(timed.highlighter.shown.at(-1), 1, 'the highlight follows audio time');
+timed.play.fire('click');
+assert.equal(timed.highlighter.clears, 1, 'stopping audio clears the highlight');
 console.log('Local speech UI: on-demand playback, speed, stop, and changed-content protection passed');

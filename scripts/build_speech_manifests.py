@@ -35,6 +35,29 @@ SOURCE_CITATION_END = re.compile(r"\(\d{4}\)\.\s*(.*)$")
 SOURCE_LINK_LABEL = re.compile(r"(?:^|\s+)(?:DOI|논문|원문(?:\s*보기)?|자료(?:\s*보기)?|링크)\s*[↗→]?\s*$", re.IGNORECASE)
 MAX_CHARS = 120
 VOICE_PROFILE_ID = "female-v1"
+SUPPORTED_VOICE_PROFILES = {VOICE_PROFILE_ID, "ko-KR-InJoonNeural-v1"}
+
+
+class VoiceProfile(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.values = []
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == "meta" and (attrs.get("name") or "").lower() == "dm-speech-voice":
+            self.values.append((attrs.get("content") or "").strip())
+
+
+def voice_profile(source):
+    parser = VoiceProfile()
+    parser.feed(source)
+    if len(parser.values) > 1:
+        raise ValueError("Duplicate article speech voice declarations")
+    voice = parser.values[0] if parser.values else VOICE_PROFILE_ID
+    if voice not in SUPPORTED_VOICE_PROFILES:
+        raise ValueError(f"Unsupported article speech voice: {voice}")
+    return voice
 
 
 def has_class(node, name):
@@ -200,6 +223,7 @@ def split_block(text):
 
 def build_manifest(source):
     parts = article_parts(source)
+    voice = voice_profile(source)
     chunks = []
     for part in parts:
         for value in split_block(part):
@@ -208,9 +232,9 @@ def build_manifest(source):
     # The public player only accepts an audio file generated from these exact
     # readable blocks. A harmless HTML/style edit does not invalidate it.
     fingerprint = hashlib.sha256(
-        (VOICE_PROFILE_ID + "\n" + "\n".join(item["id"] for item in chunks)).encode("utf-8")
+        (voice + "\n" + "\n".join(item["id"] for item in chunks)).encode("utf-8")
     ).hexdigest()
-    return {"version": 1, "voice": VOICE_PROFILE_ID, "content_id": fingerprint,
+    return {"version": 1, "voice": voice, "content_id": fingerprint,
             "title": parts[0], "chunks": chunks}
 
 

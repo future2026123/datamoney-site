@@ -23,6 +23,23 @@ the voice model, reference, grouping or audio encoding requires changing
 `VOICE_PROFILE_ID` in `scripts/build_speech_manifests.py`: audio and index URLs
 are immutable and must never be reused for different recordings.
 
+Optional sentence timing is stored separately at
+`audio/manifests/<slug>/<content_id>-cues-v1.json`. It contains the article
+fingerprint and ordered `{text, start, end}` entries in seconds. For the local
+voice, the recognizer aligns its word timings to the original article text;
+uncertain matches are omitted. A missing timing file never blocks playback.
+The Windows runner backfills timing for existing local recordings without
+rewriting the audio. The player highlights the current sentence and can follow
+its location; manual scrolling suspends following until the reader enables it
+again.
+
+An article may explicitly use `<meta name="dm-speech-voice"
+content="ko-KR-InJoonNeural-v1">`. This changes its content fingerprint and
+marks the voice as separately managed: the female generator and its timing
+backfill will not upload or replace that article's recording. A dedicated
+generator for another voice must use its own fingerprint, upload the audio and
+timing first, and publish the matching availability index last.
+
 ## Windows operation
 
 - Dedicated checkout: `D:\Tools\DataMoney-TTS\published-site-local-voice`.

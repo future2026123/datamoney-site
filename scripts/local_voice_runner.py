@@ -15,9 +15,10 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from build_speech_manifests import build_manifest
+from build_speech_manifests import VOICE_PROFILE_ID, build_manifest
 from generate_local_speech import grouped_text, idle_seconds
 from local_speech_storage import BUCKET, client
+from speech_timing import timing_key
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOL_ROOT = Path(r"D:\Tools\DataMoney-TTS")
@@ -86,6 +87,21 @@ def is_ready(storage, slug, manifest):
             current.get("audio") == f"audio/articles/{slug}/{manifest['content_id']}.mp3")
 
 
+def is_timing_ready(storage, slug, manifest):
+    from botocore.exceptions import ClientError
+    try:
+        storage.head_object(Bucket=BUCKET, Key=timing_key(slug, manifest["content_id"]))
+        return True
+    except ClientError as exc:
+        if exc.response.get("ResponseMetadata", {}).get("HTTPStatusCode") == 404:
+            return False
+        raise
+
+
+def managed_locally(manifest):
+    return manifest.get("voice") == VOICE_PROFILE_ID
+
+
 def wait_for_generator(process, idle_only):
     """Wait without imposing an article-length limit; stop promptly for desktop activity."""
     while True:
@@ -138,6 +154,9 @@ def main():
         failures = state.get("review_required", {})
         if not isinstance(failures, dict):
             failures = {}
+        timing_failures = state.get("timing_review_required", {})
+        if not isinstance(timing_failures, dict):
+            timing_failures = {}
         entries = []
         for path in sorted((CHECKOUT / "blog").glob("*/index.html")):
             slug = path.parent.name
@@ -148,46 +167,61 @@ def main():
         ready, pending = [], []
         for _, slug, manifest in sorted(entries):
             (ready if is_ready(storage, slug, manifest) else pending).append((slug, manifest))
+        missing_timing = [(slug, manifest) for slug, manifest in ready
+                          if managed_locally(manifest) and not is_timing_ready(storage, slug, manifest)]
         state.update({"checked_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                       "source_commit": revision, "total": len(entries), "ready": len(ready),
-                      "pending": [slug for slug, _ in pending], "review_required": failures})
+                      "pending": [slug for slug, _ in pending], "review_required": failures,
+                      "timing_pending": [slug for slug, _ in missing_timing],
+                      "timing_review_required": timing_failures,
+                      "external_voice_pending": [slug for slug, manifest in pending if not managed_locally(manifest)]})
         save_state(state)
         log(f"Published checkout: {revision[:12]}; ready {len(ready)}/{len(entries)}; pending {len(pending)}")
         if args.inspect:
             return
-        for slug, manifest in pending:
+        jobs = [(slug, manifest, True) for slug, manifest in missing_timing]
+        jobs += [(slug, manifest, False) for slug, manifest in pending if managed_locally(manifest)]
+        for slug, manifest, alignment_only in jobs:
             if args.idle_only and idle_seconds() < 180:
                 log("PC is active; remaining articles will retry later")
                 break
-            if failures.get(slug) == manifest["content_id"] and not args.retry_review:
+            job_failures = timing_failures if alignment_only else failures
+            if job_failures.get(slug) == manifest["content_id"] and not args.retry_review:
                 log(f"Awaiting speech review: {slug}")
                 continue
             args_for_child = [str(PYTHON), "-B", str(GENERATOR), slug, "--source-root", str(CHECKOUT), "--upload"]
+            if alignment_only:
+                args_for_child.append("--alignment-only")
             if args.idle_only:
                 args_for_child.append("--yield-when-active")
-            log(f"Generating article: {slug}")
+            log(f"{'Aligning existing audio' if alignment_only else 'Generating article'}: {slug}")
             flags = getattr(subprocess, "CREATE_NO_WINDOW", 0) | getattr(subprocess, "BELOW_NORMAL_PRIORITY_CLASS", 0)
             with LOG.open("a", encoding="utf-8", buffering=1) as output:
                 process = subprocess.Popen(args_for_child, cwd=str(ROOT), stdout=output, stderr=subprocess.STDOUT,
                                            text=True, creationflags=flags)
                 result = wait_for_generator(process, args.idle_only)
             if result == 0:
-                failures.pop(slug, None)
-                state["ready"] += 1
-                state["pending"] = [value for value in state["pending"] if value != slug]
-                log(f"Audio uploaded: {slug}")
+                job_failures.pop(slug, None)
+                if alignment_only:
+                    state["timing_pending"] = [value for value in state["timing_pending"] if value != slug]
+                    log(f"Sentence timing uploaded: {slug}")
+                else:
+                    state["ready"] += 1
+                    state["pending"] = [value for value in state["pending"] if value != slug]
+                    log(f"Audio uploaded: {slug}")
             elif result == 10:
                 log("GPU unavailable or desktop activity resumed; will retry later")
                 break
             elif result in (20, 30):
-                failures[slug] = manifest["content_id"]
+                job_failures[slug] = manifest["content_id"]
                 log(f"Audio held for review or storage limit: {slug}")
                 if result == 30:
                     break
             else:
-                failures[slug] = manifest["content_id"]
+                job_failures[slug] = manifest["content_id"]
                 log(f"Audio generation failed ({result}): {slug}")
             state["review_required"] = failures
+            state["timing_review_required"] = timing_failures
             save_state(state)
     finally:
         lock.seek(0)

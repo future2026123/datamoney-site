@@ -79,6 +79,7 @@
             <label><input type="radio" name="dm-speech-speed" value="1" checked> 보통</label>
             <label><input type="radio" name="dm-speech-speed" value="1.2"> 빠름</label>
           </fieldset>
+          <label class="dm-speech-follow"><input type="checkbox" data-speech-follow checked> 읽는 위치 따라가기</label>
           <button type="button" class="dm-speech-play" data-speech-play disabled>음성 재생</button>
           <p class="dm-speech-feedback" role="status" aria-live="polite"></p>
         </div>
@@ -152,6 +153,10 @@
   });
 
   const speechButton = button('speech');
+  const speechTitle = heading?.querySelector('h1') || fallbackTitle;
+  const highlighter = typeof window.createDataMoneySpeechHighlighter === 'function' && content
+    ? window.createDataMoneySpeechHighlighter({title:speechTitle, content, followInput:toolbar.querySelector('[data-speech-follow]')})
+    : null;
   const attachDeviceSpeech = () => {
     if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window) || !content) {
       speechButton.disabled = true;
@@ -160,10 +165,13 @@
     }
     speechButton.title = 'AI 음성 준비 중 · 기기 음성으로 듣기';
     let speaking = false;
+    let session = 0;
     speechButton.addEventListener('click', () => {
       if (speaking) {
+        session++;
         window.speechSynthesis.cancel();
         speaking = false;
+        highlighter?.clear();
         speechButton.setAttribute('aria-pressed', 'false');
         speechButton.setAttribute('aria-label', '글 음성으로 듣기');
         return;
@@ -171,23 +179,34 @@
       const title = (heading || fallbackTitle).querySelector?.('h1')?.innerText?.trim() || fallbackTitle?.innerText?.trim();
       const parts = readable.filter(element => !element.closest('figcaption, .dm-references') &&
         !element.parentElement.closest('li, blockquote, td, th'))
-        .map(element => element.innerText.trim()).filter(Boolean);
+        .map(element => element.innerText.replace(/\s+/gu, ' ').trim()).filter(Boolean);
       if (title) parts.unshift(title);
-      const text = parts.join('. ');
-      if (!text) { announce('읽을 본문을 찾지 못했어요.'); return; }
-      const chunks = text.match(/[\s\S]{1,220}(?:[.!?。]\s|$)|[\s\S]{1,220}/g) || [text];
+      const sentences = parts.flatMap(part => (part.match(/.*?[.!?。！？](?=\s|$)|.+$/gu) || [])
+        .map(value => value.trim()).filter(Boolean));
+      if (!sentences.length) { announce('읽을 본문을 찾지 못했어요.'); return; }
+      const chunks = sentences.flatMap((text, index) => {
+        const pieces = text.match(/.{1,220}(?:\s+|$)|.{1,220}/gu) || [text];
+        return pieces.map(value => ({text:value.trim(), index})).filter(value => value.text);
+      });
+      highlighter?.prepare(sentences.map(text => ({text})));
       let index = 0;
+      const currentSession = ++session;
       const finish = () => {
+        if (currentSession !== session) return;
         speaking = false;
+        highlighter?.clear();
         speechButton.setAttribute('aria-pressed', 'false');
         speechButton.setAttribute('aria-label', '글 음성으로 듣기');
       };
       const speakNext = () => {
+        if (currentSession !== session) return;
         if (!speaking || index >= chunks.length) { finish(); return; }
-        const utterance = new SpeechSynthesisUtterance(chunks[index++]);
+        const chunk = chunks[index++];
+        const utterance = new SpeechSynthesisUtterance(chunk.text);
         utterance.lang = 'ko-KR';
+        utterance.onstart = () => { if (speaking && currentSession === session) highlighter?.show(chunk.index); };
         utterance.onend = speakNext;
-        utterance.onerror = () => { finish(); announce('음성을 재생하지 못했어요.'); };
+        utterance.onerror = () => { if (currentSession === session) { finish(); announce('음성을 재생하지 못했어요.'); } };
         window.speechSynthesis.speak(utterance);
       };
       speaking = true;
@@ -196,10 +215,10 @@
       announce('AI 음성을 준비 중이라 현재는 기기 음성으로 재생해요.');
       speakNext();
     });
-    window.addEventListener('pagehide', () => { if (speaking) window.speechSynthesis.cancel(); });
+    window.addEventListener('pagehide', () => { if (speaking) { session++; window.speechSynthesis.cancel(); highlighter?.clear(); } });
   };
   if (typeof window.initDataMoneyArticleSpeech === 'function') {
-    window.initDataMoneyArticleSpeech({toolbar, speechButton, onUnavailable: attachDeviceSpeech});
+    window.initDataMoneyArticleSpeech({toolbar, speechButton, onUnavailable: attachDeviceSpeech, highlighter});
   } else {
     attachDeviceSpeech();
   }

@@ -113,6 +113,22 @@ class SpeechManifestTests(unittest.TestCase):
                 self.assertTrue(manifest["chunks"])
                 self.assertTrue(all(0 < len(item["text"]) <= speech.MAX_CHARS for item in manifest["chunks"]))
 
+    def test_article_voice_gets_its_own_fingerprint(self):
+        source = (ROOT / "blog" / "ai-semiconductor-per-2026" / "index.html").read_text(encoding="utf-8")
+        original = speech.build_manifest(source)
+        changed = source.replace("</head>", '<meta name="dm-speech-voice" content="ko-KR-InJoonNeural-v1"></head>', 1)
+        selected = speech.build_manifest(changed)
+        self.assertEqual(original["voice"], "female-v1")
+        self.assertEqual(selected["voice"], "ko-KR-InJoonNeural-v1")
+        self.assertEqual(original["chunks"], selected["chunks"])
+        self.assertNotEqual(original["content_id"], selected["content_id"])
+
+    def test_unknown_voice_fails_instead_of_publishing_the_wrong_recording(self):
+        source = (ROOT / "blog" / "ai-semiconductor-per-2026" / "index.html").read_text(encoding="utf-8")
+        source = source.replace("</head>", '<meta name="dm-speech-voice" content="unknown"></head>', 1)
+        with self.assertRaisesRegex(ValueError, "Unsupported article speech voice"):
+            speech.build_manifest(source)
+
 
 if __name__ == "__main__":
     unittest.main()

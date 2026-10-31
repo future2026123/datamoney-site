@@ -18,8 +18,9 @@ import tempfile
 import unicodedata
 from pathlib import Path
 
-from build_speech_manifests import build_manifest
+from build_speech_manifests import VOICE_PROFILE_ID, build_manifest
 from local_speech_storage import BUCKET, client, upload
+from speech_timing import timing_for, timing_key
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOL_ROOT = Path(r"D:\Tools\DataMoney-TTS")
@@ -94,8 +95,12 @@ def transcript_check(audio, expected):
     if not choices:
         raise RuntimeError("Local speech verification model is unavailable")
     model = WhisperModel(str(choices[-1]), device="cpu", compute_type="int8", cpu_threads=3, local_files_only=True)
-    segments, _ = model.transcribe(str(audio), language="ko", beam_size=5, condition_on_previous_text=False)
+    segments, _ = model.transcribe(str(audio), language="ko", beam_size=5,
+                                   condition_on_previous_text=False, word_timestamps=True)
+    segments = list(segments)
     transcript = " ".join(segment.text for segment in segments)
+    words = [{"text": word.word, "start": word.start, "end": word.end}
+             for segment in segments for word in segment.words or []]
     a, b = normalize(expected), normalize(transcript)
     ratio = difflib.SequenceMatcher(None, a, b, autojunk=False).ratio()
     # A number disappearing entirely may change a financial claim. This check is
@@ -103,7 +108,7 @@ def transcript_check(audio, expected):
     numbers = {match.replace(",", "").replace(".", "") for match in re.findall(r"\d[\d,.]*", expected)}
     spoken_digits = "".join(re.findall(r"\d+", transcript))
     missing = sorted(value for value in numbers if value not in spoken_digits)
-    return {"similarity": round(ratio, 4), "missing_numbers": missing, "transcript": transcript,
+    return {"similarity": round(ratio, 4), "missing_numbers": missing, "transcript": transcript, "words": words,
             "passed": ratio >= .72 and not missing}
 
 
@@ -132,6 +137,7 @@ def main():
     parser.add_argument("--source-root", type=Path, default=ROOT, help="Clean checkout of the published site")
     parser.add_argument("--max-groups", type=int, help="Make a local preview only")
     parser.add_argument("--upload", action="store_true", help="Upload only a complete, verified article")
+    parser.add_argument("--alignment-only", action="store_true", help="Add timing to an existing recording")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--yield-when-active", action="store_true", help="Pause after a group when desktop activity resumes")
     args = parser.parse_args()
@@ -139,17 +145,23 @@ def main():
         parser.error("Invalid article slug")
     if args.max_groups is not None and (args.max_groups < 1 or args.upload):
         parser.error("A partial preview cannot be uploaded")
+    if args.alignment_only and (not args.upload or args.max_groups is not None or args.dry_run):
+        parser.error("Alignment-only mode requires --upload and a complete recording")
     source = args.source_root / "blog" / args.slug / "index.html"
-    manifest = build_manifest(source.read_text(encoding="utf-8"))
+    source_text = source.read_text(encoding="utf-8")
+    manifest = build_manifest(source_text)
+    if manifest["voice"] != VOICE_PROFILE_ID:
+        print("This article uses a separately managed voice; local female generation is disabled.", flush=True)
+        raise SystemExit(20)
     groups = grouped_text(manifest["chunks"])
     chosen = groups[:args.max_groups] if args.max_groups else groups
     job = CACHE / "articles" / args.slug / manifest["content_id"]
-    wavs = [CACHE / "groups" / (group_hash(value) + ".wav") for value in chosen]
-    missing = [i for i, (p, text) in enumerate(zip(wavs, chosen)) if not valid_wav(p, text)]
+    wavs = [] if args.alignment_only else [CACHE / "groups" / (group_hash(value) + ".wav") for value in chosen]
+    missing = [] if args.alignment_only else [i for i, (p, text) in enumerate(zip(wavs, chosen)) if not valid_wav(p, text)]
     print(f"Article: {args.slug}; groups: {len(chosen)}/{len(groups)}; to generate: {len(missing)}", flush=True)
     if args.dry_run:
         return
-    if missing:
+    if missing and not args.alignment_only:
         os.environ["HF_HUB_OFFLINE"] = "1"
         os.environ["TRANSFORMERS_OFFLINE"] = "1"
         import numpy as np
@@ -184,7 +196,14 @@ def main():
         del model, prompt
         torch.cuda.empty_cache()
     output = job / ("preview.mp3" if args.max_groups else "article.mp3")
-    render_mp3(wavs, output)
+    if args.alignment_only:
+        if not output.is_file():
+            output.parent.mkdir(parents=True, exist_ok=True)
+            temporary = output.with_suffix(".download.partial")
+            client().download_file(BUCKET, f"audio/articles/{args.slug}/{manifest['content_id']}.mp3", str(temporary))
+            temporary.replace(output)
+    else:
+        render_mp3(wavs, output)
     print(f"Local audio ready: {output}; bytes: {output.stat().st_size}", flush=True)
     if not args.upload:
         return
@@ -194,13 +213,28 @@ def main():
     if not review["passed"]:
         print("Audio requires review; it was not uploaded.", flush=True)
         raise SystemExit(20)
+    timing = timing_for(source_text, review["words"], manifest["content_id"])
+    timing_path = job / "sentence-timing-v1.json"
+    timing_path.write_text(json.dumps(timing, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+    print(f"Sentence timestamps aligned: {len(timing['cues'])}", flush=True)
+    if args.alignment_only:
+        if not timing["cues"]:
+            print("Sentence timing requires review; no timing data was uploaded.", flush=True)
+            raise SystemExit(20)
+        if bucket_bytes(client()) + timing_path.stat().st_size > MAX_BUCKET_BYTES:
+            print("Dedicated audio bucket has reached its 8 GB safety limit.", flush=True)
+            raise SystemExit(30)
+        upload(timing_path, timing_key(args.slug, manifest["content_id"]), "application/json",
+               "public, max-age=31536000, immutable")
+        print("Sentence timing uploaded for existing audio", flush=True)
+        return
     remote = f"audio/articles/{args.slug}/{manifest['content_id']}.mp3"
     index = {"version": 1, "voice": manifest["voice"], "content_id": manifest["content_id"], "audio": remote}
     index_path = job / "availability.json"
     index_path.write_text(json.dumps(index, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     storage = client()
     total = bucket_bytes(storage)
-    if total + output.stat().st_size + index_path.stat().st_size > MAX_BUCKET_BYTES:
+    if total + output.stat().st_size + index_path.stat().st_size + timing_path.stat().st_size > MAX_BUCKET_BYTES:
         print("Dedicated audio bucket has reached its 8 GB safety limit; audio was not uploaded.", flush=True)
         raise SystemExit(30)
     upload(output, remote, "audio/mpeg", "public, max-age=31536000, immutable")
@@ -217,6 +251,9 @@ def main():
         body.close()
     if remote_digest.digest() != expected_digest:
         raise RuntimeError("Uploaded audio checksum mismatch; index was not published")
+    if timing["cues"]:
+        upload(timing_path, timing_key(args.slug, manifest["content_id"]), "application/json",
+               "public, max-age=31536000, immutable")
     upload(index_path, f"audio/manifests/{args.slug}/{manifest['content_id']}.json", "application/json",
            "public, max-age=31536000, immutable")
     print("Verified audio and availability index uploaded", flush=True)
