@@ -174,9 +174,11 @@ def synchronize(path, fragment):
     css = f'<link rel="stylesheet" href="/blog/sidebar.css?v={version(ROOT / "blog/sidebar.css")}">'
     popular = f'<script src="/scripts/popular-posts.js?v={version(ROOT / "scripts/popular-posts.js")}" defer></script>'
     quotes = f'<script src="/scripts/investment-quotes.js?v={version(ROOT / "scripts/investment-quotes.js")}" defer></script>'
+    tags = f'<script src="/scripts/blog-tags.js?v={version(ROOT / "scripts/blog-tags.js")}" defer></script>'
     updated = ensure_asset(updated, r'''<link\s+rel=["']stylesheet["']\s+href=["']/blog/sidebar\.css(?:\?[^"']*)?["']\s*/?>''', css)
     updated = ensure_asset(updated, r'''<script\s+src=["']/scripts/popular-posts\.js(?:\?[^"']*)?["']\s+defer\s*></script\s*>''', popular)
     updated = ensure_asset(updated, r'''<script\s+src=["']/scripts/investment-quotes\.js(?:\?[^"']*)?["']\s+defer\s*></script\s*>''', quotes)
+    updated = ensure_asset(updated, r'''<script\s+src=["']/scripts/blog-tags\.js(?:\?[^"']*)?["']\s+defer\s*></script\s*>''', tags)
     if path != ROOT / "blog/index.html":
         sticky = f'<script src="/scripts/sticky-article-sidebar.js?v={version(ROOT / "scripts/sticky-article-sidebar.js")}" defer></script>'
         updated = ensure_asset(updated, r'''<script\s+src=["']/scripts/sticky-article-sidebar\.js(?:\?[^"']*)?["']\s+defer\s*></script\s*>''', sticky)
