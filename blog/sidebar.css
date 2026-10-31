@@ -59,15 +59,16 @@
 .dm-shared-sidebar .popular-list img { grid-column: 2; grid-row: 1; display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: contain; border-radius: 8px; background: #f4f7fb; }
 .dm-shared-sidebar .popular-title { grid-column: 1; grid-row: 1; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; min-width: 0; margin: 0; color: #0f172a; font-size: 15px; font-weight: 700; line-height: 1.45; word-break: keep-all; overflow-wrap: anywhere; }
 .dm-shared-sidebar .popular-empty { margin: 0; padding: 0; border: 0; background: transparent; color: #475569; font-size: 13px; line-height: 1.6; }
-.dm-shared-sidebar .quote-card { margin-top: 16px; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
-.dm-shared-sidebar .quote-mark { display: block; height: 34px; color: #2563eb; font-family: Georgia,serif; font-size: 48px; font-weight: 700; line-height: 1; }
-.dm-shared-sidebar .quote-card blockquote { margin: 4px 0 18px; padding: 0; border: 0; background: transparent; color: #0f172a; font-size: 17px; font-weight: 700; line-height: 1.65; word-break: keep-all; overflow-wrap: anywhere; }
-.dm-shared-sidebar .quote-original { margin: 0 0 12px; color: #64748b; font-size: 13px; line-height: 1.65; overflow-wrap: anywhere; }
-.dm-shared-sidebar .quote-review-note { margin: -4px 0 10px; color: #64748b; font-size: 11px; line-height: 1.4; }
+.dm-shared-sidebar .quote-panel { padding: 18px; }
+.dm-shared-sidebar .quote-card { margin-top: 10px; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.dm-shared-sidebar .quote-mark { display: block; height: 27px; color: #2563eb; font-family: Georgia,serif; font-size: 40px; font-weight: 700; line-height: 1; }
+.dm-shared-sidebar .quote-card blockquote { margin: 4px 0 12px; padding: 0; border: 0; background: transparent; color: #0f172a; font-size: 17px; font-weight: 700; line-height: 1.65; word-break: keep-all; overflow-wrap: anywhere; }
+.dm-shared-sidebar .quote-original { margin: 0 0 8px; color: #64748b; font-size: 13px; line-height: 1.65; overflow-wrap: anywhere; }
+.dm-shared-sidebar .quote-review-note { margin: -3px 0 6px; color: #64748b; font-size: 11px; line-height: 1.4; }
 .dm-shared-sidebar .quote-review-note[hidden] { display: none; }
 .dm-shared-sidebar .quote-meta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; color: #334155; font-size: 13px; font-weight: 700; }
-.dm-shared-sidebar .quote-card button { display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; min-height: 42px; margin-top: 18px; padding: 0; border: 0; border-radius: 12px; background: #2563eb; color: #fff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
-.dm-shared-sidebar .quote-card button:hover { background: #1d4ed8; }
+.dm-shared-sidebar .quote-card button { display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; min-height: 38px; margin-top: 12px; padding: 0 12px; border: 1px solid #dbe7fa; border-radius: 10px; background: #f1f5fd; color: #2856b8; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.dm-shared-sidebar .quote-card button:hover { background: #e7efff; }
 .dm-shared-sidebar .dm-channel-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
 .dm-shared-sidebar .dm-channel-links :is(a, button) { display: flex; align-items: center; gap: 9px; width: 100%; min-width: 0; min-height: 44px; padding: 10px 12px; border: 1px solid rgba(15,23,42,.08); border-radius: 10px; background: #f8fafc; color: #1e293b; font: inherit; font-size: 14px; font-weight: 600; text-align: left; }
 .dm-shared-sidebar .dm-channel-links a:hover { background: #eff6ff; }
