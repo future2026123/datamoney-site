@@ -14,20 +14,19 @@
     {symbol:'🔭', title:'변화를 읽는 관찰자', tagline:'남들보다 시장의 움직임이 먼저 눈에 띄는 편', description:'작은 변화도 놓치지 않는 당신. 빠른 반응이 꼭 빠른 결정일 필요는 없어요. 확인하는 때와 결정하는 때를 나눠 보세요.', strength:'시장이나 계좌에서 달라진 점을 빠르게 알아차려요.', caution:'잦은 확인이 불안을 키우거나 계획 밖의 거래로 이어지지 않는지 살펴보세요.'},
     {symbol:'🌱', title:'회복을 준비하는 정원사', tagline:'지금 필요한 건 서두르기보다 숨 고르기', description:'여러 걱정이 한꺼번에 찾아온 시기일 수 있어요. 당장의 수익보다 생활과 선택의 여유를 차근차근 살펴보세요.', strength:'지금의 상황을 직면하고 다시 기준을 세울 기회를 만들고 있어요.', caution:'손실을 빨리 만회해야 한다는 마음이 더 큰 위험으로 이어지지 않도록 주의해요.'}
   ];
-  const answers = {}; let step = 0, result = null;
-  const screens = ['intro','quiz','consent','result'];
+  const answers = {}; let step = 0, result = null, consented = false, finishing = false;
+  const screens = ['intro','quiz','result'];
   const show = id => { screens.forEach(name => { $(name).hidden = name !== id; }); window.scrollTo(0,0); };
   function renderQuestion() {
     const q = questions[step]; $('step').textContent = `${step+1} / ${questions.length}`;
     $('progress-bar').style.width = `${(step+1)/questions.length*100}%`;
     $('back').hidden = step === 0; $('question-title').textContent = q.title; $('question-hint').textContent = q.hint;
     const box = $('choices'); box.replaceChildren();
-    q.choices.forEach((text, value) => { const b = document.createElement('button'); b.className='choice'; b.type='button'; b.textContent=text; b.addEventListener('click', () => { answers[q.key]=value; if (++step < questions.length) renderQuestion(); else {show('consent'); $('consent-title').focus();} }); box.append(b); });
+    q.choices.forEach((text, value) => { const b = document.createElement('button'); b.className='choice'; b.type='button'; b.textContent=text; b.addEventListener('click', () => { if (finishing) return; answers[q.key]=value; if (++step < questions.length) renderQuestion(); else finish(); }); box.append(b); });
     $('question-title').focus();
   }
-  $('start').addEventListener('click', () => { step=0; show('quiz'); renderQuestion(); });
+  $('start').addEventListener('click', () => { consented=$('agree').checked; step=0; show('quiz'); renderQuestion(); });
   $('back').addEventListener('click', () => { if (step>0) {step--; renderQuestion();} });
-  $('consent-back').addEventListener('click', () => {step=questions.length-1; show('quiz'); renderQuestion();});
   function tip() {
     if (answers.horizon >= 2) return '가까운 시기에 써야 할 돈이 시장 변동에 얼마나 노출돼 있는지 확인해 보세요.';
     if (answers.buffer >= 2) return '예상치 못한 지출에 대비할 생활비 여유가 충분한지 먼저 점검해 보세요.';
@@ -37,26 +36,28 @@
     return '투자 목적과 생활비 여유를 정기적으로 확인할 날짜를 정해 보세요.';
   }
   function drawCard() {
-    const c=$('canvas'), x=c.getContext('2d'); x.fillStyle='#e3f1ff'; x.fillRect(0,0,c.width,c.height);
-    x.fillStyle='#245bd5'; x.font='bold 38px sans-serif'; x.fillText('데이터머니',80,125);
-    x.fillStyle='#526782'; x.font='34px sans-serif'; x.fillText('나의 투자 유형은',80,300);
-    x.fillStyle='#112846'; x.font='bold 64px sans-serif'; x.fillText(result.title,80,430,920);
-    x.fillStyle='#245bd5'; x.font='bold 38px sans-serif'; x.fillText(result.tagline,80,530,920);
-    x.fillStyle='#345273'; x.font='34px sans-serif'; let line='', y=670;
+    const c=$('canvas'), x=c.getContext('2d'); x.fillStyle='#f4f7fc'; x.fillRect(0,0,c.width,c.height);
+    x.fillStyle='#305cdb'; x.fillRect(0,0,1080,24); x.font='bold 42px sans-serif'; x.fillText('데이터머니',80,120);
+    x.fillStyle='#dfeeff'; x.beginPath(); x.arc(855,325,150,0,Math.PI*2); x.fill();
+    x.fillStyle='#305cdb'; x.beginPath(); x.moveTo(855,208); x.lineTo(895,322); x.lineTo(855,442); x.lineTo(815,330); x.closePath(); x.fill();
+    x.fillStyle='#586b83'; x.font='34px sans-serif'; x.fillText('나의 투자 유형은',80,280);
+    x.fillStyle='#14233c'; x.font='bold 64px sans-serif'; x.fillText(result.title,80,405,740);
+    x.fillStyle='#305cdb'; x.font='bold 38px sans-serif'; x.fillText(result.tagline,80,505,900);
+    x.fillStyle='#425f80'; x.font='34px sans-serif'; let line='', y=690;
     for (const word of result.description.split(' ')) { const next=line+word+' '; if (x.measureText(next).width>900 && line) {x.fillText(line,80,y); y+=58; line='';} line+=word+' '; } if(line) x.fillText(line,80,y);
-    x.fillStyle='#245bd5'; x.fillRect(80,1100,920,3); x.fillStyle='#526782'; x.font='32px sans-serif'; x.fillText('나의 투자 유형 알아보기',80,1170); x.fillText('datamoney.kr/tools/investor-type/',80,1230);
+    x.fillStyle='#ccd9e9'; x.fillRect(80,1080,920,3); x.fillStyle='#526782'; x.font='32px sans-serif'; x.fillText('나의 투자 유형 알아보기',80,1160); x.fillText('datamoney.kr/tools/investor-type/',80,1230);
     $('card-preview').src=c.toDataURL('image/png');
   }
-  $('finish').addEventListener('click', async () => {
-    $('finish').disabled=true; let message='';
-    if ($('agree').checked) {
+  async function finish() {
+    finishing=true; $('quiz-status').textContent='결과를 준비하고 있어요.'; let message='';
+    if (consented) {
       try { const response=await fetch('/api/article-engagement/_survey',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({consent:true,answers})}); if(!response.ok) throw new Error(); message='응답을 지표 연구에 전달했어요. 같은 브라우저의 같은 날 첫 응답만 반영됩니다.'; }
       catch (_) { message='응답을 저장하지 못했어요. 결과는 아래에서 확인할 수 있습니다.'; }
     }
     const score=Object.values(answers).reduce((sum,value)=>sum+value,0); result=types[score<=2?0:score<=5?1:score<=9?2:3];
     $('symbol').textContent=result.symbol; $('result-title').textContent=result.title; $('tagline').textContent=result.tagline; $('description').textContent=result.description; $('strength').textContent=result.strength; $('caution').textContent=result.caution; $('tip').textContent=tip(); $('notice').textContent=message;
-    show('result'); drawCard(); $('result-title').focus(); $('finish').disabled=false;
-  });
+    show('result'); drawCard(); $('result-title').focus(); finishing=false; $('quiz-status').textContent='';
+  }
   $('save').addEventListener('click', () => {const a=document.createElement('a'); a.href=$('canvas').toDataURL('image/png'); a.download='datamoney-investor-type.png'; a.click();});
   $('share').addEventListener('click', async () => {
     const data={title:'나의 투자 유형 테스트',text:`나는 ${result.title}! 당신은 어떤 투자자일까요?`,url:'https://datamoney.kr/tools/investor-type/'};
