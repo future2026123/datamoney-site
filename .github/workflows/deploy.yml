@@ -42,7 +42,7 @@ jobs:
       - name: Synchronize article thumbnails
         run: python3 scripts/sync_blog_thumbnails.py
 
-      - name: Test article structured data
+      - name: Test article data and source excerpt format
         run: python3 -m unittest discover -s tests
 
       - name: Add article structured data

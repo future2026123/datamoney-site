@@ -1,0 +1,65 @@
+{
+  "description": "Existing excerpt images in other articles, retained until their original context and instructions can be reviewed. Never add new entries without an explicit user request for a text-source capture.",
+  "entries": [
+    {
+      "article": "blog/covered-call-etf-principal/index.html",
+      "src": "/blog/covered-call-etf-principal/hankyung-source-20250119.png",
+      "sha256": "476e39f1a5065a6f5b5314ce2f4ee74340d0cbbc4a322b3eb832a003dc35ff7f"
+    },
+    {
+      "article": "blog/covered-call-etf-principal/index.html",
+      "src": "/blog/covered-call-etf-principal/globalx-source.png",
+      "sha256": "4f81e9fb1033e1e1a0262c75816f4c12e9b4af0292bdd33f6f2f8882e3950475"
+    },
+    {
+      "article": "blog/covered-call-etf-principal/index.html",
+      "src": "/blog/covered-call-etf-principal/nts-source.png",
+      "sha256": "8edae9790fbbedc00d3366faf01826f830cff4bad1c8213fefcaaf009e053060"
+    },
+    {
+      "article": "blog/health-insurance-settlement-2026-april/index.html",
+      "src": "/blog/health-insurance-settlement-2026-april/nhis-installment-law.png",
+      "sha256": "800c237b74894abb9e530c05231bd79d723eba9dd14cf926e378fe62b263795a"
+    },
+    {
+      "article": "blog/health-insurance-settlement-2026-april/index.html",
+      "src": "/blog/health-insurance-settlement-2026-april/nhis-2026-rate.png",
+      "sha256": "e954efdf495a9ed21d022f7924e7b99df5fb901271fbeeda3e2b3822e3dd4452"
+    },
+    {
+      "article": "blog/high-point-investors-2026/index.html",
+      "src": "/blog/high-point-investors-2026/sec-past-performance.png",
+      "sha256": "7099c04929c6d8963ece6b6267b229d4935dd1390c80dae7eadd0f1e135e60b3"
+    },
+    {
+      "article": "blog/high-point-investors-2026/index.html",
+      "src": "/blog/high-point-investors-2026/proshares-tqqq.png",
+      "sha256": "bddfe33f525dde4ea568fb2968e4de28d5d09a2cf1da1b9b1fe0438205b1110d"
+    },
+    {
+      "article": "blog/leverage-etf-volatility-decay-2026/index.html",
+      "src": "/blog/leverage-etf-volatility-decay-2026/finra-09-31-source.png",
+      "sha256": "002905717562e2c6d86d895de50b05647a6d5e646445007934d36a16058d5b59"
+    },
+    {
+      "article": "blog/leverage-etf-volatility-decay-2026/index.html",
+      "src": "/blog/leverage-etf-volatility-decay-2026/asu-bessembinder-source.png",
+      "sha256": "ee5e78a69bcf4c5bfe5b13b1103964cf0735a511e81e28c9d91e598228d567fd"
+    },
+    {
+      "article": "blog/side-income-tax-300-rule-2026/index.html",
+      "src": "/blog/side-income-tax-300-rule-2026/nts-deadline-source.png",
+      "sha256": "6b95af48a3c8d42f11a91231b5eb16e05f970ac56bede67433dbd283de004ca6"
+    },
+    {
+      "article": "blog/side-income-tax-300-rule-2026/index.html",
+      "src": "/blog/side-income-tax-300-rule-2026/nts-other-income-source.png",
+      "sha256": "0d2328fe510ade735e49a4c72d36a1824181211a8344eca0ec92d04f66a204db"
+    },
+    {
+      "article": "blog/uptrend-myth-3-fallacies-2026/index.html",
+      "src": "/blog/uptrend-myth-3-fallacies-2026/intel-earnings-source.png",
+      "sha256": "f26fbd9ed6da2e1a2b9452cd8fd2489d6348560d2271a05132e86f3f7472697c"
+    }
+  ]
+}
