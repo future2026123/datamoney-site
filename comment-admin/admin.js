@@ -7,17 +7,22 @@
   const list = document.getElementById('admin-comments');
   const empty = document.getElementById('admin-empty');
   const more = document.getElementById('admin-more');
+  const googleLogin = document.getElementById('google-login');
+  const googleSignin = document.getElementById('google-signin');
+  const signout = document.getElementById('admin-signout');
   const tabs = [...panel.querySelectorAll('[data-status]')];
   const endpoint = '/api/article-engagement/_admin/comments';
   let key = '';
+  let googleSession = false;
   let currentStatus = 'pending';
   let nextBefore = null;
 
+  const authHeaders = () => key ? {authorization: `Bearer ${key}`} : {};
   const request = async (path = '', options = {}) => {
     const response = await fetch(endpoint + path, {
       ...options,
       cache: 'no-store',
-      headers: {...options.headers, authorization: `Bearer ${key}`}
+      headers: {...options.headers, ...authHeaders()}
     });
     if (!response.ok) {
       const error = new Error('Request failed');
@@ -85,12 +90,12 @@
     empty.hidden = list.children.length > 0;
     empty.textContent = currentStatus === 'pending' ? '검토할 댓글이 없습니다.' : currentStatus === 'private' ? '비밀댓글이 없습니다.' : '공개된 댓글이 없습니다.';
   };
-  const load = async append => {
+  const load = async (append, silent = false) => {
     more.disabled = true;
     status.textContent = '';
     try {
       if (currentStatus === 'subscribers') {
-        const response = await fetch('/api/article-engagement/_admin/email-subscribers', {cache:'no-store', headers:{authorization:'Bearer '+key}});
+        const response = await fetch('/api/article-engagement/_admin/email-subscribers', {cache:'no-store', headers:authHeaders()});
         if (!response.ok) { const error = new Error('Request failed'); error.status=response.status; throw error; }
         const data = await response.json();
         list.replaceChildren();
@@ -105,7 +110,7 @@
         more.hidden=true;panel.hidden=false;login.hidden=true;keyInput.value='';return;
       }
       if (currentStatus === 'survey') {
-        const response = await fetch('/api/article-engagement/_admin/survey', {cache:'no-store', headers:{authorization:`Bearer ${key}`}});
+        const response = await fetch('/api/article-engagement/_admin/survey', {cache:'no-store', headers:authHeaders()});
         if (!response.ok) { const error = new Error('Request failed'); error.status=response.status; throw error; }
         const data = await response.json();
         list.replaceChildren();
@@ -123,6 +128,7 @@
       const params = new URLSearchParams({status:currentStatus});
       if (append && nextBefore) params.set('before', String(nextBefore));
       const data = await request(`?${params}`);
+      if (!key) { googleSession = true; signout.hidden = false; }
       if (!append) list.replaceChildren();
       data.items.forEach(render);
       nextBefore = data.nextBefore;
@@ -130,10 +136,15 @@
       showEmpty();
       panel.hidden = false;
       login.hidden = true;
+      googleLogin.hidden = true;
       keyInput.value = '';
     } catch (error) {
-      status.textContent = error.status === 401 ? '접속키가 맞지 않습니다.' : '댓글 목록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
-      if (!append && panel.hidden) key = '';
+      if (!(silent && error.status === 401)) {
+        status.textContent = error.status === 401
+          ? (googleSession ? '로그인이 만료되었습니다. 페이지를 새로고침해 다시 로그인해 주세요.' : '접속키가 맞지 않습니다.')
+          : '댓글 목록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+      }
+      if (!append && panel.hidden && !silent) key = '';
     } finally { more.disabled = false; }
   };
   login.addEventListener('submit', event => {
@@ -148,4 +159,44 @@
     load(false);
   }));
   more.addEventListener('click', () => load(true));
+  signout.addEventListener('click', async () => {
+    try {
+      const response = await fetch('/api/article-engagement/_auth/logout', {method:'POST', cache:'no-store'});
+      if (!response.ok) throw new Error('Logout failed');
+      location.reload();
+    } catch (_) { status.textContent = '로그아웃하지 못했습니다. 다시 시도해 주세요.'; }
+  });
+  const initialize = async () => {
+    // An existing session opens automatically. Otherwise keep legacy key access
+    // until Google sign-in has been fully configured on the server.
+    await load(false, true);
+    if (!panel.hidden) return;
+    try {
+      const response = await fetch('/api/article-engagement/_auth/config', {cache:'no-store'});
+      if (!response.ok) return;
+      const config = await response.json();
+      if (!config.googleClientId || !config.nonce) return;
+      login.hidden = !config.legacyAllowed;
+      googleLogin.hidden = false;
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.onerror = () => { status.textContent = 'Google 로그인을 불러오지 못했습니다. 페이지를 새로고침해 주세요.'; };
+      script.onload = () => {
+        window.google.accounts.id.initialize({client_id:config.googleClientId, nonce:config.nonce, callback:async result => {
+          try {
+            const loginResponse = await fetch('/api/article-engagement/_auth/login', {
+              method:'POST', cache:'no-store', headers:{'content-type':'application/json'}, body:JSON.stringify({credential:result.credential})
+            });
+            if (!loginResponse.ok) throw new Error('Login failed');
+            googleLogin.hidden = true;
+            await load(false);
+          } catch (_) { status.textContent = '로그인하지 못했습니다. 운영자 계정과 인터넷 연결을 확인하고 새로고침해 주세요.'; }
+        }});
+        window.google.accounts.id.renderButton(googleSignin, {theme:'outline', size:'large', text:'signin_with'});
+      };
+      document.head.append(script);
+    } catch (_) { status.textContent = '로그인을 준비하지 못했습니다. 페이지를 새로고침해 주세요.'; }
+  };
+  initialize();
 })();

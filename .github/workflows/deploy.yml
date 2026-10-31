@@ -25,8 +25,14 @@ jobs:
         with:
           node-version: 24
 
+      - name: Install worker authentication dependencies
+        run: npm ci --prefix workers --ignore-scripts --no-audit --no-fund
+
       - name: Test private comment security
-        run: node tests/private-comments.mjs
+        run: |
+          node tests/private-comments.mjs
+          node tests/google-admin-auth.mjs
+          node tests/google-admin-ui.mjs
 
       - name: Test keyboard back navigation
         run: node tests/back-navigation.mjs
@@ -92,16 +98,33 @@ jobs:
           GA4_SERVICE_ACCOUNT_JSON: ${{ secrets.GA4_SERVICE_ACCOUNT_JSON }}
           GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
 
+      - name: Prepare worker secrets
+        if: github.event_name != 'schedule'
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const names = ['RESEND_API_KEY', 'DM_GOOGLE_CLIENT_ID', 'DM_GOOGLE_ADMIN_EMAIL', 'DM_ADMIN_SESSION_SECRET', 'DM_GOOGLE_ENFORCE'];
+          for (const name of names) if (!process.env[name]) throw new Error(`Missing worker secret: ${name}`);
+          const values = Object.fromEntries(names.map(name => [name, process.env[name]]));
+          fs.writeFileSync(`${process.env.RUNNER_TEMP}/datamoney-worker-secrets.json`, JSON.stringify(values), {mode:0o600});
+          NODE
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          DM_GOOGLE_CLIENT_ID: ${{ secrets.DM_GOOGLE_CLIENT_ID }}
+          DM_GOOGLE_ADMIN_EMAIL: ${{ secrets.DM_GOOGLE_ADMIN_EMAIL }}
+          DM_ADMIN_SESSION_SECRET: ${{ secrets.DM_ADMIN_SESSION_SECRET }}
+          DM_GOOGLE_ENFORCE: ${{ secrets.DM_GOOGLE_ENFORCE }}
+
       - name: Deploy Article Reactions and Comments
         if: github.event_name != 'schedule'
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: deploy --config wrangler.article-engagement.toml
-          postCommands: printf '%s' "$RESEND_API_KEY" | npx --no-install wrangler secret put RESEND_API_KEY --config wrangler.article-engagement.toml
-        env:
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          command: deploy --config wrangler.article-engagement.toml --secrets-file ${{ runner.temp }}/datamoney-worker-secrets.json
+
+      - name: Exclude worker dependencies from static site
+        run: rm -rf workers/node_modules
 
       - name: Deploy to Cloudflare Pages
         if: github.event_name != 'schedule' || steps.popular.outputs.updated == 'true' || steps.ai_traffic.outputs.updated == 'true'

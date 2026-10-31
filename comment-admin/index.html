@@ -19,6 +19,8 @@
     .intro { margin:0 0 24px; color:#64748b; line-height:1.6; font-size:14px; }
     form { display:flex; align-items:end; flex-wrap:wrap; gap:10px; }
     .key-field { display:grid; gap:7px; flex:1 1 260px; }
+    .google-login { margin:16px 0; }
+    .google-login p { color:#64748b; font-size:14px; line-height:1.6; }
     label { font-size:14px; font-weight:700; }
     input { width:100%; min-height:44px; padding:10px 12px; border:1px solid #cbd5e1; border-radius:10px; font:inherit; }
     button { min-height:42px; padding:9px 15px; border:1px solid #dbe3ed; border-radius:10px; background:#fff; color:#334155; font:inherit; font-size:14px; font-weight:700; cursor:pointer; }
@@ -53,8 +55,13 @@
         <div class="key-field"><label for="admin-key">관리자 접속키</label><input id="admin-key" type="password" autocomplete="off" required></div>
         <button class="primary" type="submit">열기</button>
       </form>
+      <div class="google-login" id="google-login" hidden>
+        <p>운영자 Google 계정으로 로그인해 주세요.</p>
+        <div id="google-signin"></div>
+      </div>
       <p class="status" id="admin-status" role="status" aria-live="polite"></p>
       <section id="admin-panel" aria-label="댓글 목록" hidden>
+        <button id="admin-signout" type="button" hidden>로그아웃</button>
         <div class="tabs" role="group" aria-label="댓글 상태">
           <button type="button" data-status="pending" aria-pressed="true">검토 대기</button>
           <button type="button" data-status="published" aria-pressed="false">공개 댓글</button>
@@ -68,6 +75,6 @@
       </section>
     </main>
   </div>
-  <script src="/comment-admin/admin.js?v=20261031-email" defer></script>
+  <script src="/comment-admin/admin.js?v=20261031-google" defer></script>
 </body>
 </html>

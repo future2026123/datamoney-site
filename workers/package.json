@@ -1,0 +1,11 @@
+{
+  "name": "datamoney-worker-auth",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "jose": "6.2.14"
+  },
+  "devDependencies": {
+    "jsdom": "^29.0.1"
+  }
+}

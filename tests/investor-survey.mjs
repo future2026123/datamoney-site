@@ -1,8 +1,6 @@
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
 import {DatabaseSync} from 'node:sqlite';
-const source=await readFile(new URL('../workers/article-engagement.js',import.meta.url));
-const {default:worker,ArticleEngagement}=await import(`data:text/javascript;base64,${source.toString('base64')}`);
+import worker,{ArticleEngagement} from '../workers/article-engagement.js';
 const db=new DatabaseSync(':memory:');
 db.exec('CREATE TABLE survey_answers (visitor TEXT NOT NULL, day TEXT NOT NULL, created_at INTEGER NOT NULL, loss INTEGER NOT NULL, anxiety INTEGER NOT NULL, horizon INTEGER NOT NULL, reaction INTEGER NOT NULL, buffer INTEGER NOT NULL, PRIMARY KEY(visitor,day))');
 const state={storage:{sql:{exec(sql,...args){const rows=db.prepare(sql).all(...args);return {toArray:()=>rows,one:()=>rows[0]};}},setAlarm:async()=>{}}};

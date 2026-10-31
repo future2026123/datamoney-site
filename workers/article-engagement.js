@@ -1,3 +1,5 @@
+import {AUTH_CONFIG_PATH, AUTH_LOGIN_PATH, AUTH_LOGOUT_PATH, getGoogleAdminConfig, googleAdminLogin, googleAdminLogout, googleAdminMode, hasGoogleAdminSession} from './admin-auth.js';
+
 const ROUTE = /^\/api\/article-engagement\/([a-z0-9][a-z0-9-]{0,95})(?:\/(reaction|comments)(?:\/([1-9]\d*)(?:\/(vote))?)?)?\/?$/;
 const ADMIN_ROUTE = /^\/api\/article-engagement\/_admin\/comments(?:\/([1-9]\d*)(?:\/(approve))?)?\/?$/;
 const CONFIG_PATH = '/api/article-engagement/_config';
@@ -93,11 +95,17 @@ export default {
     const surveyAdmin = url.pathname === SURVEY_ADMIN_PATH;
     const emailAdmin = url.pathname === EMAIL_ADMIN_PATH;
     const emailRoute = /^\/api\/article-engagement\/_email\/(request|open|preferences|delete)$/.test(url.pathname);
-    if (!adminRoute && !route && !survey && !surveyAdmin && !surveyAggregate && !emailRoute && !emailAdmin) return json({error: 'Not found'}, 404);
+    const authConfig = url.pathname === AUTH_CONFIG_PATH;
+    const authLogin = url.pathname === AUTH_LOGIN_PATH;
+    const authLogout = url.pathname === AUTH_LOGOUT_PATH;
+    if (!adminRoute && !route && !survey && !surveyAdmin && !surveyAggregate && !emailRoute && !emailAdmin && !authConfig && !authLogin && !authLogout) return json({error: 'Not found'}, 404);
     if (!['GET', 'POST', 'DELETE'].includes(request.method)) return json({error: 'Method not allowed'}, 405);
     if (request.method !== 'GET' && request.headers.get('origin') !== url.origin) {
       return json({error: 'Invalid origin'}, 403);
     }
+    if (authConfig) return request.method === 'GET' ? getGoogleAdminConfig(request, env) : json({error:'Method not allowed'}, 405);
+    if (authLogin) return request.method === 'POST' ? googleAdminLogin(request, env) : json({error:'Method not allowed'}, 405);
+    if (authLogout) return request.method === 'POST' ? googleAdminLogout() : json({error:'Method not allowed'}, 405);
     if (!env.ARTICLE_ENGAGEMENT) return json({error: 'Service unavailable'}, 503);
     if (surveyAggregate) {
       if (request.method !== 'POST') return json({error: 'Method not allowed'}, 405);
@@ -107,9 +115,18 @@ export default {
       return env.ARTICLE_ENGAGEMENT.get(id).fetch(new Request(request, {headers}));
     }
     if (adminRoute || surveyAdmin || emailAdmin) {
-      if (!env.DM_COMMENT_ADMIN_KEY) return json({error: 'Administrator access unavailable'}, 503);
-      const token = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
-      if (!await secureEqual(token, env.DM_COMMENT_ADMIN_KEY)) return json({error: 'Not authorized'}, 401);
+      const mode = googleAdminMode(env);
+      if (mode === 'unavailable') return json({error: 'Administrator access unavailable'}, 503);
+      if (mode === 'enabled') {
+        const session = await hasGoogleAdminSession(request, env);
+        const token = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
+        const legacy = env.DM_GOOGLE_ENFORCE === '0' && await secureEqual(token, env.DM_COMMENT_ADMIN_KEY);
+        if (!session && !legacy) return json({error: 'Not authorized'}, 401);
+      } else {
+        if (!env.DM_COMMENT_ADMIN_KEY) return json({error: 'Administrator access unavailable'}, 503);
+        const token = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
+        if (!await secureEqual(token, env.DM_COMMENT_ADMIN_KEY)) return json({error: 'Not authorized'}, 401);
+      }
       const headers = new Headers(request.headers);
       headers.delete('authorization');
       headers.set('x-article-admin', 'authorized');
