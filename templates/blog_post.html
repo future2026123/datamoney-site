@@ -70,8 +70,12 @@
 <article class="dm-post">
   <div class="dm-article-heading"><h1>{{POST_TITLE}}</h1><div class="dm-article-byline"><span>데이터머니</span><span>{{POST_DATE}}</span><span>읽는 시간 {{POST_READ_MINUTES}}분</span></div></div>
   <!-- 자료 원문 인용은 templates/blog_source_excerpt.html을 참고해 관련 본문 바로 뒤에 배치한다. -->
-  <!-- 글 끝 참고자료는 <section class="dm-references">로 묶어 작은 글씨로 표시한다. -->
   {{POST_CONTENT}}
+  <!-- 참고자료가 있으면 아래 목록을 채우고, 없으면 이 section을 제거한다. -->
+  <section class="dm-references" aria-labelledby="references-heading">
+    <h2 id="references-heading">참고자료</h2>
+    {{POST_REFERENCES}}
+  </section>
 </article>
 <!-- dm-shared-sidebar:start -->
 <aside class="sidebar dm-shared-sidebar" id="blog-sidebar" aria-label="블로그 둘러보기">
