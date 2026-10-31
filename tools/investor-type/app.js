@@ -64,9 +64,9 @@
     const day=new Date(Date.now()+9*3600000).toISOString().slice(0,10), key='dm_survey_aggregate_day';
     let alreadySent=false;try{alreadySent=localStorage.getItem(key)===day;}catch(_){}
     if(!alreadySent){
-      try{const current=Object.fromEntries(['loss','anxiety','horizon','reaction','buffer'].map(key=>[key,answers[key]]));const response=await fetch('/api/article-engagement/_survey-aggregate',{method:'POST',credentials:'omit',headers:{'content-type':'application/json'},body:JSON.stringify({baseline,answers:current})});if(!response.ok)throw new Error();try{localStorage.setItem(key,day);}catch(_){}message='응답이 투자 심리 통계에 반영됐어요.';}
-      catch(_){message='통계에 반영하지 못했어요. 결과는 아래에서 확인할 수 있습니다.';}
-    }else message='오늘 이 브라우저의 첫 번째 응답이 통계에 반영됐어요.';
+      try{const current=Object.fromEntries(['loss','anxiety','horizon','reaction','buffer'].map(key=>[key,answers[key]]));const response=await fetch('/api/article-engagement/_survey-aggregate',{method:'POST',credentials:'omit',headers:{'content-type':'application/json'},body:JSON.stringify({baseline,answers:current})});if(!response.ok)throw new Error();try{localStorage.setItem(key,day);}catch(_){}}
+      catch(_){}
+    }
     result=types[4*baseline[0]+2*baseline[1]+baseline[2]];
     $('character-image').setAttribute('viewBox',result.art.join(' '));$('character-image').setAttribute('aria-label',`${result.name} 캐릭터`);
     $('result-title').textContent=result.name;$('tagline').textContent=`${result.short} · ${result.tag}`;$('description').textContent=result.description;$('strength').textContent=result.strength;$('caution').textContent=result.caution;$('tip').textContent=tip();
