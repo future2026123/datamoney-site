@@ -90,7 +90,7 @@ jobs:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: deploy --config wrangler.article-engagement.toml
-          postCommands: printf '%s' "$RESEND_API_KEY" | wrangler secret put RESEND_API_KEY --config wrangler.article-engagement.toml
+          postCommands: printf '%s' "$RESEND_API_KEY" | npx --no-install wrangler secret put RESEND_API_KEY --config wrangler.article-engagement.toml
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
 
