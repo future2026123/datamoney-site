@@ -227,12 +227,20 @@
     return {prepare, show, clear, indexAtPoint};
   };
 
-  window.initDataMoneyArticleSpeech = ({toolbar, speechButton, onUnavailable, highlighter}) => {
+  window.initDataMoneyArticleSpeech = ({toolbar, speechButton, player, onUnavailable, highlighter}) => {
     const menu = toolbar.querySelector('.dm-speech-menu');
     const start = menu.querySelector('[data-speech-play]');
     const close = menu.querySelector('[data-speech-close]');
     const feedback = menu.querySelector('.dm-speech-feedback');
     const speeds = Array.from(menu.querySelectorAll('[name="dm-speech-speed"]'));
+    const settings = toolbar.querySelector('[data-speech-settings]');
+    const label = speechButton.querySelector?.('[data-speech-label]');
+    const info = speechButton.querySelector?.('[data-speech-info]');
+    const playerToggle = player?.querySelector('[data-player-toggle]');
+    const playerClose = player?.querySelector('[data-player-close]');
+    const playerTitle = player?.querySelector('[data-player-title]');
+    const playerCurrent = player?.querySelector('[data-player-current]');
+    const playerTime = player?.querySelector('[data-player-time]');
     const slug = location.pathname.match(/^\/blog\/([a-z0-9][a-z0-9-]{0,95})\/?$/)?.[1];
     if (!slug || !window.Audio) {
       speechButton.disabled = true;
@@ -248,6 +256,37 @@
     let playing = false;
     let run = 0;
     let speed = 1;
+    let contentId = '', voiceName = '', resumeAt = 0, resumePending = false;
+    let heard = 0, totalHeard = 0, lastTime = null, lastSavedAt = 0;
+    const milestones = new Set();
+    const listenedMilestones = new Set();
+    const storageKey = () => 'dm-speech-position:' + slug + ':' + contentId;
+    const report = (name, data = {}) => {
+      try { window.gtag?.('event', name, {article_slug:slug, ...data}); } catch (_) {}
+    };
+    const savePosition = () => {
+      if (!contentId || !Number.isFinite(audio.currentTime)) return;
+      try {
+        if (audio.currentTime < 3 || (Number.isFinite(audio.duration) && audio.currentTime >= audio.duration - 3))
+          localStorage.removeItem(storageKey());
+        else localStorage.setItem(storageKey(), String(Math.floor(audio.currentTime)));
+      } catch (_) {}
+    };
+    const reportListening = () => {
+      if (heard >= 1) report('audio_listening', {seconds:Math.round(heard)});
+      heard = 0;
+    };
+    const formatTime = value => {
+      if (!Number.isFinite(value) || value < 0) return '';
+      const seconds = Math.floor(value), minutes = Math.floor(seconds / 60);
+      return minutes + ':' + String(seconds % 60).padStart(2, '0');
+    };
+    const updateTime = () => {
+      const total = Number.isFinite(audio.duration) ? Math.floor(audio.duration) : null;
+      const durationText = total === null ? '' : Math.floor(total / 60) + '분 ' + (total % 60) + '초';
+      if (info) info.textContent = [voiceName, durationText].filter(Boolean).join(' · ');
+      if (playerTime) playerTime.textContent = Number.isFinite(audio.duration) ? formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration) : formatTime(audio.currentTime);
+    };
     try { speed = Number(localStorage.getItem('dm-speech-rate')) || 1; } catch (_) {}
     if (![0.85, 1, 1.2].includes(speed)) speed = 1;
     speeds.forEach(option => { option.checked = Number(option.value) === speed; });
@@ -255,21 +294,26 @@
     const setFeedback = message => { feedback.textContent = message; };
     const closeMenu = focus => {
       menu.hidden = true;
-      speechButton.setAttribute('aria-expanded', 'false');
-      if (focus) speechButton.focus();
+      settings?.setAttribute('aria-expanded', 'false');
+      if (focus) settings?.focus();
     };
     const updatePlaying = value => {
       playing = value;
       speechButton.setAttribute('aria-pressed', String(value));
-      start.textContent = value ? '음성 중지' : '음성 재생';
+      speechButton.setAttribute('aria-label', value ? '음성 일시정지' : (resumeAt >= 3 ? '이어 듣기' : '글 듣기'));
+      if (label) label.textContent = value ? '일시정지' : (resumeAt >= 3 ? '이어 듣기' : '글 듣기');
+      if (playerToggle) { playerToggle.textContent = value ? '❚❚' : '▶'; playerToggle.setAttribute('aria-label', value ? '일시정지' : '재생'); }
+      start.textContent = value ? '일시정지' : '음성 재생';
     };
-    const stop = message => {
+    const stop = (message, completed = false) => {
       run++;
       audio.pause();
-      audio.removeAttribute('src');
-      audio.load();
+      if (completed) { try { localStorage.removeItem(storageKey()); } catch (_) {} resumeAt = 0; audio.currentTime = 0; }
+      else { savePosition(); resumeAt = audio.currentTime || 0; }
+      reportListening();
       highlighter?.clear();
       updatePlaying(false);
+      if (player) player.hidden = true;
       setFeedback(message || '');
     };
     const loadAudio = () => {
@@ -292,6 +336,15 @@
               recording.content_id !== id || article.voice !== recording.voice ||
               recording.audio !== `audio/articles/${slug}/${id}.mp3`) throw new Error('not-ready');
           available = `${AUDIO_ORIGIN}/${recording.audio}`;
+          contentId = id;
+          voiceName = article.voice?.includes('InJoon') ? '인준 음성' : 'AI 음성';
+          if (playerTitle) playerTitle.textContent = voiceName;
+          try { resumeAt = Math.max(0, Number(localStorage.getItem(storageKey())) || 0); } catch (_) {}
+          updatePlaying(false);
+          audio.preload = 'metadata';
+          audio.src = available;
+          audio.load();
+          updateTime();
           if (highlighter) {
             fetch(`${AUDIO_ORIGIN}/audio/manifests/${slug}/${id}-cues-v1.json`, {cache:'no-store', credentials:'omit'})
               .then(response => response.ok ? response.json() : null)
@@ -327,42 +380,91 @@
         else high = mid;
       }
       highlighter.show(low - 1);
+      if (playerCurrent) playerCurrent.textContent = cues[low - 1]?.text || '음성을 재생하고 있어요';
     };
+    audio.addEventListener('loadedmetadata', () => {
+      if (resumePending) {
+        audio.currentTime = Number.isFinite(audio.duration) && resumeAt < audio.duration - 3 ? resumeAt : 0;
+        resumePending = false;
+      }
+      updateTime();
+    });
     audio.addEventListener('playing', syncHighlight);
-    audio.addEventListener('timeupdate', syncHighlight);
-    audio.addEventListener('seeked', syncHighlight);
-    audio.addEventListener('ended', () => { if (playing) stop('음성 재생을 마쳤어요.'); });
+    audio.addEventListener('timeupdate', () => {
+      if (playing && lastTime !== null) {
+        const delta = audio.currentTime - lastTime;
+        if (!audio.seeking && delta > 0 && delta < 10) {
+          const elapsed = delta / (audio.playbackRate || 1);
+          heard += elapsed;
+          totalHeard += elapsed;
+          for (const seconds of [30, 60, 300, 600]) {
+            if (!listenedMilestones.has(seconds) && totalHeard >= seconds) {
+              listenedMilestones.add(seconds); report('audio_listened_' + seconds + 's');
+            }
+          }
+        }
+        if (heard >= 30) reportListening();
+      }
+      lastTime = audio.currentTime;
+      if (playing && Math.abs(audio.currentTime - lastSavedAt) >= 5) {
+        savePosition();
+        lastSavedAt = audio.currentTime;
+      }
+      if (playing && Number.isFinite(audio.duration) && audio.duration > 0) {
+        for (const percent of [25, 50, 75, 90]) {
+          if (!milestones.has(percent) && audio.currentTime / audio.duration >= percent / 100) {
+            milestones.add(percent); report('audio_progress', {percent});
+          }
+        }
+      }
+      updateTime(); syncHighlight();
+    });
+    audio.addEventListener('seeking', () => { lastTime = null; });
+    audio.addEventListener('seeked', () => { lastTime = audio.currentTime; lastSavedAt = audio.currentTime; savePosition(); updateTime(); syncHighlight(); });
+    audio.addEventListener('ended', () => { if (playing) { report('audio_complete'); stop('음성 재생을 마쳤어요.', true); } });
     audio.addEventListener('error', () => {
       if (playing) stop('음성을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.');
     });
     const openMenu = () => {
       menu.hidden = !menu.hidden;
-      speechButton.setAttribute('aria-expanded', String(!menu.hidden));
+      settings?.setAttribute('aria-expanded', String(!menu.hidden));
       if (!menu.hidden && !playing) loadAudio();
     };
     speechButton.disabled = true;
     loadAudio().then(result => {
       speechButton.disabled = false;
-      if (result) speechButton.addEventListener('click', openMenu);
+      if (result) { speechButton.addEventListener('click', togglePlayback); settings?.addEventListener('click', openMenu); }
       else if (typeof onUnavailable === 'function') onUnavailable();
       else speechButton.addEventListener('click', openMenu);
     });
     close.addEventListener('click', () => closeMenu(true));
-    start.addEventListener('click', () => {
-      if (playing) { stop('음성을 중지했어요.'); return; }
+    const togglePlayback = () => {
+      if (playing) {
+        audio.pause(); savePosition(); resumeAt = audio.currentTime || 0; reportListening();
+        report('audio_pause'); lastTime = null; updatePlaying(false); setFeedback('일시정지'); return;
+      }
       if (!available) { loadAudio(); return; }
       run++;
       const currentRun = run;
-      audio.src = available;
+      if (!audio.getAttribute?.('src')) { audio.src = available; resumePending = resumeAt >= 3; }
+      else if (!audio.currentTime && resumeAt >= 3) {
+        if (audio.readyState >= 1) audio.currentTime = resumeAt;
+        else resumePending = true;
+      }
       audio.playbackRate = speed;
       updatePlaying(true);
+      if (player) player.hidden = false;
+      report('audio_play', {resumed:audio.currentTime > 0 || resumeAt >= 3});
       setFeedback('음성 재생 중');
       // play() must run synchronously inside the user's click on iOS.
       const result = audio.play();
       if (result?.catch) result.catch(() => {
         if (playing && currentRun === run) stop('음성을 재생하지 못했어요. 잠시 후 다시 시도해 주세요.');
       });
-    });
+    };
+    start.addEventListener('click', togglePlayback);
+    playerToggle?.addEventListener('click', togglePlayback);
+    playerClose?.addEventListener('click', () => stop('음성을 중지했어요.'));
     speeds.forEach(option => option.addEventListener('change', () => {
       if (!option.checked) return;
       speed = Number(option.value);

@@ -13,7 +13,24 @@
 .dm-actions-group { display: flex; align-items: center; gap: 14px; }
 .dm-actions-group:last-of-type { gap: 18px; }
 .dm-action-wrap { position: relative; }
-.dm-speech-wrap { position: static; }
+.dm-speech-wrap { position: static; display: flex; align-items: center; gap: 4px; }
+.dm-speech-start { color: #1d4ed8; font-weight: 700; white-space: nowrap; }
+.dm-speech-info { color: #64748b; font-size: 12px; font-weight: 400; }
+.dm-speech-settings { color: #64748b; font-size: 17px; }
+.dm-speech-settings[hidden] { display: none; }
+.dm-speech-player {
+  position: fixed; z-index: 150; left: 50%; bottom: 18px; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 12px; width: min(540px, calc(100% - 28px));
+  padding: 10px 12px; box-sizing: border-box; background: #fff; border: 1px solid #d9e4f3;
+  border-radius: 14px; box-shadow: 0 8px 30px rgba(15, 23, 42, .18); color: #14243b;
+}
+.dm-speech-player[hidden] { display: none; }
+.dm-speech-player button { flex: none; width: 38px; height: 38px; border: 0; border-radius: 9px; background: #edf4ff; color: #1d4ed8; font: inherit; font-weight: 700; cursor: pointer; }
+.dm-speech-player button:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+.dm-player-text { display: grid; gap: 3px; min-width: 0; flex: 1; }
+.dm-player-text strong { font-size: 13px; }
+.dm-player-text span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #64748b; font-size: 12px; }
+.dm-player-time { flex: none; color: #64748b; font-size: 12px; font-variant-numeric: tabular-nums; }
 .dm-action {
   display: inline-flex;
   align-items: center;
@@ -130,7 +147,11 @@ mark.dm-speech-reading { background-color: #fff0a6; color: inherit; }
 .dm-comment-verification[hidden] { display: none; }
 @media (max-width: 560px) {
   .dm-article-actions { gap: 8px; margin-top: 14px; padding-top: 10px; }
-  .dm-actions-group, .dm-actions-group:last-of-type { gap: 9px; }
+  .dm-actions-group, .dm-actions-group:last-of-type { gap: 4px; }
+  .dm-speech-wrap { gap: 0; }
+  .dm-speech-info { display: none; }
+  .dm-speech-start { font-size: 13px; gap: 3px; }
+  .dm-speech-player { bottom: max(10px, env(safe-area-inset-bottom)); }
   .dm-action { min-width: 26px; min-height: 36px; font-size: 14px; }
   .dm-action svg { width: 21px; height: 21px; }
   .dm-font-menu { right: -72px; }
@@ -139,6 +160,8 @@ mark.dm-speech-reading { background-color: #fff0a6; color: inherit; }
   .dm-comment-name-field { grid-column: 1 / -1; }
 }
 @media (max-width: 360px) {
+  .dm-article-actions { gap: 4px; }
+  .dm-actions-group, .dm-actions-group:last-of-type { gap: 0; }
   .dm-comment-input-row { grid-template-columns: minmax(0, 1fr); }
   .dm-comment-name-field { grid-column: auto; }
   .dm-comment-form .dm-comment-private { min-height: 0; }
@@ -147,6 +170,7 @@ mark.dm-speech-reading { background-color: #fff0a6; color: inherit; }
 @page { margin: 15mm; }
 
 @media print {
+  .dm-speech-player { display: none !important; }
   /* Only the title and article body belong on paper, including on pages whose
      title and body use different wrappers. This also excludes floating overlays. */
   [data-dm-print-path] > :not([data-dm-print-path]):not([data-dm-print-content]) {

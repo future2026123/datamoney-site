@@ -69,9 +69,11 @@
     </div>
     <div class="dm-actions-group">
       <div class="dm-speech-wrap">
-        <button class="dm-action" type="button" data-action="speech" aria-label="글 음성으로 듣기" aria-haspopup="dialog" aria-expanded="false" aria-pressed="false" title="음성으로 듣기">
+        <button class="dm-action dm-speech-start" type="button" data-action="speech" aria-label="글 듣기" aria-pressed="false" title="글 듣기">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 9h3l4-3.5v13L7 15H4zM14.2 9.3a4 4 0 0 1 0 5.4M16.7 6.8a7.4 7.4 0 0 1 0 10.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span data-speech-label>글 듣기</span><span class="dm-speech-info" data-speech-info></span>
         </button>
+        <button class="dm-action dm-speech-settings" type="button" data-speech-settings aria-label="음성 설정" aria-haspopup="dialog" aria-expanded="false" title="음성 설정">⚙</button>
         <div class="dm-speech-menu" role="dialog" aria-label="음성 재생 설정" hidden>
           <div class="dm-speech-heading"><strong>음성 재생 설정</strong><button type="button" data-speech-close aria-label="음성 설정 닫기">×</button></div>
           <fieldset class="dm-speech-speeds"><legend>재생 속도</legend>
@@ -103,6 +105,13 @@
     <span class="dm-actions-status" role="status" aria-live="polite"></span>`;
   if (heading) heading.append(toolbar);
   else fallbackTitle.after(toolbar);
+  const speechPlayer = document.createElement('div');
+  speechPlayer.className = 'dm-speech-player';
+  speechPlayer.hidden = true;
+  speechPlayer.setAttribute('role', 'region');
+  speechPlayer.setAttribute('aria-label', '음성 재생');
+  speechPlayer.innerHTML = '<button type="button" data-player-toggle aria-label="일시정지">❚❚</button><div class="dm-player-text"><strong data-player-title>글 듣기</strong><span data-player-current>음성을 재생하고 있어요</span></div><span class="dm-player-time" data-player-time></span><button type="button" data-player-close aria-label="음성 닫기">×</button>';
+  document.body.append(speechPlayer);
 
   const button = name => toolbar.querySelector(`[data-action="${name}"]`);
   const status = toolbar.querySelector('.dm-actions-status');
@@ -158,22 +167,54 @@
     ? window.createDataMoneySpeechHighlighter({title:speechTitle, content, followInput:toolbar.querySelector('[data-speech-follow]')})
     : null;
   const attachDeviceSpeech = () => {
+    const settings = toolbar.querySelector('[data-speech-settings]');
+    if (settings) settings.hidden = true;
     if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window) || !content) {
       speechButton.disabled = true;
       speechButton.title = '이 글의 AI 음성은 아직 준비 중입니다';
       return;
     }
     speechButton.title = 'AI 음성 준비 중 · 기기 음성으로 듣기';
-    let speaking = false;
+    const fallbackToggle = speechPlayer.querySelector('[data-player-toggle]');
+    const fallbackClose = speechPlayer.querySelector('[data-player-close]');
+    const fallbackCurrent = speechPlayer.querySelector('[data-player-current]');
+    const fallbackTime = speechPlayer.querySelector('[data-player-time]');
+    const fallbackLabel = speechButton.querySelector('[data-speech-label]');
+    const fallbackInfo = speechButton.querySelector('[data-speech-info]');
+    if (fallbackInfo) fallbackInfo.textContent = '기기 음성';
+    const fallbackKey = 'dm-device-speech:' + location.pathname;
+    const fallbackEvent = (name, data = {}) => {
+      try { window.gtag?.('event', name, {article_slug:location.pathname, voice:'device', ...data}); } catch (_) {}
+    };
+    let speaking = false, paused = false, startedAt = 0;
     let session = 0;
+    const fallbackReport = () => {
+      if (startedAt) fallbackEvent('audio_listening', {seconds:Math.round((Date.now() - startedAt) / 1000)});
+      startedAt = 0;
+    };
+    fallbackToggle.addEventListener('click', () => speechButton.click());
+    fallbackClose.addEventListener('click', () => {
+      if (speaking) { session++; window.speechSynthesis.cancel(); speaking = paused = false; highlighter?.clear(); }
+      fallbackReport();
+      speechButton.setAttribute('aria-pressed', 'false');
+      speechButton.setAttribute('aria-label', '이어 듣기');
+      if (fallbackLabel) fallbackLabel.textContent = '이어 듣기';
+      speechPlayer.hidden = true;
+    });
     speechButton.addEventListener('click', () => {
       if (speaking) {
-        session++;
-        window.speechSynthesis.cancel();
-        speaking = false;
-        highlighter?.clear();
-        speechButton.setAttribute('aria-pressed', 'false');
-        speechButton.setAttribute('aria-label', '글 음성으로 듣기');
+        if (paused) {
+          window.speechSynthesis.resume(); paused = false; startedAt = Date.now();
+          speechButton.setAttribute('aria-pressed', 'true'); speechButton.setAttribute('aria-label', '음성 일시정지');
+          if (fallbackLabel) fallbackLabel.textContent = '일시정지';
+          fallbackToggle.textContent = '❚❚'; fallbackToggle.setAttribute('aria-label', '일시정지');
+          fallbackEvent('audio_play', {resumed:true});
+        } else {
+          window.speechSynthesis.pause(); paused = true; fallbackReport(); fallbackEvent('audio_pause');
+          speechButton.setAttribute('aria-pressed', 'false'); speechButton.setAttribute('aria-label', '이어 듣기');
+          if (fallbackLabel) fallbackLabel.textContent = '이어 듣기';
+          fallbackToggle.textContent = '▶'; fallbackToggle.setAttribute('aria-label', '재생');
+        }
         return;
       }
       const title = (heading || fallbackTitle).querySelector?.('h1')?.innerText?.trim() || fallbackTitle?.innerText?.trim();
@@ -191,13 +232,25 @@
       });
       highlighter?.prepare(sentences.map(text => ({text})));
       let index = 0;
+      try {
+        const saved = JSON.parse(localStorage.getItem(fallbackKey) || 'null');
+        if (saved && sentences[saved.index] === saved.text) index = Math.max(0, chunks.findIndex(chunk => chunk.index === saved.index));
+      } catch (_) {}
       const currentSession = ++session;
-      const finish = () => {
+      const finish = (completed = true) => {
         if (currentSession !== session) return;
         speaking = false;
+        paused = false;
+        fallbackReport();
+        if (completed) {
+          fallbackEvent('audio_complete');
+          try { localStorage.removeItem(fallbackKey); } catch (_) {}
+        }
+        speechPlayer.hidden = true;
         highlighter?.clear();
         speechButton.setAttribute('aria-pressed', 'false');
         speechButton.setAttribute('aria-label', '글 음성으로 듣기');
+        if (fallbackLabel) fallbackLabel.textContent = completed ? '글 듣기' : '이어 듣기';
       };
       const speakNext = () => {
         if (currentSession !== session) return;
@@ -205,21 +258,31 @@
         const chunk = chunks[index++];
         const utterance = new SpeechSynthesisUtterance(chunk.text);
         utterance.lang = 'ko-KR';
-        utterance.onstart = () => { if (speaking && currentSession === session) highlighter?.show(chunk.index); };
+        utterance.onstart = () => {
+          if (!speaking || currentSession !== session) return;
+          highlighter?.show(chunk.index);
+          fallbackCurrent.textContent = sentences[chunk.index];
+          try { localStorage.setItem(fallbackKey, JSON.stringify({index:chunk.index, text:sentences[chunk.index]})); } catch (_) {}
+        };
         utterance.onend = speakNext;
-        utterance.onerror = () => { if (currentSession === session) { finish(); announce('음성을 재생하지 못했어요.'); } };
+        utterance.onerror = () => { if (currentSession === session) { finish(false); announce('음성을 재생하지 못했어요.'); } };
         window.speechSynthesis.speak(utterance);
       };
       speaking = true;
+      paused = false; startedAt = Date.now(); speechPlayer.hidden = false;
+      fallbackTime.textContent = '기기 음성';
+      fallbackToggle.textContent = '❚❚'; fallbackToggle.setAttribute('aria-label', '일시정지');
+      if (fallbackLabel) fallbackLabel.textContent = '일시정지';
+      fallbackEvent('audio_play', {resumed:index > 0});
       speechButton.setAttribute('aria-pressed', 'true');
       speechButton.setAttribute('aria-label', '음성 듣기 중지');
       announce('AI 음성을 준비 중이라 현재는 기기 음성으로 재생해요.');
       speakNext();
     });
-    window.addEventListener('pagehide', () => { if (speaking) { session++; window.speechSynthesis.cancel(); highlighter?.clear(); } });
+    window.addEventListener('pagehide', () => { if (speaking) { fallbackReport(); session++; window.speechSynthesis.cancel(); highlighter?.clear(); } });
   };
   if (typeof window.initDataMoneyArticleSpeech === 'function') {
-    window.initDataMoneyArticleSpeech({toolbar, speechButton, onUnavailable: attachDeviceSpeech, highlighter});
+    window.initDataMoneyArticleSpeech({toolbar, speechButton, player:speechPlayer, onUnavailable: attachDeviceSpeech, highlighter});
   } else {
     attachDeviceSpeech();
   }
