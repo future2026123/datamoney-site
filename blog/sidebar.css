@@ -29,6 +29,14 @@
 .dm-shared-sidebar .tool-links li { margin: 0; padding: 0; }
 .dm-shared-sidebar .tool-links a { display: flex; align-items: center; width: 100%; min-height: 42px; padding: 10px 12px; border: 1px solid rgba(15,23,42,.08); border-radius: 10px; background: #f8fafc; color: #1e293b; font-size: 14px; font-weight: 600; line-height: 1.35; }
 .dm-shared-sidebar .all-tools { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; padding: 0 14px; border-radius: 10px; background: #2563eb; color: #fff; font-size: 14px; font-weight: 700; }
+.dm-shared-sidebar .ai-traffic-card[hidden] { display: none; }
+.dm-shared-sidebar .ai-traffic-number { margin: 15px 0 2px; color: #1d4ed8; }
+.dm-shared-sidebar .ai-traffic-number strong { font-size: 28px; letter-spacing: -.03em; }
+.dm-shared-sidebar .ai-traffic-number span { margin-left: 5px; color: #334155; font-size: 14px; font-weight: 600; }
+.dm-shared-sidebar .ai-traffic-period { margin: 0; color: #64748b; font-size: 12px; line-height: 1.5; }
+.dm-shared-sidebar .ai-traffic-info { margin-top: 14px; color: #64748b; font-size: 12px; line-height: 1.55; }
+.dm-shared-sidebar .ai-traffic-info summary { cursor: pointer; }
+.dm-shared-sidebar .ai-traffic-info p { margin: 8px 0 0; }
 .dm-shared-sidebar .popular-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 20px; border: 0; background: transparent; }
 .dm-shared-sidebar .popular-list li { margin: 0; padding: 0; }
 .dm-shared-sidebar .popular-list a { display: block; }
