@@ -197,9 +197,9 @@
   .dm-article-heading { margin-bottom: 24px; }
   .dm-article-heading h1 { font-size: 26px; line-height: 1.4; }
   .dm-article-byline { margin-top: 18px; font-size: 14px; }
-  .dm-article-page { padding: 26px 16px; border-radius: 16px; }
+  .dm-article-page { padding: 26px 22px; border-radius: 16px; }
   :is(.article-shell > .article, .dm-heading-layout > .paper,
-      .dm-sidebar-shell > .dm-article-page, .dm-sidebar-shell > article) { padding: 26px 16px; }
+      .dm-sidebar-shell > .dm-article-page, .dm-sidebar-shell > article) { padding: 26px 22px; }
 }
 
 /* Match the article page width and outer columns to the blog homepage. */

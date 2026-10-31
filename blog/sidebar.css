@@ -111,12 +111,6 @@ body:has(.dm-article-heading, article.dm-post) > .dm-sidebar-shell { margin-top:
   body:has(.dm-article-heading) > .wrap > :is(.article-shell, .dm-heading-layout, .dm-sidebar-shell) { margin-top: 16px; }
   body:has(.dm-article-heading, article.dm-post) > .dm-sidebar-shell { margin-top: 16px; }
 }
-@media (max-width: 560px) {
-  body:has(.dm-shared-sidebar) > .wrap,
-  body:has(.dm-shared-sidebar) > .dm-sidebar-shell { width: calc(100% - 12px); }
-  .dm-shared-sidebar .home-card { padding: 16px; }
-  .dm-investor-embed { padding: 16px; }
-}
 @media (max-width: 380px) {
   .dm-shared-sidebar .popular-list a { grid-template-columns: minmax(0, 1fr) 88px; gap: 10px; }
   .dm-shared-sidebar .popular-list a.no-thumbnail { grid-template-columns: minmax(0, 1fr); }
