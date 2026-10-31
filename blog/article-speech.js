@@ -305,8 +305,14 @@
     const syncHighlight = () => {
       if (!playing || !highlighter || !cues.length) return;
       const time = audio.currentTime || 0;
-      const index = cues.findIndex(cue => cue.start <= time && time < cue.end);
-      highlighter.show(index);
+      // Keep the current sentence highlighted through pauses until the next starts.
+      let low = 0, high = cues.length;
+      while (low < high) {
+        const mid = Math.floor((low + high) / 2);
+        if (cues[mid].start <= time) low = mid + 1;
+        else high = mid;
+      }
+      highlighter.show(low - 1);
     };
     audio.addEventListener('playing', syncHighlight);
     audio.addEventListener('timeupdate', syncHighlight);
