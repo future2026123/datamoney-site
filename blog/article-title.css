@@ -72,8 +72,68 @@
   font-weight: 700;
   line-height: 1.4;
   letter-spacing: -.03em;
+  margin: 2.4em 0 .8em;
+  padding-top: .3em;
   word-break: keep-all;
   overflow-wrap: anywhere;
+}
+
+:is(.article, article:has(> .dm-article-heading), main.dm-article-page,
+    .dm-article-page .content-grid main, article.dm-post)
+    h3:not(.dm-original-sidebar h3, .dm-comments h3, .dm-author-note h3, .dm-references h3, .toc h3) {
+  margin-top: 28px;
+  color: #12284a;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* Use the same continuous article layout for older report sections. */
+.dm-article-page .report-section {
+  display: block;
+  margin: 62px 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+:is(.article, article:has(> .dm-article-heading), main.dm-article-page,
+    .dm-article-page .content-grid main, article.dm-post)
+    .report-section h2:not(.dm-original-sidebar h2, .dm-comments h2) { margin: 0 0 .8em; padding-top: .3em; }
+.dm-article-page .check-table { padding: 20px 22px; border: 1px solid #dfe7f2; border-radius: 15px; background: #f7f9fc; color: #172033; }
+:is(.article, article:has(> .dm-article-heading), main.dm-article-page,
+    .dm-article-page .content-grid main, article.dm-post)
+    .check-table h2:not(.dm-original-sidebar h2, .dm-comments h2) { margin: 0 0 .8em; padding: 0; }
+
+/* Match ordinary article tables to the latest post while retaining their contents. */
+:is(.article, article:has(> .dm-article-heading), main.dm-article-page,
+    .dm-article-page .content-grid main, article.dm-post) table {
+  width: 100%;
+  border-collapse: collapse;
+}
+:is(.article, article:has(> .dm-article-heading), main.dm-article-page,
+    .dm-article-page .content-grid main, article.dm-post) table th {
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  background: #0f172a;
+  color: #f8fafc;
+  font-size: 16px;
+  letter-spacing: normal;
+}
+:is(.article, article:has(> .dm-article-heading), main.dm-article-page,
+    .dm-article-page .content-grid main, article.dm-post) table td {
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+}
+:is(.article, article:has(> .dm-article-heading), main.dm-article-page,
+    .dm-article-page .content-grid main, article.dm-post) table tr:nth-child(even) td { background: #f8fafc; }
+.dm-article-page .check-table table td { color: #172033; }
+
+@media screen and (max-width: 560px) {
+  :is(.article, article:has(> .dm-article-heading), main.dm-article-page,
+      .dm-article-page .content-grid main, article.dm-post) table { display: block; max-width: 100%; overflow-x: auto; }
 }
 
 .dm-article-thumbnail { margin: 0 0 30px; }
