@@ -107,7 +107,7 @@
         </div>
       </div>
     </div>
-    <button class="btn-calc" onclick="calculate()">배당 수익 계산하기</button>
+    <button class="btn-calc" onclick="calculate(); if (typeof window.gtag === 'function') window.gtag('event', 'calculator_result', {calculator_type: 'dividend'});">배당 수익 계산하기</button>
   </div>
 
   <div class="result-card" id="resultCard">

@@ -97,7 +97,7 @@
         <span class="unit">원</span>
       </div>
     </div>
-    <button class="btn-calc" onclick="calculate()">절세액 계산하기</button>
+    <button class="btn-calc" onclick="calculate(); if (typeof window.gtag === 'function') window.gtag('event', 'calculator_result', {calculator_type: 'tax'});">절세액 계산하기</button>
   </div>
 
   <div class="result-card" id="resultCard">

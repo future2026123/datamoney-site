@@ -131,7 +131,7 @@
       </select>
     </div>
 
-    <button class="btn-calc" onclick="calculate()">수익률 계산하기</button>
+    <button class="btn-calc" onclick="calculate(); if (typeof window.gtag === 'function') window.gtag('event', 'calculator_result', {calculator_type: 'etf'});">수익률 계산하기</button>
   </div>
 
   <!-- 결과 -->
