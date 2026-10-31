@@ -47,6 +47,9 @@ jobs:
       - name: Synchronize blog navigation
         run: python3 scripts/sync_blog_headers.py
 
+      - name: Synchronize browser icons
+        run: python3 scripts/sync_brand_icons.py
+
       - name: Synchronize blog sidebars
         run: python3 scripts/sync_blog_sidebars.py
 

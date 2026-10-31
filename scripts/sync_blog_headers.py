@@ -104,6 +104,9 @@ def main() -> None:
     search_page = ROOT / "search" / "index.html"
     if search_page.exists():
         paths.append(search_page)
+    preview_page = ROOT / "preview" / "article-format" / "index.html"
+    if preview_page.exists():
+        paths.append(preview_page)
     changed = sum(synchronize(path, fragment) for path in paths)
     print(f"Blog navigation synchronized: {len(paths)} pages/templates, {changed} updated.")
 
