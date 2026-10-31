@@ -277,7 +277,15 @@
           <p class="dm-comment-notice" role="status" aria-live="polite"></p>
         </form>
       </div>`;
-    content.append(section);
+    const author = document.createElement('aside');
+    author.className = 'dm-author-note';
+    author.setAttribute('aria-labelledby', 'dm-author-note-title');
+    author.innerHTML = `
+      <h3 id="dm-author-note-title">운영자 소개</h3>
+      <p>돈에 관한 정보는 넘쳐나지만, 무엇을 믿어야 할지 판단하기는 쉽지 않습니다.</p>
+      <p>데이터머니는 투자와 경제에 관한 익숙한 주장들을 다시 질문하고, 자료와 연구를 통해 근거를 확인합니다. ETF, 자산배분, 투자심리, 위험 관리 등 개인투자자가 실제로 마주하는 문제를 다룹니다.</p>
+      <p>정답을 제시하기보다 <strong>스스로 더 나은 금융 의사결정을 내릴 수 있는 판단 근거</strong>를 제공하고자 합니다.</p>`;
+    content.append(author, section);
     const list = section.querySelector('.dm-comment-list');
     const empty = section.querySelector('.dm-comment-empty');
     const more = section.querySelector('.dm-comment-more');

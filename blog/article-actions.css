@@ -157,3 +157,11 @@
     max-width: 100% !important;
   }
 }
+
+/* 운영자 소개는 모든 글의 댓글 바로 위에 표시합니다. */
+.dm-author-note { box-sizing: border-box; margin: 42px 0 28px; padding: 22px 24px; border: 1px solid #e3e9f1; border-radius: 12px; background: #f7f9fc; color: #41516a; }
+.dm-author-note h3 { margin: 0 0 12px; color: #192e4e; font-size: 16px; line-height: 1.5; font-weight: 700; }
+:is(article, main, .article) .dm-author-note p { margin: 0 0 9px; font-size: 14px !important; line-height: 1.7 !important; color: #41516a; word-break: keep-all; }
+:is(article, main, .article) .dm-author-note p:last-child { margin-bottom: 0; }
+.dm-author-note strong { color: #253c5e; }
+@media (max-width: 600px) { .dm-author-note { padding: 18px; margin-top: 32px; } }
