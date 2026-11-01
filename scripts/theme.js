@@ -23,6 +23,7 @@
   else if (/^\/(?:about|privacy)(?:\/|$)/.test(path)) page = 'info';
   else if (path.startsWith('/comment-admin')) page = 'admin';
   else if (path.startsWith('/search')) page = 'search';
+  if (root.dataset.dmToolShell === '1') page = 'tools';
   if (page) root.dataset.dmPage = page;
 
   let control, trigger, menu;

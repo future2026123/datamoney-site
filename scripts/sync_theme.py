@@ -45,6 +45,7 @@ def site_pages(root=ROOT):
              root / 'preview' / 'article-format' / 'index.html', root / 'templates' / 'blog_post.html']
     paths += sorted((root / 'blog').glob('*/index.html'))
     paths += sorted((root / 'tools').glob('*/index.html'))
+    paths += sorted((root / 'tools').glob('*/embed.html'))
     return [path for path in paths if path.exists()]
 
 

@@ -20,6 +20,12 @@
 /tools/dividend_calculator/
   Cache-Control: no-cache
 
+/tools/*/embed.html
+  Cache-Control: no-cache
+
+/tools/*/embed
+  Cache-Control: no-cache
+
 # Revalidate the test document so updated characters appear promptly.
 /tools/investor-type/
   Cache-Control: no-cache

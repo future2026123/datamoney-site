@@ -103,6 +103,9 @@ jobs:
       - name: Add AdSense code to site pages
         run: python3 scripts/ensure_adsense.py
 
+      - name: Wrap direct tool pages in the blog layout
+        run: python3 scripts/sync_tool_shells.py
+
       - name: Synchronize site color theme
         run: python3 scripts/sync_theme.py
 

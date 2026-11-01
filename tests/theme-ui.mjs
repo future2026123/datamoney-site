@@ -7,10 +7,11 @@ const {JSDOM} = require('jsdom');
 const source = await readFile(new URL('../scripts/theme.js', import.meta.url), 'utf8');
 const key = 'datamoney-color-mode';
 
-function setup(url, saved, systemDark = false, storageFails = false, markup = '<header class="dm-site-header"><a href="/">데이터머니</a><nav class="dm-site-nav"></nav></header>') {
+function setup(url, saved, systemDark = false, storageFails = false, markup = '<header class="dm-site-header"><a href="/">데이터머니</a><nav class="dm-site-nav"></nav></header>', shell = false) {
   const dom = new JSDOM(`<!doctype html><html><head></head><body>${markup}<main></main></body></html>`,
     {url, runScripts:'outside-only'});
   const {window} = dom;
+  if (shell) window.document.documentElement.dataset.dmToolShell='1';
   if (saved) window.localStorage.setItem(key, saved);
   if (storageFails) Object.defineProperty(window, 'localStorage', {get(){throw new Error('unavailable');}});
   const handlers = [];
@@ -43,6 +44,8 @@ assert.equal(menu.hidden, true);assert.equal(page.document.activeElement, button
 const next = setup('https://datamoney.kr/tools/etf-calculator', 'dark', false);
 assert.equal(next.document.documentElement.dataset.dmTheme, 'dark');
 assert.equal(next.document.documentElement.dataset.dmPage, 'calculator');
+const directShell = setup('https://datamoney.kr/tools/etf_calculator/', 'dark', false, false, undefined, true);
+assert.equal(directShell.document.documentElement.dataset.dmPage, 'tools', 'direct tool shells use the blog layout theme');
 next.window.dispatchEvent(new next.window.StorageEvent('storage',{key,newValue:'light'}));
 assert.equal(next.document.documentElement.dataset.dmTheme, 'light', 'another tab or parent can change the mode');
 const embedded = setup('https://datamoney.kr/tools/investor-type/?embed=1', 'dark');

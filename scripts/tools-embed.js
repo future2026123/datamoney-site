@@ -17,6 +17,7 @@
     observer?.disconnect(); screenObserver?.disconnect();
     observer=screenObserver=null;
     slot.replaceChildren();panel.hidden=true;list.forEach(item=>{item.hidden=false;});
+    delete document.documentElement.dataset.dmToolShell;
     active='';
     if (restoreFocus) {
       window.scrollTo({top:previousScroll,behavior:'auto'});
@@ -32,7 +33,7 @@
     active=id;title.textContent=item.title;list.forEach(element=>{element.hidden=true;});panel.hidden=false;
     const frame=document.createElement('iframe');
     frame.title=item.title;
-    frame.src=item.path+'?embed=1&context=tools';
+    frame.src=item.path+'embed.html?embed=1&context=tools';
     frame.scrolling='no';
     frame.addEventListener('load',()=>{
       if (active!==id || !frame.isConnected) return;
@@ -81,9 +82,17 @@
     if (focus) {window.scrollTo({top:0,behavior:'auto'});close.focus({preventScroll:true});}
   }
 
-  function selectedFromUrl() {return new URL(location.href).searchParams.get('tool')||'';}
+  function selectedFromUrl() {
+    const url=new URL(location.href);
+    const query=url.searchParams.get('tool');
+    if (query && tools[query]) return query;
+    const path=url.pathname.replace(/\/index\.html$/,'').replace(/\/+$/,'');
+    const aliases={'/tools/etf-calculator':'etf','/tools/tax-simulator':'tax','/tools/dividend-calculator':'dividend'};
+    return aliases[path] || Object.keys(tools).find(key=>tools[key].path.replace(/\/+$/,'')===path)||'';
+  }
   function setUrl(id, method) {
     const url=new URL(location.href);
+    url.pathname='/tools/';
     if (id) url.searchParams.set('tool',id);else url.searchParams.delete('tool');
     history[method](id?{...history.state,dmToolsPanel:id,dmToolsPanelPushed:pushedPanel}:null,'',url);
   }
