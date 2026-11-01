@@ -19,6 +19,8 @@ for (const [path,id] of [['/tools/investor-type/','investor-type'],['/tools/etf_
   assert.ok(d.querySelector('header.dm-site-header .dm-brand'),'the shared blog header stays visible');
   assert.ok(d.querySelector('.dm-sidebar-shell > .dm-shared-sidebar'),'the shared sidebar stays visible');
   assert.ok(d.querySelector('.tools-content > .dm-tool-embed'),'the tool opens in the content column');
+  assert.ok(d.querySelector('.dm-tool-embed .dm-article-heading > h1#dm-tool-title'),'the tool title uses the shared blog heading');
+  assert.ok(d.querySelector('link[href^="/blog/article-title.css"]'),'the shared blog title stylesheet is loaded');
   d.querySelector('[data-tool-close]').click(); await tick();
   assert.equal(d.querySelector('.dm-tool-embed').hidden,true);
   assert.equal(new URL(w.location.href).searchParams.has('tool'),false);

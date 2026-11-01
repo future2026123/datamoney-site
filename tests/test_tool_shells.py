@@ -29,6 +29,8 @@ class ToolShellTests(unittest.TestCase):
                 self.assertIn('dm-shared-sidebar', page)
                 self.assertIn('dm-site-header', page)
                 self.assertIn(f'<h1 id="dm-tool-title">{title}</h1>', page)
+                self.assertIn(f'<div class="dm-article-heading"><h1 id="dm-tool-title">{title}</h1></div>', page)
+                self.assertIn('/blog/article-title.css', page)
                 self.assertIn('location.replace("embed.html"+location.search+location.hash)', page)
                 self.assertEqual(sync_tool_shells.CANONICAL.search(page).group(), sync_tool_shells.CANONICAL.search(source).group())
                 self.assertEqual(sync_tool_shells.TITLE.search(page).group(), sync_tool_shells.TITLE.search(source).group())
