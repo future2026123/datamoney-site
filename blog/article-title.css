@@ -286,3 +286,9 @@ body.dm-header-flush .dm-site-header::before {
 @media (max-width: 360px) {
   body.dm-header-flush .article h2 { scroll-margin-top: 130px; }
 }
+
+/* Keep embedded YouTube players flat across old and new article layouts. */
+:is(article, main.article, .dm-article-page) :has(> iframe[src*="youtube.com/embed/"], > iframe[src*="youtube-nocookie.com/embed/"]),
+:is(article, main.article, .dm-article-page) iframe:is([src*="youtube.com/embed/"], [src*="youtube-nocookie.com/embed/"]) {
+  box-shadow: none !important;
+}
