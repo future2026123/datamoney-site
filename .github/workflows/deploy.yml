@@ -43,6 +43,7 @@ jobs:
           node tests/back-navigation.mjs
           node tests/tools-embed.mjs
           node tests/calculators.mjs
+          node tests/new-calculators.mjs
 
       - name: Test investor survey
         run: |

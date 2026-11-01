@@ -7,7 +7,7 @@ const html=await readFile(new URL('../tools/index.html',import.meta.url),'utf8')
 const script=await readFile(new URL('../scripts/tools-embed.js',import.meta.url),'utf8');
 assert.ok(!html.includes('먼저 글로 이해하고, 계산기로 확인하세요'),'the removed sample article promotion stays absent');
 const tick=()=>new Promise(resolve=>setTimeout(resolve,40));
-for (const [path,id] of [['/tools/investor-type/','investor-type'],['/tools/etf_calculator/','etf'],['/tools/tax_simulator/','tax'],['/tools/dividend_calculator/','dividend']]) {
+for (const [path,id] of [['/tools/investor-type/','investor-type'],['/tools/etf_calculator/','etf'],['/tools/tax_simulator/','tax'],['/tools/dividend_calculator/','dividend'],['/tools/average-cost/','average-cost'],['/tools/deposit-savings/','deposit-savings'],['/tools/fixed-deposit/','fixed-deposit'],['/tools/installment-savings/','installment-savings'],['/tools/investment-return/','investment-return'],['/tools/portfolio-builder/','portfolio-builder']]) {
   const dom=new JSDOM(html,{url:'https://datamoney.kr/tools/',runScripts:'outside-only'});
   const w=dom.window;w.scrollTo=()=>{};w.eval(script);
   const d=w.document, card=d.querySelector(`.grid a[href="${path}"]`);
@@ -45,7 +45,7 @@ assert.equal(direct.window.location.search,'','close returns to the list after s
 direct.window.document.querySelector('.investor-test-banner').click();
 assert.equal(direct.window.location.search,'?tool=investor-type','the shared banner also opens the test in the content column');
 direct.window.close();
-for (const [path,id] of [['/tools/investor-type/','investor-type'],['/tools/etf_calculator/','etf'],['/tools/tax_simulator/','tax'],['/tools/dividend_calculator/','dividend']]) {
+for (const [path,id] of [['/tools/investor-type/','investor-type'],['/tools/etf_calculator/','etf'],['/tools/tax_simulator/','tax'],['/tools/dividend_calculator/','dividend'],['/tools/average-cost/','average-cost'],['/tools/deposit-savings/','deposit-savings'],['/tools/fixed-deposit/','fixed-deposit'],['/tools/installment-savings/','installment-savings'],['/tools/investment-return/','investment-return'],['/tools/portfolio-builder/','portfolio-builder']]) {
   const page=new JSDOM(html,{url:'https://datamoney.kr'+path,runScripts:'outside-only'});
   page.window.scrollTo=()=>{};page.window.eval(script);
   assert.equal(page.window.document.querySelector('.dm-tool-embed').hidden,false,`${path} opens in the blog layout`);

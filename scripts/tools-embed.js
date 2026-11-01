@@ -4,7 +4,13 @@
     'investor-type': {path:'/tools/investor-type/', title:'나의 투자 유형 테스트'},
     etf: {path:'/tools/etf_calculator/', title:'ETF 적립식 수익률 계산기'},
     tax: {path:'/tools/tax_simulator/', title:'절세 시뮬레이터'},
-    dividend: {path:'/tools/dividend_calculator/', title:'배당 포트폴리오 계산기'}
+    dividend: {path:'/tools/dividend_calculator/', title:'배당 포트폴리오 계산기'},
+    'average-cost': {path:'/tools/average-cost/', title:'평단가 계산기'},
+    'deposit-savings': {path:'/tools/deposit-savings/', title:'예금·적금 계산기'},
+    'fixed-deposit': {path:'/tools/fixed-deposit/', title:'정기예금 계산기'},
+    'installment-savings': {path:'/tools/installment-savings/', title:'적금 계산기'},
+    'investment-return': {path:'/tools/investment-return/', title:'투자 수익률 계산기'},
+    'portfolio-builder': {path:'/tools/portfolio-builder/', title:'자산 포트폴리오'}
   };
   const panel=document.querySelector('.dm-tool-embed');
   const list=[...document.querySelectorAll('[data-tool-list]')];

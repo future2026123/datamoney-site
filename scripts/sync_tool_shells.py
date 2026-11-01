@@ -8,6 +8,12 @@ TOOLS = {
     'etf_calculator': ('etf', 'ETF 적립식 수익률 계산기'),
     'tax_simulator': ('tax', '절세 시뮬레이터'),
     'dividend_calculator': ('dividend', '배당 포트폴리오 계산기'),
+    'average-cost': ('average-cost', '평단가 계산기'),
+    'deposit-savings': ('deposit-savings', '예금·적금 계산기'),
+    'fixed-deposit': ('fixed-deposit', '정기예금 계산기'),
+    'installment-savings': ('installment-savings', '적금 계산기'),
+    'investment-return': ('investment-return', '투자 수익률 계산기'),
+    'portfolio-builder': ('portfolio-builder', '자산 포트폴리오'),
 }
 TITLE = re.compile(r'<title\b[^>]*>.*?</title\s*>', re.I | re.S)
 DESCRIPTION = re.compile(r'<meta\s+name=["\']description["\'][^>]*>', re.I)

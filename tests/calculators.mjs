@@ -43,6 +43,9 @@ assert.match(div.d.getElementById('goalBox').textContent,/1년차/);
 div.set('drip','yes');div.calc();assert.equal(div.rows()[0].portfolio,Math.round(1200000*(1+.12/12*.75)**12),'only the after-tax dividend is reinvested');
 div.set('drip','no');div.set('monthlyContribution','100000');div.set('dividendYield','0');div.calc();assert.equal(div.rows()[0].portfolio,2400000,'additional contributions increase the portfolio');
 div.set('drip','no');div.set('dividendYield','0');div.calc();assert.match(div.d.getElementById('goalBox').textContent,/계산할 수 없습니다/);assert.doesNotMatch(div.d.getElementById('goalBox').textContent,/Infinity/);
+div.set('principal','1200000');div.set('monthlyContribution','0');div.set('dividendYield','12');div.set('growth','0');div.set('years','2');div.set('dividendTax','0');div.set('drip','no');div.set('yieldMode','growth');div.set('dividendGrowth','12');div.set('divInflation','10');div.calc();
+assert.ok(div.rows()[1].dividend > div.rows()[0].dividend, 'growing per-share dividends increase payout when price is unchanged');
+assert.match(div.d.getElementById('dividendSummary').textContent,/물가 반영 최종 연도 세후 배당의 현재 가치/);
 div.set('years','0');div.calc();assert.match(div.d.getElementById('calcError').textContent,/1~50/);
 div.dom.window.close();
 
