@@ -21,20 +21,32 @@
   .link-chip { padding:10px 14px; border-radius:999px; border:1px solid var(--line); color:#334155; font-size:14px; }
   .tools-layout { margin-top:24px; }
   .tools-content { min-width:0; padding:28px; border:1px solid rgba(15,23,42,.08); border-radius:20px; background:#fff; box-shadow:0 12px 40px rgba(15,23,42,.05); }
-  .hero { padding:4px 0 20px; }
-  .hero h1 { margin:0 0 12px; font-size:clamp(26px, 3vw, 36px); line-height:1.25; letter-spacing:-.04em; }
-  .hero p { max-width:760px; margin:0; color:var(--sub); line-height:1.8; font-size:16px; }
-  .grid { margin-top:8px; }
-  .tool-group { margin:28px 0 4px; color:var(--sub); font-size:14px; font-weight:700; line-height:1.4; }
-  .card { display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:16px; align-items:center; padding:16px 2px; border-bottom:1px solid #e2e8f0; background:transparent; border-radius:0; box-shadow:none; }
-  .card:hover { background:rgba(37,99,235,.035); }
-  .card:focus-visible { outline:3px solid #f0a33c; outline-offset:2px; border-radius:4px; }
-  .card h3 { grid-column:1; margin:0; color:var(--navy); font-size:17px; line-height:1.4; letter-spacing:-.025em; }
-  .card p { grid-column:1; margin:5px 0 0; color:var(--sub); font-size:14px; line-height:1.55; }
-  .card .tool-open { grid-column:2; grid-row:1 / span 2; color:var(--blue); font-size:14px; font-weight:700; white-space:nowrap; }
-  html[data-dm-theme="dark"] .card { border-color:#40516a; }
-  html[data-dm-theme="dark"] .card:hover { background:rgba(147,197,253,.08); }
+  .hero { padding:2px 0 12px; }
+  .hero h1 { margin:0 0 9px; font-size:clamp(25px,2.6vw,30px); line-height:1.3; letter-spacing:-.035em; }
+  .hero p { margin:0; color:var(--sub); line-height:1.6; font-size:15px; }
+  .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:4px; }
+  .tool-group { grid-column:1/-1; margin:25px 0 2px; color:var(--navy); font-size:17px; font-weight:800; line-height:1.4; }
+  .card { display:grid; grid-template-columns:38px minmax(0,1fr) 14px; gap:12px; align-items:start; padding:17px 15px; min-height:103px; border:1px solid #dbe5f2; border-radius:13px; background:#fff; box-shadow:none; }
+  .card:hover { background:#f5f9ff; border-color:#8db4ef; }
+  .card:focus-visible { outline:3px solid #f0a33c; outline-offset:2px; }
+  .tool-icon { display:grid; place-items:center; width:38px; height:38px; border-radius:11px; color:#245ed6; background:#eaf2ff; }
+  .tool-icon svg { width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .card.saving .tool-icon { color:#087a68; background:#e5f7f1; }
+  .card.personal .tool-icon { color:#7a47c7; background:#f1eafb; }
+  .tool-copy { min-width:0; }
+  .card h3 { margin:0; color:var(--navy); font-size:16px; line-height:1.4; letter-spacing:-.025em; word-break:normal; }
+  .card p { margin:7px 0 0; color:var(--sub); font-size:13px; line-height:1.45; word-break:normal; }
+  .card .tool-open { color:#5078ba; font-size:20px; line-height:1; }
+  .card.featured { background:#f2f5ff; border-color:#b9cafa; }
+  .card.featured:hover { background:#e8efff; }
+  html[data-dm-theme="dark"] .card { background:#202f45; border-color:#40516a; }
+  html[data-dm-theme="dark"] .card:hover { background:#2b405d; border-color:#7294c5; }
+  html[data-dm-theme="dark"] .tool-icon { color:#b5d0ff; background:#304b75; }
+  html[data-dm-theme="dark"] .card.saving .tool-icon { color:#a3e8d8; background:#215a54; }
+  html[data-dm-theme="dark"] .card.personal .tool-icon { color:#e0c5ff; background:#4c3b69; }
   html[data-dm-theme="dark"] .card .tool-open { color:#a9c9ff; }
+  html[data-dm-theme="dark"] .card.featured { background:#303b60; border-color:#7c90cc; }
+  @media (max-width:560px), (min-width:901px) and (max-width:1050px) { .grid { grid-template-columns:1fr; } .card { min-height:0; } }
   footer { margin-top:28px; color:#64748b; font-size:13px; }
   [hidden] { display:none !important; }
   .dm-tool-embed { max-width:900px; margin:20px auto 0; }
@@ -96,24 +108,24 @@
     <main class="dm-sidebar-shell tools-layout">
     <section class="tools-content">
     <section class="hero" data-tool-list>
-      <h1>투자에 필요한 계산은<br>먼저 숫자로 확인합니다.</h1>
-      <p>투자 수익률과 배당, 예·적금과 자산 배분까지. 필요한 숫자를 직접 확인해 보세요.</p>
+      <h1>어떤 계산이 필요하세요?</h1>
+      <p>투자부터 예금·절세까지, 궁금한 숫자를 확인해 보세요.</p>
     </section>
 
     <section class="grid" data-tool-list aria-label="데이터머니 도구 목록">
-      <h2 class="tool-group">투자와 자산 관리</h2>
-      <a class="card" href="/tools/etf_calculator/"><h3>ETF 수익률 계산기</h3><p>초기 자금과 월 적립금으로 예상 복리 수익을 확인합니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
-      <a class="card" href="/tools/investment-return/"><h3>투자 수익률 계산기</h3><p>투자금과 수익률로 미래 자산과 현재 가치를 살펴봅니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
-      <a class="card" href="/tools/dividend_calculator/"><h3>배당 포트폴리오 계산기</h3><p>배당 재투자와 성장에 따른 예상 배당금을 확인합니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
-      <a class="card" href="/tools/portfolio-builder/"><h3>자산 포트폴리오</h3><p>여러 자산의 비중과 예상 성장, 목표 비중을 확인합니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
-      <h2 class="tool-group">예금과 적금</h2>
-      <a class="card" href="/tools/deposit-savings/"><h3>예금·적금 계산기</h3><p>목돈과 월 납입금을 함께 넣어 만기 금액을 계산합니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
-      <a class="card" href="/tools/fixed-deposit/"><h3>정기예금 계산기</h3><p>목돈을 예치했을 때의 세후 이자를 계산합니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
-      <a class="card" href="/tools/installment-savings/"><h3>적금 계산기</h3><p>월 납입액과 기간에 따른 세후 만기 금액을 계산합니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
-      <h2 class="tool-group">투자를 돕는 도구</h2>
-      <a class="card" href="/tools/average-cost/"><h3>평단가 계산기</h3><p>보유분과 추가 매수분의 평균 단가를 확인합니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
-      <a class="card" href="/tools/tax_simulator/"><h3>절세 시뮬레이터</h3><p>연금저축, IRP, ISA의 예상 절세 효과를 계산합니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
-      <a class="card" href="/tools/investor-type/"><h3>나의 투자 유형 테스트</h3><p>평소 투자 습관과 지금의 마음으로 투자 유형을 알아봅니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
+      <h2 class="tool-group">투자 계산</h2>
+      <a class="card" href="/tools/etf_calculator/"><span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 19h18M5 16V9m5 7V5m5 11v-5m5 5V3"/></svg></span><div class="tool-copy"><h3>ETF에 꾸준히 투자하면?</h3><p>ETF 수익률 계산기</p></div><span class="tool-open" aria-hidden="true">›</span></a>
+      <a class="card" href="/tools/investment-return/"><span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 18l5-5 4 3 7-9M15 7h5v5"/></svg></span><div class="tool-copy"><h3>투자금이 얼마나 불어날까?</h3><p>투자 수익률 계산기</p></div><span class="tool-open" aria-hidden="true">›</span></a>
+      <a class="card" href="/tools/dividend_calculator/"><span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 6v12m3-9c-.5-.8-1.5-1.2-3-1.2-4.2 0-4.2 4.2 0 4.2s4.2 4.2 0 4.2c-1.5 0-2.6-.5-3.2-1.4"/></svg></span><div class="tool-copy"><h3>배당금을 얼마나 받을까?</h3><p>배당 포트폴리오 계산기</p></div><span class="tool-open" aria-hidden="true">›</span></a>
+      <a class="card" href="/tools/average-cost/"><span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h16M17 10v4m-2-2h4"/></svg></span><div class="tool-copy"><h3>추가 매수 후 평단가는?</h3><p>평단가 계산기</p></div><span class="tool-open" aria-hidden="true">›</span></a>
+      <h2 class="tool-group">예금과 절세</h2>
+      <a class="card saving" href="/tools/deposit-savings/"><span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 10h16v9H4zM3 10l9-6 9 6M8 14v2m4-2v2m4-2v2"/></svg></span><div class="tool-copy"><h3>목돈과 적금의 만기 금액은?</h3><p>예금·적금 계산기</p></div><span class="tool-open" aria-hidden="true">›</span></a>
+      <a class="card saving" href="/tools/fixed-deposit/"><span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="13" rx="2"/><path d="M8 4v4m8-4v4M4 10h16m-12 5h8"/></svg></span><div class="tool-copy"><h3>목돈을 예치하면 이자는?</h3><p>정기예금 계산기</p></div><span class="tool-open" aria-hidden="true">›</span></a>
+      <a class="card saving" href="/tools/installment-savings/"><span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v11m-4-4 4 4 4-4M5 15v4h14v-4"/></svg></span><div class="tool-copy"><h3>매달 저축하면 얼마가 될까?</h3><p>적금 계산기</p></div><span class="tool-open" aria-hidden="true">›</span></a>
+      <a class="card saving" href="/tools/tax_simulator/"><span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6m-6 4h6m-6 4h3"/></svg></span><div class="tool-copy"><h3>연금·ISA로 얼마나 아낄까?</h3><p>절세 시뮬레이터</p></div><span class="tool-open" aria-hidden="true">›</span></a>
+      <h2 class="tool-group">나를 위한 도구</h2>
+      <a class="card personal" href="/tools/portfolio-builder/"><span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9h-9zM15 3.5A9 9 0 0 1 20.5 9H15z"/></svg></span><div class="tool-copy"><h3>내 자산은 어떻게 나눌까?</h3><p>자산 포트폴리오</p></div><span class="tool-open" aria-hidden="true">›</span></a>
+      <a class="card personal featured" href="/tools/investor-type/"><span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M5 20c0-4 3-6 7-6s7 2 7 6M19 4l.6 1.4L21 6l-1.4.6L19 8l-.6-1.4L17 6l1.4-.6z"/></svg></span><div class="tool-copy"><h3>나는 어떤 투자자일까?</h3><p>나의 투자 유형 테스트 · 약 2분</p></div><span class="tool-open" aria-hidden="true">›</span></a>
     </section>
 
     <section class="dm-tool-embed" hidden aria-labelledby="dm-tool-title">
