@@ -7,7 +7,7 @@ import sync_admin_area_labels
 
 class AreaLabelSyncTests(unittest.TestCase):
     def test_management_and_public_pages_are_included_without_embeds(self):
-        self.assertTrue(sync_admin_area_labels.should_include('comment-admin/index.html'))
+        self.assertFalse(sync_admin_area_labels.should_include('comment-admin/index.html'))
         self.assertTrue(sync_admin_area_labels.should_include('blog/index.html'))
         self.assertTrue(sync_admin_area_labels.should_include('tools/etf_calculator/index.html'))
         self.assertFalse(sync_admin_area_labels.should_include('tools/etf_calculator/embed.html'))

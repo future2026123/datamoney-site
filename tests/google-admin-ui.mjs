@@ -3,15 +3,19 @@ import {readFile} from 'node:fs/promises';
 import {createRequire} from 'node:module';
 
 const require = createRequire(new URL('../workers/package.json', import.meta.url));
-const {JSDOM} = require('jsdom');
+const {JSDOM, VirtualConsole} = require('jsdom');
 const html = await readFile(new URL('../comment-admin/index.html', import.meta.url), 'utf8');
 const script = await readFile(new URL('../comment-admin/admin.js', import.meta.url), 'utf8');
 const tick = () => new Promise(resolve => setTimeout(resolve, 0));
 const response = (status, data = {}) => ({ok:status === 200, status, json:async () => data});
 const emptyList = {items:[], nextBefore:null};
 
-function setup({existingSession=false, google=true, legacyAllowed=false, feedback=false, inquiry=false} = {}) {
-  const dom = new JSDOM(html, {url:'https://datamoney.kr/comment-admin/' + (inquiry ? '?tab=inquiries' : ''), runScripts:'outside-only'});
+function setup({existingSession=false, google=true, legacyAllowed=false, feedback=false, inquiry=false, returnHome=false} = {}) {
+  const navigationErrors=[];
+  const virtualConsole=new VirtualConsole();
+  virtualConsole.on('jsdomError',error=>navigationErrors.push(error.message));
+  const query = inquiry ? '?tab=inquiries' : returnHome ? '?return=home' : '';
+  const dom = new JSDOM(html, {url:'https://datamoney.kr/comment-admin/' + query, runScripts:'outside-only', virtualConsole});
   let authorized = existingSession;
   let googleConfig;
   const calls = [];
@@ -38,7 +42,7 @@ function setup({existingSession=false, google=true, legacyAllowed=false, feedbac
     if (node.src === 'https://accounts.google.com/gsi/client') setTimeout(() => node.onload(), 0);
   };
   dom.window.eval(script);
-  return {dom, calls, getGoogleConfig:() => googleConfig, expire:() => {authorized = false;}};
+  return {dom, calls, navigationErrors, getGoogleConfig:() => googleConfig, expire:() => {authorized = false;}};
 }
 
 const existing = setup({existingSession:true});
@@ -101,4 +105,12 @@ for (const google of [false, true]) {
   assert.equal(document.querySelector('#google-login').hidden, true);
   assert.equal(document.querySelector('#admin-status').textContent, '');
 }
+const returnPage=setup({returnHome:true});
+await tick();await tick();
+await returnPage.getGoogleConfig().callback({credential:'test-google-token'});
+assert.ok(returnPage.navigationErrors.some(message=>message.includes('navigation')), 'successful Google login returns the footer visitor to the homepage');
+const existingReturn=setup({returnHome:true,existingSession:true});
+await tick();
+assert.equal(existingReturn.dom.window.document.querySelector('#admin-panel').hidden,false,'an existing session can still open the management page');
+assert.equal(existingReturn.navigationErrors.length,0,'an existing session is not bounced out of administration');
 console.log('Administrator UI: Google sessions, expiry, transition and legacy fallback passed');

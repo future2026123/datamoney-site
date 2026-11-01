@@ -14,8 +14,8 @@ function setup(value='© 2026 데이터머니 · datamoney.kr') {
 }
 let x=setup();assert.equal(x.updated.map(n=>n.textContent??n.data).join(''),'© 2026 데이터머니 · datamoney.kr');
 assert.equal(x.button['aria-label'],'관리자 로그인: 두 번 누르기');
-x.click(100);assert.deepEqual(x.navigations,[],'one click does not navigate');x.click(700);assert.deepEqual(x.navigations,['/comment-admin/'],'two clicks open the admin page');
-x=setup();x.click(100);x.click(1700);assert.deepEqual(x.navigations,[],'a slow second click starts a new sequence');x.click(1800);assert.deepEqual(x.navigations,['/comment-admin/']);
+x.click(100);assert.deepEqual(x.navigations,[],'one click does not navigate');x.click(700);assert.deepEqual(x.navigations,['/comment-admin/?return=home'],'two clicks open the admin page');
+x=setup();x.click(100);x.click(1700);assert.deepEqual(x.navigations,[],'a slow second click starts a new sequence');x.click(1800);assert.deepEqual(x.navigations,['/comment-admin/?return=home']);
 x=setup();x.click(100,{ctrlKey:true});x.click(200);assert.deepEqual(x.navigations,[],'modified clicks are ignored');
 for(const file of ['../index.html','../blog/index.html']) assert.match(await readFile(new URL(file,import.meta.url),'utf8'),/admin-footer-login\.js/);
 console.log('Admin footer entry: two clicks, slow clicks, modified clicks and visible copyright passed');

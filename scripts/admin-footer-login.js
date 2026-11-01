@@ -19,7 +19,7 @@
     const now = performance.now();
     if (lastClick !== null && now - lastClick <= 1500) {
       lastClick = null;
-      location.assign('/comment-admin/');
+      location.assign('/comment-admin/?return=home');
     } else lastClick = now;
   });
 })();

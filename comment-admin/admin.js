@@ -14,6 +14,7 @@
   const inspectorHelp = document.getElementById('admin-inspector-help');
   const tabs = [...panel.querySelectorAll('[data-status]')];
   const endpoint = '/api/article-engagement/_admin/comments';
+  const returnHomeAfterLogin = new URLSearchParams(location.search).get('return') === 'home';
   let key = '';
   let googleSession = false;
   let currentStatus = new URLSearchParams(location.search).get('tab') === 'inquiries' ? 'inquiries' : 'pending';
@@ -272,7 +273,6 @@
     try {
       const response = await fetch('/api/article-engagement/_auth/logout', {method:'POST', cache:'no-store'});
       if (!response.ok) throw new Error('Logout failed');
-      window.dispatchEvent(new Event('dm-admin-session-change'));
       location.reload();
     } catch (_) { status.textContent = '로그아웃하지 못했습니다. 다시 시도해 주세요.'; }
   });
@@ -300,7 +300,7 @@
             });
             if (!loginResponse.ok) throw new Error('Login failed');
             googleLogin.hidden = true;
-            window.dispatchEvent(new Event('dm-admin-session-change'));
+            if (returnHomeAfterLogin) {location.assign('/blog/');return;}
             await load(false);
           } catch (_) { status.textContent = '로그인하지 못했습니다. 운영자 계정과 인터넷 연결을 확인하고 새로고침해 주세요.'; }
         }});

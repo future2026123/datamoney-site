@@ -19,7 +19,7 @@ def render(source, version):
 
 
 def should_include(rel):
-    return not rel.startswith(('account/', 'templates/', 'preview/')) and not rel.endswith('/embed.html')
+    return not rel.startswith(('account/', 'comment-admin/', 'templates/', 'preview/')) and not rel.endswith('/embed.html')
 
 
 def main():

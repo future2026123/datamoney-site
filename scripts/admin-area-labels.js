@@ -3,7 +3,6 @@
   if (window.top !== window || new URLSearchParams(location.search).get('embed') === '1') return;
   const preference = 'dm-admin-section-labels';
   const endpoint = '/api/article-engagement/_auth/session';
-  const adminToggle = document.getElementById('admin-inspector-toggle');
   let host, shadow, toggle, marks, observer, active = false, authorized = false, scheduled = false, checking = false, checkAgain = false;
   const frames = new WeakSet();
   const rules = [
@@ -108,7 +107,6 @@
   function schedule() { if (authorized && active && !scheduled) { scheduled = true;requestAnimationFrame(render); } }
   function setActive(value) {
     active = !!value;toggle.setAttribute('aria-pressed', String(active));toggle.textContent = active ? '영역 이름 끄기' : '영역 이름 켜기';
-    if (adminToggle) {adminToggle.hidden=false;adminToggle.setAttribute('aria-pressed',String(active));adminToggle.textContent=active?'영역 이름 끄기':'영역 이름 켜기';}
     try { localStorage.setItem(preference, active ? 'on' : 'off'); } catch (_) {}
     if (active) schedule();else marks.replaceChildren();
   }
@@ -132,7 +130,7 @@
     observer = new MutationObserver(schedule);
     observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class','style']});
   }
-  function revoke() { authorized=false;active=false;observer?.disconnect();observer=null;host?.remove();host=shadow=toggle=marks=null;if(adminToggle) adminToggle.hidden=true; }
+  function revoke() { authorized=false;active=false;observer?.disconnect();observer=null;host?.remove();host=shadow=toggle=marks=null; }
   async function verify() {
     if (checking) {checkAgain=true;return;}checking=true;
     try {
@@ -142,8 +140,6 @@
       authorized=true;mount();
     } catch (_) { revoke(); } finally {checking=false;if(checkAgain){checkAgain=false;verify();}}
   }
-  if (adminToggle) adminToggle.addEventListener('click',()=>{if(authorized && toggle) setActive(!active);});
-  window.addEventListener('dm-admin-session-change',verify);
   window.addEventListener('resize',schedule,{passive:true});window.addEventListener('scroll',schedule,{passive:true});
   document.addEventListener('load',schedule,true);
   document.addEventListener('visibilitychange',()=>{if (!document.hidden) verify();});
