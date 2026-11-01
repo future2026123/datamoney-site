@@ -3,6 +3,8 @@
   const sidebar = document.querySelector('.dm-shared-sidebar');
   const banners = document.querySelectorAll('.dm-shared-sidebar .investor-test-banner, .dm-mobile-investor-banner');
   if (!sidebar || !banners.length) return;
+  let restoringFromAddress = false;
+  const onBlogHome = () => /^\/blog\/?$/.test(new URL(window.location.href).pathname);
   const setTestInAddress = open => {
     const url = new URL(window.location.href);
     if (open) url.searchParams.set('investor_test', '1');
@@ -16,7 +18,8 @@
     const existing = layout.querySelector(':scope > .dm-investor-embed');
     if (existing) {
       event.preventDefault();
-      window.scrollTo({top: Math.max(0, existing.getBoundingClientRect().top + window.scrollY - 90), behavior: 'auto'});
+      const top = onBlogHome() ? 0 : Math.max(0, existing.getBoundingClientRect().top + window.scrollY - 90);
+      window.scrollTo({top, behavior: 'auto'});
       return;
     }
     const original = [...layout.children].find(element => element !== sidebar && element.matches('article, main, .article, .paper, .dm-article-page, .latest-column'));
@@ -65,8 +68,14 @@
       window.scrollTo({top: previousScroll, behavior: 'instant'});
       banner.focus({preventScroll: true});
     });
-    window.scrollTo({top: Math.max(0, panel.getBoundingClientRect().top + window.scrollY - 90), behavior: 'auto'});
-    close.focus({preventScroll: true});
+    if (!restoringFromAddress || !onBlogHome()) {
+      const top = onBlogHome() ? 0 : Math.max(0, panel.getBoundingClientRect().top + window.scrollY - 90);
+      window.scrollTo({top, behavior: 'auto'});
+      close.focus({preventScroll: true});
+    }
   }));
-  if (new URL(window.location.href).searchParams.get('investor_test') === '1') banners[0].click();
+  if (new URL(window.location.href).searchParams.get('investor_test') === '1') {
+    restoringFromAddress = true;
+    try { banners[0].click(); } finally { restoringFromAddress = false; }
+  }
 })();
