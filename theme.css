@@ -172,6 +172,7 @@ html[data-dm-page="calculator"] body > header > .dm-theme-control { margin-left:
   html[data-dm-theme="dark"][data-dm-page="calculator"] .result-card { background: #172538; }
 
   html[data-dm-theme="dark"][data-dm-page="tools"] { --card: #1b2738; --navy: #e7edf7; --sub: #b6c4d7; --line: #40516a; }
+  html[data-dm-theme="dark"][data-dm-page="tools"] .tools-content { background:var(--dm-dark-surface); border-color:var(--dm-dark-border); }
   html[data-dm-theme="dark"][data-dm-page="tools"] :is(.logo, .link-chip, .card h2, .meta) { color: var(--dm-dark-text); }
   html[data-dm-theme="dark"][data-dm-page="tools"] .card strong { background: #2c4364; color: #c9ddff; }
   html[data-dm-theme="dark"][data-dm-page="tools"] footer { color: var(--dm-dark-muted); }

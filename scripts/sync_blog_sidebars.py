@@ -191,6 +191,7 @@ def synchronize(path, fragment):
 def main():
     fragment = FRAGMENT.read_text(encoding="utf-8").strip()
     paths = [ROOT / "blog/index.html", *sorted((ROOT / "blog").glob("*/index.html")), ROOT / "templates/blog_post.html"]
+    paths.append(ROOT / "tools/index.html")
     preview = ROOT / "preview/article-format/index.html"
     if preview.exists():
         paths.append(preview)

@@ -112,6 +112,9 @@ def main() -> None:
     search_page = ROOT / "search" / "index.html"
     if search_page.exists():
         paths.append(search_page)
+    tools_page = ROOT / "tools" / "index.html"
+    if tools_page.exists():
+        paths.append(tools_page)
     preview_page = ROOT / "preview" / "article-format" / "index.html"
     if preview_page.exists():
         paths.append(preview_page)

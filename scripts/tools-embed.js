@@ -11,7 +11,7 @@
   const slot=panel.querySelector('[data-tool-frame]');
   const title=panel.querySelector('#dm-tool-title');
   const close=panel.querySelector('[data-tool-close]');
-  let active='', observer, screenObserver, previousScroll=0, opener=null;
+  let active='', observer, screenObserver, previousScroll=0, opener=null, pushedPanel=false;
 
   function closePanel(restoreFocus=false) {
     observer?.disconnect(); screenObserver?.disconnect();
@@ -85,23 +85,32 @@
   function setUrl(id, method) {
     const url=new URL(location.href);
     if (id) url.searchParams.set('tool',id);else url.searchParams.delete('tool');
-    history[method](id?{...history.state,dmToolsPanel:id}:null,'',url);
+    history[method](id?{...history.state,dmToolsPanel:id,dmToolsPanelPushed:pushedPanel}:null,'',url);
   }
-  document.querySelectorAll('.grid a.card').forEach(link=>{
+  document.querySelectorAll('.grid a.card, .dm-shared-sidebar .tool-links a, .dm-shared-sidebar .investor-test-banner, .dm-mobile-investor-banner').forEach(link=>{
     const id=Object.keys(tools).find(key=>tools[key].path===link.getAttribute('href'));
     if (!id) return;
     link.addEventListener('click',event=>{
       if (event.defaultPrevented || event.button!==0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-      event.preventDefault();previousScroll=window.scrollY;opener=link;setUrl(id,'pushState');openPanel(id,true);
+      event.preventDefault();
+      if (active===id) {window.scrollTo({top:Math.max(0,panel.getBoundingClientRect().top+window.scrollY-16),behavior:'auto'});return;}
+      if (!active) {previousScroll=window.scrollY;opener=link;pushedPanel=true;setUrl(id,'pushState');}
+      else setUrl(id,'replaceState');
+      openPanel(id,true);
     });
   });
+  document.querySelector('.dm-shared-sidebar .all-tools')?.addEventListener('click',event=>{
+    if (!active || event.defaultPrevented || event.button!==0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();close.click();
+  });
   close.addEventListener('click',()=>{
-    if (history.state?.dmToolsPanel===active) history.back();
+    if (pushedPanel && history.state?.dmToolsPanel===active) history.back();
     else {setUrl('','replaceState');closePanel(true);}
   });
   window.addEventListener('popstate',()=>{
     const id=selectedFromUrl();
-    if (tools[id]) openPanel(id,false); else closePanel(true);
+    if (tools[id]) {pushedPanel=history.state?.dmToolsPanel===id && history.state?.dmToolsPanelPushed===true;openPanel(id,false);}
+    else {pushedPanel=false;closePanel(true);}
   });
-  const id=selectedFromUrl();if(tools[id]) openPanel(id,false);
+  const id=selectedFromUrl();if(tools[id]) {pushedPanel=history.state?.dmToolsPanel===id && history.state?.dmToolsPanelPushed===true;openPanel(id,false);}
 })();
