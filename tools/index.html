@@ -24,13 +24,17 @@
   .hero { padding:4px 0 20px; }
   .hero h1 { margin:0 0 12px; font-size:clamp(26px, 3vw, 36px); line-height:1.25; letter-spacing:-.04em; }
   .hero p { max-width:760px; margin:0; color:var(--sub); line-height:1.8; font-size:16px; }
-  .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin-top:12px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:28px; padding:24px; box-shadow:0 12px 40px rgba(15,23,42,.05); transition:transform .2s ease, box-shadow .2s ease; }
-  .card:hover { transform:translateY(-4px); box-shadow:0 18px 48px rgba(15,23,42,.1); }
-  .card strong { display:inline-flex; align-items:center; justify-content:center; width:48px; height:48px; border-radius:16px; background:#eff6ff; color:var(--blue); font-size:22px; }
-  .card h2 { margin:18px 0 10px; font-size:20px; letter-spacing:-.03em; }
-  .card p { margin:0 0 18px; color:var(--sub); line-height:1.75; min-height:84px; }
-  .meta { display:flex; justify-content:space-between; align-items:center; color:#1e3a8a; font-weight:700; font-size:14px; }
+  .grid { margin-top:8px; }
+  .tool-group { margin:28px 0 4px; color:var(--sub); font-size:14px; font-weight:700; line-height:1.4; }
+  .card { display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:16px; align-items:center; padding:16px 2px; border-bottom:1px solid #e2e8f0; background:transparent; border-radius:0; box-shadow:none; }
+  .card:hover { background:rgba(37,99,235,.035); }
+  .card:focus-visible { outline:3px solid #f0a33c; outline-offset:2px; border-radius:4px; }
+  .card h3 { grid-column:1; margin:0; color:var(--navy); font-size:17px; line-height:1.4; letter-spacing:-.025em; }
+  .card p { grid-column:1; margin:5px 0 0; color:var(--sub); font-size:14px; line-height:1.55; }
+  .card .tool-open { grid-column:2; grid-row:1 / span 2; color:var(--blue); font-size:14px; font-weight:700; white-space:nowrap; }
+  html[data-dm-theme="dark"] .card { border-color:#40516a; }
+  html[data-dm-theme="dark"] .card:hover { background:rgba(147,197,253,.08); }
+  html[data-dm-theme="dark"] .card .tool-open { color:#a9c9ff; }
   footer { margin-top:28px; color:#64748b; font-size:13px; }
   [hidden] { display:none !important; }
   .dm-tool-embed { max-width:900px; margin:20px auto 0; }
@@ -40,7 +44,7 @@
   .dm-tool-embed-top h1 { margin:0; font-size:clamp(19px,3vw,26px); line-height:1.4; }
   .dm-tool-embed iframe { display:block; width:100%; min-height:400px; border:0; background:transparent; }
   html[data-dm-theme="dark"] .dm-tool-back { color:#e7edf7; border-color:#526b88; }
-  @media (max-width:560px) { .tools-layout { margin-top:16px; } .tools-content { padding:18px; } .grid { grid-template-columns:1fr; } }
+  @media (max-width:560px) { .tools-layout { margin-top:16px; } .tools-content { padding:18px; } }
   @media (max-width:560px) {
     header { gap:6px; }
     header .logo { font-size:18px; white-space:nowrap; }
@@ -96,17 +100,20 @@
       <p>투자 수익률과 배당, 예·적금과 자산 배분까지. 필요한 숫자를 직접 확인해 보세요.</p>
     </section>
 
-    <section class="grid" data-tool-list>
-      <a class="card" href="/tools/investor-type/"><strong>☀</strong><h2>나의 투자 유형 테스트</h2><p>평소의 투자 성향과 지금의 마음을 살펴보고 나의 투자 유형을 알아보세요.</p><div class="meta"><span>약 2분</span><span>테스트하기</span></div></a>
-      <a class="card" href="/tools/etf_calculator/"><strong>E</strong><h2>ETF 수익률 계산기</h2><p>초기 자금과 적립금, 기대 수익률을 넣고 복리 누적 결과를 확인합니다.</p><div class="meta"><span>무료</span><span>바로 열기</span></div></a>
-      <a class="card" href="/tools/tax_simulator/"><strong>T</strong><h2>절세 시뮬레이터</h2><p>연금저축, IRP, ISA 조합에 따라 얼마나 세금을 줄일 수 있는지 계산합니다.</p><div class="meta"><span>무료</span><span>바로 열기</span></div></a>
-      <a class="card" href="/tools/dividend_calculator/"><strong>D</strong><h2>배당 포트폴리오 계산기</h2><p>배당수익률과 성장률, DRIP 적용 여부를 기반으로 목표 배당금 도달 시점을 봅니다.</p><div class="meta"><span>무료</span><span>바로 열기</span></div></a>
-      <a class="card" href="/tools/average-cost/"><strong>₩</strong><h2>평단가 계산기</h2><p>보유분과 추가 매수분의 평균 단가를 확인합니다.</p><div class="meta"><span>무료</span><span>바로 열기</span></div></a>
-      <a class="card" href="/tools/deposit-savings/"><strong>예</strong><h2>예금·적금 계산기</h2><p>목돈과 월 납입금을 함께 넣어 만기 금액을 계산합니다.</p><div class="meta"><span>무료</span><span>바로 열기</span></div></a>
-      <a class="card" href="/tools/fixed-deposit/"><strong>예</strong><h2>정기예금 계산기</h2><p>목돈을 예치했을 때 세후 원금과 이자를 계산합니다.</p><div class="meta"><span>무료</span><span>바로 열기</span></div></a>
-      <a class="card" href="/tools/installment-savings/"><strong>적</strong><h2>적금 계산기</h2><p>월 납입금과 기간에 따른 세후 만기 금액을 계산합니다.</p><div class="meta"><span>무료</span><span>바로 열기</span></div></a>
-      <a class="card" href="/tools/investment-return/"><strong>↗</strong><h2>투자 수익률 계산기</h2><p>초기 자금과 월 납입금의 예상 복리 성장을 확인합니다.</p><div class="meta"><span>무료</span><span>바로 열기</span></div></a>
-      <a class="card" href="/tools/portfolio-builder/"><strong>◒</strong><h2>자산 포트폴리오</h2><p>여러 자산의 비중과 예상 성장을 살펴봅니다.</p><div class="meta"><span>무료</span><span>바로 열기</span></div></a>
+    <section class="grid" data-tool-list aria-label="데이터머니 도구 목록">
+      <h2 class="tool-group">투자와 자산 관리</h2>
+      <a class="card" href="/tools/etf_calculator/"><h3>ETF 수익률 계산기</h3><p>초기 자금과 월 적립금으로 예상 복리 수익을 확인합니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
+      <a class="card" href="/tools/investment-return/"><h3>투자 수익률 계산기</h3><p>투자금과 수익률로 미래 자산과 현재 가치를 살펴봅니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
+      <a class="card" href="/tools/dividend_calculator/"><h3>배당 포트폴리오 계산기</h3><p>배당 재투자와 성장에 따른 예상 배당금을 확인합니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
+      <a class="card" href="/tools/portfolio-builder/"><h3>자산 포트폴리오</h3><p>여러 자산의 비중과 예상 성장, 목표 비중을 확인합니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
+      <h2 class="tool-group">예금과 적금</h2>
+      <a class="card" href="/tools/deposit-savings/"><h3>예금·적금 계산기</h3><p>목돈과 월 납입금을 함께 넣어 만기 금액을 계산합니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
+      <a class="card" href="/tools/fixed-deposit/"><h3>정기예금 계산기</h3><p>목돈을 예치했을 때의 세후 이자를 계산합니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
+      <a class="card" href="/tools/installment-savings/"><h3>적금 계산기</h3><p>월 납입액과 기간에 따른 세후 만기 금액을 계산합니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
+      <h2 class="tool-group">투자를 돕는 도구</h2>
+      <a class="card" href="/tools/average-cost/"><h3>평단가 계산기</h3><p>보유분과 추가 매수분의 평균 단가를 확인합니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
+      <a class="card" href="/tools/tax_simulator/"><h3>절세 시뮬레이터</h3><p>연금저축, IRP, ISA의 예상 절세 효과를 계산합니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
+      <a class="card" href="/tools/investor-type/"><h3>나의 투자 유형 테스트</h3><p>평소 투자 습관과 지금의 마음으로 투자 유형을 알아봅니다.</p><span class="tool-open" aria-hidden="true">열기 ›</span></a>
     </section>
 
     <section class="dm-tool-embed" hidden aria-labelledby="dm-tool-title">
