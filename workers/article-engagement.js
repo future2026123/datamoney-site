@@ -1,6 +1,6 @@
 import {AUTH_CONFIG_PATH, AUTH_LOGIN_PATH, AUTH_LOGOUT_PATH, getGoogleAdminConfig, googleAdminLogin, googleAdminLogout, googleAdminMode, hasGoogleAdminSession} from './admin-auth.js';
 
-const ROUTE = /^\/api\/article-engagement\/([a-z0-9][a-z0-9-]{0,95})(?:\/(reaction|comments|feedback)(?:\/([1-9]\d*)(?:\/(vote))?)?)?\/?$/;
+const ROUTE = /^\/api\/article-engagement\/([a-z0-9][a-z0-9-]{0,95})(?:\/(reaction|dislike|comments|feedback)(?:\/([1-9]\d*)(?:\/(vote))?)?)?\/?$/;
 const ADMIN_ROUTE = /^\/api\/article-engagement\/_admin\/comments(?:\/([1-9]\d*)(?:\/(approve))?)?\/?$/;
 const CONFIG_PATH = '/api/article-engagement/_config';
 const SURVEY_PATH = '/api/article-engagement/_survey';
@@ -231,6 +231,7 @@ export class ArticleEngagement {
     this.env = env;
     this.sql = state.storage.sql;
     this.sql.exec('CREATE TABLE IF NOT EXISTS reactions (article TEXT NOT NULL, visitor TEXT NOT NULL, PRIMARY KEY (article, visitor))');
+    this.sql.exec('CREATE TABLE IF NOT EXISTS dislikes (article TEXT NOT NULL, visitor TEXT NOT NULL, PRIMARY KEY (article, visitor))');
     this.sql.exec('CREATE TABLE IF NOT EXISTS comments (id INTEGER PRIMARY KEY AUTOINCREMENT, article TEXT NOT NULL, visitor TEXT NOT NULL, nickname TEXT NOT NULL, body TEXT NOT NULL, created_at INTEGER NOT NULL, parent_id INTEGER, deleted_at INTEGER)');
     const columns = new Set(this.sql.exec('PRAGMA table_info(comments)').toArray().map(column => column.name));
     if (!columns.has('parent_id')) this.sql.exec('ALTER TABLE comments ADD COLUMN parent_id INTEGER');
@@ -260,7 +261,8 @@ export class ArticleEngagement {
     const reactions = this.sql.exec('SELECT COUNT(*) AS n FROM reactions WHERE article = ?', article).one().n;
     const comments = this.sql.exec("SELECT COUNT(*) AS n FROM comments WHERE article = ? AND deleted_at IS NULL AND status = 'published'", article).one().n;
     const reacted = !!visitor && this.sql.exec('SELECT 1 AS present FROM reactions WHERE article = ? AND visitor = ?', article, visitor).toArray().length > 0;
-    return {reactions, comments, reacted};
+    const disliked = !!visitor && this.sql.exec('SELECT 1 AS present FROM dislikes WHERE article = ? AND visitor = ?', article, visitor).toArray().length > 0;
+    return {reactions, comments, reacted, disliked};
   }
 
   async fetch(request) {
@@ -275,7 +277,8 @@ export class ArticleEngagement {
       const items = this.sql.exec('SELECT id, article, choice, body, created_at, updated_at FROM article_feedback WHERE id < ? ORDER BY id DESC LIMIT 51', before).toArray();
       const totals = this.sql.exec("SELECT article, SUM(CASE WHEN choice='helpful' THEN 1 ELSE 0 END) AS helpful, SUM(CASE WHEN choice='difficult' THEN 1 ELSE 0 END) AS difficult, SUM(CASE WHEN choice='disappointing' THEN 1 ELSE 0 END) AS disappointing FROM article_feedback GROUP BY article ORDER BY MAX(updated_at) DESC LIMIT 1000").toArray();
       const nextBefore = items.length > 50 ? items[49].id : null;
-      return json({items:items.slice(0, 50), totals, nextBefore});
+      const dislikes = this.sql.exec('SELECT article, COUNT(*) AS count FROM dislikes GROUP BY article ORDER BY count DESC').toArray();
+      return json({items:items.slice(0, 50), totals, dislikes, nextBefore});
     }
     if (url.pathname === EMAIL_ADMIN_PATH && request.headers.get('x-article-admin') === 'authorized' && request.method === 'GET') {
       const items = this.sql.exec('SELECT email, MAX(test_news) AS test_news, MAX(monthly_report) AS monthly_report, MAX(confirmed_at) AS confirmed_at FROM email_results WHERE confirmed_at IS NOT NULL AND created_at > ? GROUP BY email HAVING MAX(test_news) = 1 OR MAX(monthly_report) = 1 ORDER BY confirmed_at DESC LIMIT 5000', Date.now() - YEAR).toArray();
@@ -352,11 +355,18 @@ export class ArticleEngagement {
       return json({ok:true});
     }
 
+    if (request.method === 'POST' && action === 'dislike' && !commentId) {
+      if (!visitor) return json({error: 'Not authorized'}, 403);
+      const existing = this.sql.exec('SELECT 1 AS present FROM dislikes WHERE article = ? AND visitor = ?', article, visitor).toArray().length > 0;
+      if (existing) this.sql.exec('DELETE FROM dislikes WHERE article = ? AND visitor = ?', article, visitor);
+      else { this.sql.exec('DELETE FROM reactions WHERE article = ? AND visitor = ?', article, visitor); this.sql.exec('INSERT INTO dislikes (article, visitor) VALUES (?, ?)', article, visitor); }
+      return json(this.summary(article, visitor));
+    }
     if (request.method === 'POST' && action === 'reaction' && !commentId) {
       if (!visitor) return json({error: 'Not authorized'}, 403);
       const existing = this.sql.exec('SELECT 1 AS present FROM reactions WHERE article = ? AND visitor = ?', article, visitor).toArray().length > 0;
       if (existing) this.sql.exec('DELETE FROM reactions WHERE article = ? AND visitor = ?', article, visitor);
-      else this.sql.exec('INSERT INTO reactions (article, visitor) VALUES (?, ?)', article, visitor);
+      else { this.sql.exec('DELETE FROM dislikes WHERE article = ? AND visitor = ?', article, visitor); this.sql.exec('INSERT INTO reactions (article, visitor) VALUES (?, ?)', article, visitor); }
       return json(this.summary(article, visitor));
     }
 

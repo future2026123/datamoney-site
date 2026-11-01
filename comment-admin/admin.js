@@ -116,7 +116,14 @@
         const titles = await loadArticleTitles();
         if (!append) {
           list.replaceChildren(); feedbackSummary.replaceChildren();
-          const heading = document.createElement('strong'); heading.textContent = '글별 평가'; feedbackSummary.append(heading);
+          const dislikeHeading = document.createElement('strong'); dislikeHeading.textContent = '글별 싫어요'; feedbackSummary.append(dislikeHeading);
+          (data.dislikes || []).forEach(row => {
+            const line = document.createElement('p'); line.className = 'comment-header';
+            const link = document.createElement('a'); link.href = `/blog/${encodeURIComponent(row.article)}/`; link.textContent = titles.get(`/blog/${row.article}/`) || row.article;
+            const count = document.createElement('span'); count.textContent = `싫어요 ${row.count}`;
+            line.append(link, count); feedbackSummary.append(line);
+          });
+          const heading = document.createElement('strong'); heading.textContent = '기존 글 평가'; feedbackSummary.append(heading);
           data.totals.forEach(row => {
             const line = document.createElement('p'); line.className = 'comment-header';
             const link = document.createElement('a'); link.href = `/blog/${encodeURIComponent(row.article)}/`; link.textContent = titles.get(`/blog/${row.article}/`) || row.article;
@@ -148,7 +155,7 @@
           list.append(item);
         });
         nextBefore = data.nextBefore; more.hidden = !nextBefore;
-        empty.hidden = !!list.children.length; empty.textContent = '아직 글 피드백이 없습니다.';
+        empty.hidden = !!list.children.length || (data.dislikes || []).length > 0; empty.textContent = '아직 글 반응이나 기존 평가가 없습니다.';
         panel.hidden = false; login.hidden = true; keyInput.value = ''; return;
       }
       if (currentStatus === 'subscribers') {

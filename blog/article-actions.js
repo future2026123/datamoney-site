@@ -329,6 +329,7 @@
   endActions.setAttribute('role', 'group');
   endActions.setAttribute('aria-label', '글 반응과 공유');
   endActions.innerHTML = `<button type="button" class="dm-end-action" data-end-reaction aria-pressed="false" disabled><span aria-hidden="true">👍</span><span>좋아요</span><span data-end-count></span></button>
+    <button type="button" class="dm-end-action" data-end-dislike aria-pressed="false" disabled><span aria-hidden="true">👎</span><span>싫어요</span></button>
     <button type="button" class="dm-end-action" data-end-share><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 5.5V3l7 5.5-7 5.4v-2.8C8.5 11.1 6 13 5 16c0-6.4 2.5-10.5 8-10.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 13.5V19H4V9h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>공유하기</span></button>
     <span class="dm-end-status" role="status" aria-live="polite"></span>`;
   const references = content.querySelector(':scope > .dm-references');
@@ -336,6 +337,7 @@
   else content.append(endActions);
   const endReaction = endActions.querySelector('[data-end-reaction]');
   const endCount = endActions.querySelector('[data-end-count]');
+  const endDislike = endActions.querySelector('[data-end-dislike]');
   const endStatus = endActions.querySelector('.dm-end-status');
   let endStatusTimer;
   const announceEnd = message => {
@@ -345,58 +347,8 @@
   };
   endActions.querySelector('[data-end-share]').addEventListener('click', () => shareArticle(announceEnd));
   const reactionButtons = [reactionButton, endReaction];
-  const setReactionDisabled = value => reactionButtons.forEach(item => { item.disabled = value; });
+  const setReactionDisabled = value => [...reactionButtons, endDislike].forEach(item => { item.disabled = value; });
   const endpoint = `/api/article-engagement/${slug}`;
-  const feedback = document.createElement('section');
-  feedback.className = 'dm-feedback';
-  feedback.setAttribute('aria-labelledby', 'dm-feedback-title');
-  feedback.innerHTML = `<h2 id="dm-feedback-title">이 글, 어떠셨나요?</h2>
-    <div class="dm-feedback-choices" role="group" aria-label="글 평가">
-      <button type="button" data-feedback-choice="helpful" aria-pressed="false">도움됐어요</button>
-      <button type="button" data-feedback-choice="difficult" aria-pressed="false">어려웠어요</button>
-      <button type="button" data-feedback-choice="disappointing" aria-pressed="false">아쉬워요</button>
-    </div>
-    <p class="dm-feedback-status" role="status" aria-live="polite"></p>
-    <form class="dm-feedback-form" hidden>
-      <label for="dm-feedback-body">더 남기고 싶은 의견이 있나요? <span>(선택)</span></label>
-      <textarea id="dm-feedback-body" maxlength="500" rows="3" placeholder="의견을 자유롭게 남겨 주세요."></textarea>
-      <div class="dm-feedback-form-footer"><span>의견은 운영자만 확인합니다.</span><button type="submit">의견 보내기</button></div>
-    </form>`;
-  endActions.after(feedback);
-  const choices = [...feedback.querySelectorAll('[data-feedback-choice]')];
-  const feedbackStatus = feedback.querySelector('.dm-feedback-status');
-  const feedbackForm = feedback.querySelector('.dm-feedback-form');
-  const feedbackBody = feedback.querySelector('#dm-feedback-body');
-  const feedbackSubmit = feedbackForm.querySelector('button');
-  let feedbackChoice = '';
-  const sendFeedback = async (choice, body) => {
-    const data = {choice};
-    if (body !== undefined) data.body = body;
-    const response = await fetch(endpoint + '/feedback', {method:'POST', credentials:'same-origin', headers:{'content-type':'application/json'}, body:JSON.stringify(data)});
-    if (!response.ok) { const error = new Error('Feedback failed'); error.status = response.status; throw error; }
-  };
-  choices.forEach(choice => choice.addEventListener('click', async () => {
-    choices.forEach(item => { item.disabled = true; });
-    feedbackSubmit.disabled = true;
-    try {
-      await sendFeedback(choice.dataset.feedbackChoice);
-      feedbackChoice = choice.dataset.feedbackChoice;
-      choices.forEach(item => item.setAttribute('aria-pressed', String(item === choice)));
-      feedbackForm.hidden = false;
-      feedbackStatus.textContent = '평가를 보내주셔서 고맙습니다.';
-    } catch (error) { feedbackStatus.textContent = error.status === 429 ? '잠시 후 다시 시도해 주세요.' : '평가를 보내지 못했어요. 다시 시도해 주세요.'; }
-    finally { choices.forEach(item => { item.disabled = false; }); feedbackSubmit.disabled = false; }
-  }));
-  feedbackForm.addEventListener('submit', async event => {
-    event.preventDefault();
-    const body = feedbackBody.value.trim();
-    if (!body) { feedbackStatus.textContent = '남기고 싶은 의견을 적어 주세요.'; feedbackBody.focus(); return; }
-    feedbackSubmit.disabled = true;
-    choices.forEach(item => { item.disabled = true; });
-    try { await sendFeedback(feedbackChoice, body); feedbackStatus.textContent = '의견을 보내주셔서 고맙습니다.'; }
-    catch (error) { feedbackStatus.textContent = error.status === 429 ? '잠시 후 다시 시도해 주세요.' : '의견을 보내지 못했어요. 다시 시도해 주세요.'; }
-    finally { feedbackSubmit.disabled = false; choices.forEach(item => { item.disabled = false; }); }
-  });
   const request = async (path, options) => {
     const response = await fetch(endpoint + path, {credentials: 'same-origin', ...options});
     if (!response.ok) {
@@ -412,6 +364,7 @@
     commentCount.textContent = Number(data.comments).toLocaleString('ko-KR');
     reactionButton.setAttribute('aria-pressed', String(!!data.reacted));
     endReaction.setAttribute('aria-pressed', String(!!data.reacted));
+    endDislike.setAttribute('aria-pressed', String(!!data.disliked));
     endReaction.setAttribute('aria-label', `좋아요 ${reactionCount.textContent}개`);
     reactionButton.setAttribute('aria-label', `유익해요 ${reactionCount.textContent}개`);
     commentsButton.setAttribute('aria-label', `댓글 ${commentCount.textContent}개 보기`);
@@ -444,6 +397,13 @@
     catch (_) { (item === endReaction ? announceEnd : announce)('반응을 저장하지 못했어요. 다시 시도해 주세요.'); }
     finally { setReactionDisabled(false); }
   }));
+
+  endDislike.addEventListener('click', async () => {
+    setReactionDisabled(true);
+    try { updateCounts(await request('/dislike', {method: 'POST'})); }
+    catch (_) { announceEnd('반응을 저장하지 못했어요. 다시 시도해 주세요.'); }
+    finally { setReactionDisabled(false); }
+  });
 
   let commentsSection;
   let nextBefore = null;
