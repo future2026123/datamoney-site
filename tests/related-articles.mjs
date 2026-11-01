@@ -23,7 +23,7 @@ async function render(path, data, ok = true) {
   const reactions = {before: (section) => sections.push(section)};
   const document = {querySelector: (selector) => selector === '.dm-end-actions' ? reactions : null,
     createElement: (tag) => new Element(tag)};
-  vm.runInNewContext(source, {document, location: {pathname: path},
+  vm.runInNewContext(source, {document, location: {pathname: path}, URL,
     fetch: async () => ({ok, json: async () => ({articles: data})})});
   await new Promise((resolve) => setImmediate(resolve));
   return sections;
@@ -54,6 +54,8 @@ assert.equal(titleMatch[0].children[1].children[0].children[0].href, '/blog/depo
 assert.equal((await render('/blog/current/', [current, broad, legacy])).length, 0, 'hide the section when no meaningful match exists');
 assert.equal((await render('/blog/current/', [current, {...direct, thumbnail: ''}])).length, 0, 'skip related posts without a thumbnail');
 assert.equal((await render('/blog/current/', [current, {...direct, thumbnail: 'https://example.com/img.jpg'}])).length, 0, 'do not load unrelated external images');
+assert.equal((await render('/blog/current/', [current, {...direct, thumbnail: '/blog/thumbnails/../private.jpg'}])).length, 0, 'reject paths outside the thumbnail directory');
+assert.equal((await render('/blog/current/', [current, {...direct, thumbnail: '/blog/thumbnails/한글 썸네일.png'}])).length, 1, 'support valid Korean thumbnail filenames');
 assert.equal((await render('/blog/current/', articles, false)).length, 0, 'do not affect the article when the index is unavailable');
 let fetchCount = 0;
 const inserted = [], tagCard = new Element(), tagContent = new Element();
@@ -61,7 +63,7 @@ const sharedContext = vm.createContext({
   document: {querySelector: () => ({before: (section) => inserted.push(section)}),
     getElementById: (id) => ({'blog-tags': tagCard, 'blog-tags-content': tagContent})[id],
     createElement: (tag) => new Element(tag)},
-  location: {pathname: '/blog/current/'},
+  location: {pathname: '/blog/current/'}, URL,
   fetch: async () => { fetchCount++; return {ok: true, json: async () => ({articles, tags: [{name:'분배금', count:2}]})}; }
 });
 vm.runInContext(source, sharedContext);

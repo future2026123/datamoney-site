@@ -19,8 +19,13 @@
     ? article.primary_tags : Array.isArray(article.tags) ? article.tags : []).map(normalize).filter(Boolean));
   const intersects = (tags, candidates) => [...tags].some((tag) => candidates.has(tag));
   const canonicalPath = (path) => path.replace(/\/?$/, '/');
-  const hasThumbnail = (article) => typeof article.thumbnail === 'string' &&
-    /^\/blog\/thumbnails\/[a-z0-9._~%-]+\.(?:png|jpe?g|webp|avif|gif)(?:\?[^#]*)?$/i.test(article.thumbnail);
+  const hasThumbnail = (article) => {
+    if (typeof article.thumbnail !== 'string' || !article.thumbnail.startsWith('/blog/thumbnails/')) return false;
+    try {
+      const url = new URL(article.thumbnail, 'https://datamoney.invalid');
+      return url.origin === 'https://datamoney.invalid' && url.pathname.startsWith('/blog/thumbnails/') && !url.hash;
+    } catch (_) { return false; }
+  };
 
   const index = globalThis.dmBlogTagsIndex || (globalThis.dmBlogTagsIndex = fetch('/blog/tags-index.json')
     .then((response) => {
