@@ -4,6 +4,7 @@ import {investorReports} from './investor-reports.js';
 const ROUTE = /^\/api\/article-engagement\/([a-z0-9][a-z0-9-]{0,95})(?:\/(reaction|dislike|comments|feedback)(?:\/([1-9]\d*)(?:\/(vote))?)?)?\/?$/;
 const ADMIN_ROUTE = /^\/api\/article-engagement\/_admin\/comments(?:\/([1-9]\d*)(?:\/(approve))?)?\/?$/;
 const CONFIG_PATH = '/api/article-engagement/_config';
+const ADMIN_SESSION_PATH = '/api/article-engagement/_auth/session';
 const SURVEY_PATH = '/api/article-engagement/_survey';
 const SURVEY_AGGREGATE_PATH = '/api/article-engagement/_survey-aggregate';
 const SURVEY_ADMIN_PATH = '/api/article-engagement/_admin/survey';
@@ -120,7 +121,8 @@ export default {
     const authConfig = url.pathname === AUTH_CONFIG_PATH;
     const authLogin = url.pathname === AUTH_LOGIN_PATH;
     const authLogout = url.pathname === AUTH_LOGOUT_PATH;
-    if (!adminRoute && !route && !survey && !surveyAdmin && !surveyAggregate && !emailRoute && !emailAdmin && !feedbackAdmin && !inquiryAdmin && !inquiry && !authConfig && !authLogin && !authLogout) return json({error: 'Not found'}, 404);
+    const authSession = url.pathname === ADMIN_SESSION_PATH;
+    if (!adminRoute && !route && !survey && !surveyAdmin && !surveyAggregate && !emailRoute && !emailAdmin && !feedbackAdmin && !inquiryAdmin && !inquiry && !authConfig && !authLogin && !authLogout && !authSession) return json({error: 'Not found'}, 404);
     if (!['GET', 'POST', 'DELETE'].includes(request.method)) return json({error: 'Method not allowed'}, 405);
     if (request.method !== 'GET' && request.headers.get('origin') !== url.origin) {
       return json({error: 'Invalid origin'}, 403);
@@ -128,6 +130,7 @@ export default {
     if (authConfig) return request.method === 'GET' ? getGoogleAdminConfig(request, env) : json({error:'Method not allowed'}, 405);
     if (authLogin) return request.method === 'POST' ? googleAdminLogin(request, env) : json({error:'Method not allowed'}, 405);
     if (authLogout) return request.method === 'POST' ? googleAdminLogout() : json({error:'Method not allowed'}, 405);
+    if (authSession) return request.method === 'GET' ? json({authenticated:await hasGoogleAdminSession(request, env)}) : json({error:'Method not allowed'}, 405);
     if (!env.ARTICLE_ENGAGEMENT) return json({error: 'Service unavailable'}, 503);
     if (surveyAggregate) {
       if (request.method !== 'POST') return json({error: 'Method not allowed'}, 405);

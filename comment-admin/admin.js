@@ -11,6 +11,7 @@
   const googleLogin = document.getElementById('google-login');
   const googleSignin = document.getElementById('google-signin');
   const signout = document.getElementById('admin-signout');
+  const inspectorHelp = document.getElementById('admin-inspector-help');
   const tabs = [...panel.querySelectorAll('[data-status]')];
   const endpoint = '/api/article-engagement/_admin/comments';
   let key = '';
@@ -147,7 +148,7 @@
         });
         nextBefore = data.nextBefore; more.hidden = !nextBefore;
         empty.hidden = !!list.children.length; empty.textContent = '아직 접수된 문의가 없습니다.';
-        if (!key) { googleSession = true; signout.hidden = false; }
+        if (!key) { googleSession = true; signout.hidden = false; if (inspectorHelp) inspectorHelp.hidden = false; }
         panel.hidden = false; login.hidden = true; googleLogin.hidden = true; keyInput.value = ''; return;
       }
       if (currentStatus === 'feedback') {
@@ -236,7 +237,7 @@
       const params = new URLSearchParams({status:currentStatus});
       if (append && nextBefore) params.set('before', String(nextBefore));
       const data = await request(`?${params}`);
-      if (!key) { googleSession = true; signout.hidden = false; }
+      if (!key) { googleSession = true; signout.hidden = false; if (inspectorHelp) inspectorHelp.hidden = false; }
       if (!append) list.replaceChildren();
       data.items.forEach(render);
       nextBefore = data.nextBefore;
