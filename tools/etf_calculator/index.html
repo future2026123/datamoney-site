@@ -94,14 +94,14 @@
 
     <div class="row-2">
       <div class="field">
-        <label>초기 투자금</label>
+        <label for="initial">초기 투자금</label>
         <div class="input-wrap">
           <input type="text" id="initial" value="10,000,000" inputmode="decimal" spellcheck="false" data-amount>
           <span class="unit">원</span>
         </div>
       </div>
       <div class="field">
-        <label>월 적립금</label>
+        <label for="monthly">월 적립금</label>
         <div class="input-wrap">
           <input type="text" id="monthly" value="500,000" inputmode="decimal" spellcheck="false" data-amount>
           <span class="unit">원</span>
@@ -111,14 +111,14 @@
 
     <div class="row-2">
       <div class="field">
-        <label>연 기대 수익률</label>
+        <label for="rate">연 기대 총수익률 (배당 포함·비용 차감 전)</label>
         <div class="input-wrap">
-          <input type="number" id="rate" value="8" min="0.1" max="50" step="0.1">
+          <input type="number" id="rate" value="8" min="-99" max="100" step="0.1">
           <span class="unit">%</span>
         </div>
       </div>
       <div class="field">
-        <label>투자 기간</label>
+        <label for="years">투자 기간</label>
         <div class="input-wrap">
           <input type="number" id="years" value="20" min="1" max="50" step="1">
           <span class="unit">년</span>
@@ -126,15 +126,29 @@
       </div>
     </div>
 
+    <div class="row-2">
+      <div class="field"><label for="dividendYield">연 배당수익률 (총수익률에 포함)</label><div class="input-wrap"><input type="number" id="dividendYield" value="2" min="0" max="30" step="0.1"><span class="unit">%</span></div></div>
+      <div class="field"><label for="dividendTax">배당 원천징수율</label><div class="input-wrap"><input type="number" id="dividendTax" value="0" min="0" max="100" step="0.1"><span class="unit">%</span></div></div>
+    </div>
+    <div class="row-2">
+      <div class="field"><label for="fee">연간 비용률</label><div class="input-wrap"><input type="number" id="fee" value="0" min="0" max="10" step="0.01"><span class="unit">%</span></div></div>
+      <div class="field"><label for="inflation">연 물가상승률 (현재 가치 비교)</label><div class="input-wrap"><input type="number" id="inflation" value="2" min="0" max="20" step="0.1"><span class="unit">%</span></div></div>
+    </div>
     <div class="field">
-      <label>배당 재투자 (DRIP)</label>
+      <label for="drip">배당 재투자 (DRIP)</label>
       <select id="drip">
         <option value="yes">포함 (자동 재투자)</option>
-        <option value="no">미포함</option>
+        <option value="no">미포함 (세후 배당금 현금 보유)</option>
       </select>
     </div>
+    <div class="field">
+      <label for="targetAmount">목표 자산 (선택)</label>
+      <div class="input-wrap"><input type="text" id="targetAmount" value="" placeholder="목표를 입력하면 도달 시점을 보여드립니다" inputmode="decimal" spellcheck="false" data-amount><span class="unit">원</span></div>
+    </div>
 
-    <button class="btn-calc" onclick="calculate(); if (typeof window.gtag === 'function') window.gtag('event', 'calculator_result', {calculator_type: 'etf'});">수익률 계산하기</button>
+    <p style="font-size:12px;line-height:1.6;color:var(--sub);margin-bottom:16px">매월 초 납입하고 수익률·배당률·비용률을 12로 나눠 매월 일정하게 적용합니다. 배당세는 입력한 비율만 적용하며 매매차익 세금과 거래비용은 제외합니다.</p>
+    <button class="btn-calc" onclick="if (calculate() !== false &amp;&amp; typeof window.gtag === 'function') window.gtag('event', 'calculator_result', {calculator_type: 'etf'});">수익률 계산하기</button>
+    <p id="calcError" role="alert" style="color:#dc2626;font-size:13px;margin-top:10px"></p>
   </div>
 
   <!-- 결과 -->
@@ -154,6 +168,8 @@
         <div class="rvalue green" id="totalProfit">—</div>
       </div>
     </div>
+    <p id="assumptions" style="color:#cbd5e1;font-size:13px;line-height:1.7;margin-bottom:18px"></p>
+    <p id="targetStatus" style="color:#c9ddff;font-size:13px;line-height:1.7;margin-bottom:18px" hidden></p>
     <canvas id="chart"></canvas>
   </div>
 
@@ -176,18 +192,32 @@
 let chartInstance = null;
 
 function fmt(n) {
-  if (n >= 1e8) return (n / 1e8).toLocaleString("ko-KR", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + "억";
-  if (n >= 1e4) return Math.round(n / 1e4).toLocaleString("ko-KR") + "만";
-  return n.toLocaleString();
+  const sign = n < 0 ? '-' : '';
+  n = Math.abs(n);
+  if (n >= 1e8) return sign + (n / 1e8).toLocaleString("ko-KR", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + "억";
+  if (n >= 1e4) return sign + Math.round(n / 1e4).toLocaleString("ko-KR") + "만";
+  return sign + Math.round(n).toLocaleString("ko-KR");
 }
 
 function calculate() {
-  const initial = Number(document.getElementById("initial").value.replace(/,/g, "")) || 0;
-  const monthly = Number(document.getElementById("monthly").value.replace(/,/g, "")) || 0;
+  const initial = Number(document.getElementById("initial").value.replace(/,/g, ""));
+  const monthly = Number(document.getElementById("monthly").value.replace(/,/g, ""));
   const rate    = Number(document.getElementById("rate").value) / 100;
-  const years   = Number(document.getElementById("years").value) || 1;
+  const years   = Number(document.getElementById("years").value);
+  const yieldRate = Number(document.getElementById("dividendYield").value) / 100;
+  const dividendTax = Number(document.getElementById("dividendTax").value) / 100;
+  const fee = Number(document.getElementById("fee").value) / 100;
+  const inflation = Number(document.getElementById("inflation").value) / 100;
+  const reinvest = document.getElementById("drip").value === 'yes';
+  const targetText = document.getElementById('targetAmount').value.replace(/,/g, '').trim();
+  const target = targetText === '' ? null : Number(targetText);
+  if (![initial,monthly,rate,years,yieldRate,dividendTax,fee,inflation].every(Number.isFinite) || initial<0 || monthly<0 || initial>1e15 || monthly>1e15 || (target!==null && (!Number.isFinite(target) || target<=0 || target>1e15)) || rate<-.99 || rate>1 || !Number.isInteger(years) || years<1 || years>50 || yieldRate<0 || yieldRate>.3 || dividendTax<0 || dividendTax>1 || fee<0 || fee>.1 || inflation<0 || inflation>.2) {
+    document.getElementById('calcError').textContent='금액은 0~1,000조원(목표는 0 초과), 기간은 1~50년, 총수익률은 -99~100%, 배당률은 0~30%, 세율은 0~100%, 비용률은 0~10%, 물가상승률은 0~20%로 입력해 주세요.';
+    document.getElementById('resultCard').classList.remove('show');document.getElementById('detailsSection').hidden=true;
+    return false;
+  }
+  document.getElementById('calcError').textContent='';
 
-  const monthlyRate = rate / 12;
   const months = years * 12;
 
   let value = initial;
@@ -195,33 +225,50 @@ function calculate() {
   const values = [initial];
   const principals = [initial];
   let principal = initial;
+  let cash = 0, taxPaid = 0;
+  let targetMonth = target !== null && initial >= target ? 0 : null;
   const yearlyData = [];
 
   for (let m = 1; m <= months; m++) {
-    value = (value + monthly) * (1 + monthlyRate);
+    const invested = value + monthly;
+    const grossDividend = invested * yieldRate / 12;
+    const tax = grossDividend * dividendTax;
+    const netDividend = grossDividend - tax;
+    value = invested * (1 + (rate - yieldRate - fee) / 12) + (reinvest ? netDividend : 0);
+    if (!reinvest) cash += netDividend;
+    taxPaid += tax;
     principal += monthly;
+    if (target !== null && targetMonth === null && value + cash >= target) targetMonth = m;
     if (m % 12 === 0) {
       const yr = m / 12;
+      const total = value + cash;
       labels.push(yr + "년");
-      values.push(Math.round(value));
+      values.push(Math.round(total));
       principals.push(Math.round(principal));
       yearlyData.push({
         year: yr,
-        total: Math.round(value),
+        total: Math.round(total),
         principal: Math.round(principal),
-        profit: Math.round(value - principal),
-        roi: (((value / principal) - 1) * 100).toFixed(1),
+        profit: Math.round(total - principal),
+        roi: (principal ? ((total / principal) - 1) * 100 : 0).toFixed(1),
       });
     }
   }
 
-  const totalValue = Math.round(value);
+  const totalValue = Math.round(value + cash);
   const totalPrincipal = Math.round(principal);
   const totalProfit = totalValue - totalPrincipal;
 
   document.getElementById("totalValue").textContent = fmt(totalValue) + "원";
   document.getElementById("totalPrincipal").textContent = fmt(totalPrincipal) + "원";
-  document.getElementById("totalProfit").textContent = "+" + fmt(totalProfit) + "원";
+  document.getElementById("totalProfit").textContent = (totalProfit > 0 ? "+" : "") + fmt(totalProfit) + "원";
+  document.getElementById("totalProfit").style.color = totalProfit < 0 ? "#fb7185" : "#4ade80";
+  const realValue = totalValue / Math.pow(1 + inflation, years);
+  const exact = amount => Math.round(amount).toLocaleString('ko-KR')+'원';
+  document.getElementById('assumptions').textContent = `최종 자산 정확 금액 ${exact(totalValue)} (평가액 ${exact(value)} + 배당 현금 ${exact(cash)}), 누적 수익 ${exact(totalProfit)}. 예상 배당 원천징수 ${exact(taxPaid)}. 물가상승률 ${inflation * 100}% 가정 시 현재 가치 약 ${exact(realValue)}입니다.`;
+  const targetStatus=document.getElementById('targetStatus');
+  targetStatus.hidden=target===null;
+  if (target!==null) targetStatus.textContent=targetMonth===null ? `목표 ${exact(target)}에는 입력한 ${years}년 안에 도달하지 않았습니다.` : `목표 ${exact(target)}에 ${targetMonth===0?'시작 시점':`${targetMonth}개월차`}에 도달하는 가정입니다.`;
 
   const rc = document.getElementById("resultCard");
   rc.classList.add("show");
@@ -295,8 +342,8 @@ function buildTable(data) {
       <td>${r.year}년차</td>
       <td>${fmt(r.total)}원</td>
       <td>${fmt(r.principal)}원</td>
-      <td style="color:#4ade80">+${fmt(r.profit)}원</td>
-      <td style="color:#FACC15">+${r.roi}%</td>
+      <td style="color:${r.profit < 0 ? '#fb7185' : '#4ade80'}">${r.profit > 0 ? '+' : ''}${fmt(r.profit)}원</td>
+      <td style="color:#FACC15">${Number(r.roi) > 0 ? '+' : ''}${r.roi}%</td>
     </tr>`).join("")}
   `;
 }

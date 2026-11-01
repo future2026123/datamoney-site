@@ -38,13 +38,13 @@
   .breakdown { display: grid; gap: 10px; }
   .breakdown-row { display: flex; justify-content: space-between; align-items: center; background: #1e293b; border-radius: 8px; padding: 12px 16px; }
   .breakdown-row .blabel { color: #94A3B8; font-size: 13px; }
-  .breakdown-row .bvalue { font-size: 15px; font-weight: 600; }
+  .breakdown-row .bvalue { font-size: 15px; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
   .breakdown-row .bvalue.pos { color: #4ade80; }
   .breakdown-row .bvalue.neg { color: #f87171; }
   .tip { background: #1e3a8a; border-radius: 8px; padding: 16px; margin-top: 16px; }
   .tip h4 { color: var(--text); font-size: 14px; margin-bottom: 8px; }
   .tip ul { color: #93C5FD; font-size: 13px; line-height: 1.8; padding-left: 16px; }
-  @media (max-width:500px) { .row-2 { grid-template-columns: 1fr; } }
+  @media (max-width:500px) { .row-2 { grid-template-columns: 1fr; } .result-card { padding:16px; } .breakdown-row { gap:10px; padding:12px; } .breakdown-row .bvalue { font-size:14px; } }
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6705155374292160" crossorigin="anonymous"></script>
 <script src="/scripts/back-navigation.js?v=20261031-1" defer></script>
@@ -70,7 +70,7 @@
         </div>
       </div>
       <div class="field">
-        <label>소득 유형</label>
+        <label for="incomeType">소득 유형</label>
         <select id="incomeType">
           <option value="employee">근로소득 (직장인)</option>
           <option value="self">사업소득 (프리랜서/자영업)</option>
@@ -79,14 +79,14 @@
     </div>
     <div class="row-2">
       <div class="field">
-        <label>연금저축 납입액 (연간)</label>
+        <label for="pension">연금저축 납입액 (연간)</label>
         <div class="input-wrap">
           <input type="text" id="pension" value="6,000,000" inputmode="decimal" spellcheck="false" data-amount>
           <span class="unit">원</span>
         </div>
       </div>
       <div class="field">
-        <label>IRP 추가 납입액 (연간)</label>
+        <label for="irp">IRP 추가 납입액 (연간)</label>
         <div class="input-wrap">
           <input type="text" id="irp" value="3,000,000" inputmode="decimal" spellcheck="false" data-amount>
           <span class="unit">원</span>
@@ -94,13 +94,19 @@
       </div>
     </div>
     <div class="field">
-      <label>ISA 납입액 (연간)</label>
+      <label for="isa">ISA 만기 과세대상 순이익 (손실은 음수)</label>
       <div class="input-wrap">
-        <input type="text" id="isa" value="20,000,000" inputmode="decimal" spellcheck="false" data-amount>
+        <input type="text" id="isa" value="1,000,000" inputmode="decimal" spellcheck="false" data-amount>
         <span class="unit">원</span>
       </div>
+      <p style="color:var(--sub);font-size:12px;line-height:1.6;margin-top:6px">납입액이 아니라 계좌 만기 시 과세대상 상품의 수익과 손실을 합친 금액을 입력하세요. 국내 상장주식 등 원래 비과세인 소득은 제외합니다.</p>
     </div>
-    <button class="btn-calc" onclick="calculate(); if (typeof window.gtag === 'function') window.gtag('event', 'calculator_result', {calculator_type: 'tax'});">절세액 계산하기</button>
+    <div class="row-2">
+      <div class="field"><label for="isaType">ISA 유형</label><select id="isaType"><option value="general">일반형 (비과세 200만원)</option><option value="eligible">서민·농어민형 (요건 충족 시 400만원)</option></select></div>
+      <div class="field"><label for="taxAvailable">공제 가능한 소득세 잔액 (선택)</label><div class="input-wrap"><input type="text" id="taxAvailable" value="" placeholder="모르면 비워두세요" inputmode="decimal" spellcheck="false" data-amount><span class="unit">원</span></div><p style="color:var(--sub);font-size:12px;line-height:1.6;margin-top:6px">연금 세액공제에 실제 적용 가능한 국세 잔액입니다. 다른 공제를 반영한 금액을 입력하세요.</p></div>
+    </div>
+    <button class="btn-calc" onclick="if (calculate() !== false &amp;&amp; typeof window.gtag === 'function') window.gtag('event', 'calculator_result', {calculator_type: 'tax'});">절세액 계산하기</button>
+    <p id="calcError" role="alert" style="color:#dc2626;font-size:13px;margin-top:10px"></p>
   </div>
 
   <div class="result-card" id="resultCard">
@@ -111,7 +117,8 @@
     </div>
     <div class="breakdown" id="breakdown"></div>
     <div class="tip" id="tipBox"></div>
-    <p class="note" style="color:#94A3B8;font-size:12px;line-height:1.7;margin-top:14px">연금계좌 공제는 실제 납부할 세액과 다른 공제에 따라 달라질 수 있습니다. ISA는 입력한 납입액에 과세대상 수익률 5%를 적용한 일반형 비과세분 예시이며, 계좌 전체 손익과 가입기간에 따라 결과가 달라집니다.</p>
+    <p class="note" style="color:#94A3B8;font-size:12px;line-height:1.7;margin-top:14px">연금계좌 공제는 실제 소득세와 다른 공제에 따라 달라집니다. ISA 비교는 같은 과세대상 순이익에 일반계좌 15.4%, ISA 비과세 한도 초과분 9.9%를 적용한 단순 예시이며, 손익 구성·가입 요건·과세 방식에 따라 달라집니다.</p>
+    <p style="color:#b6c4d7;font-size:12px;line-height:1.7;margin-top:10px">제도 안내: <a style="color:#b6d4ff" href="https://image.kebhana.com/cont/download/documents/manual/0000005200007_20260213_m.pdf" target="_blank" rel="noopener noreferrer">하나은행 IRP 핵심설명서</a> · <a style="color:#b6d4ff" href="https://kbam.co.kr/insights/guide/etf-tax-saving-accounts-isa-pension-irp-guide" target="_blank" rel="noopener noreferrer">KB자산운용 절세계좌 안내</a></p>
   </div>
 
   <div id="detailsSection" hidden>
@@ -130,22 +137,6 @@
 <script>
 function fmt(n) { return Math.abs(n).toLocaleString() + "원"; }
 
-// 소득세율 (2024 기준)
-function calcTax(taxable) {
-  const brackets = [
-    [14000000, 0.06], [36000000, 0.15], [88000000, 0.24],
-    [150000000, 0.35], [300000000, 0.38], [500000000, 0.40],
-    [1000000000, 0.42], [Infinity, 0.45],
-  ];
-  let tax = 0, prev = 0;
-  for (const [limit, rate] of brackets) {
-    if (taxable <= prev) break;
-    tax += (Math.min(taxable, limit) - prev) * rate;
-    prev = limit;
-  }
-  return tax;
-}
-
 function updateIncomeLabel() {
   const selfEmployed = document.getElementById("incomeType").value === "self";
   document.getElementById("incomeLabel").textContent = selfEmployed ? "종합소득금액 (연간)" : "총급여 (연간)";
@@ -154,10 +145,18 @@ function updateIncomeLabel() {
 document.getElementById("incomeType").addEventListener("change", updateIncomeLabel);
 
 function calculate() {
-  const salary = Math.max(0, Number(document.getElementById("salary").value.replace(/,/g, "")) || 0);
-  const pensionInput = Math.max(0, Number(document.getElementById("pension").value.replace(/,/g, "")) || 0);
-  const irpInput = Math.max(0, Number(document.getElementById("irp").value.replace(/,/g, "")) || 0);
-  const isaInput = Math.max(0, Number(document.getElementById("isa").value.replace(/,/g, "")) || 0);
+  const salary = Number(document.getElementById("salary").value.replace(/,/g, ""));
+  const pensionInput = Number(document.getElementById("pension").value.replace(/,/g, ""));
+  const irpInput = Number(document.getElementById("irp").value.replace(/,/g, ""));
+  const isaInput = Number(document.getElementById("isa").value.replace(/,/g, ""));
+  const taxText = document.getElementById('taxAvailable').value.replace(/,/g, '').trim();
+  const taxAvailable = taxText === '' ? null : Number(taxText);
+  if (![salary,pensionInput,irpInput].every(value=>Number.isFinite(value)&&value>=0&&value<=1e15) || !Number.isFinite(isaInput) || Math.abs(isaInput)>1e15 || (taxAvailable!==null && (!Number.isFinite(taxAvailable) || taxAvailable<0 || taxAvailable>1e15))) {
+    document.getElementById('calcError').textContent='소득과 납입액은 0 이상 1,000조원 이하로 입력해 주세요. ISA 손실은 음수로 입력할 수 있습니다.';
+    document.getElementById('resultCard').classList.remove('show');document.getElementById('detailsSection').hidden=true;
+    return false;
+  }
+  document.getElementById('calcError').textContent='';
 
   const selfEmployed = document.getElementById("incomeType").value === "self";
   const threshold = selfEmployed ? 45000000 : 55000000;
@@ -169,24 +168,27 @@ function calculate() {
   const pensionCap = Math.min(6000000, pensionInput);
   const irpCap = Math.min(pensionIrpLimit - pensionCap, irpInput);
   const pensionIrpTotal = pensionCap + irpCap;
-  const pensionTaxCredit = Math.round(pensionIrpTotal * taxRate);
+  const maximumCredit = pensionIrpTotal * taxRate;
+  const pensionTaxCredit = Math.round(taxAvailable===null ? maximumCredit : Math.min(maximumCredit,taxAvailable*1.1));
 
-  // ISA 비과세 혜택 (일반형: 200만, 서민형: 400만)
-  const isaNonTaxLimit = 2000000;
-  const isaRoi = isaInput * 0.05; // 5% 예상 수익 가정
-  const isaExempt = Math.min(isaRoi, isaNonTaxLimit);
-  const isaTaxSaving = Math.round(isaExempt * 0.154); // 배당소득세 15.4%
+  const isaEligible = document.getElementById('isaType').value === 'eligible';
+  const isaNonTaxLimit = isaEligible ? 4000000 : 2000000;
+  const taxableProfit = Math.max(0,isaInput);
+  const ordinaryTax = Math.round(taxableProfit * 0.154);
+  const isaTax = Math.round(Math.max(0,taxableProfit-isaNonTaxLimit) * 0.099);
+  const isaTaxSaving = ordinaryTax - isaTax;
 
   document.getElementById("totalSaving").textContent = fmt(pensionTaxCredit);
   document.getElementById("savingNote").textContent =
-    `ISA 일반형 비과세 예시 ${fmt(isaTaxSaving)}은 별도이며 계좌 만기 기준입니다.`;
+    `ISA 만기 비교 예시 ${fmt(isaTaxSaving)}은 별도입니다. ${taxAvailable===null?'연금 공제는 실제 세액을 고려하지 않은 최대 추정치입니다.':'입력한 소득세 잔액에 지방소득세를 더한 한도를 반영했습니다.'}`;
 
   const rows = [
     { label: "연금저축 공제대상 납입액", value: fmt(pensionCap), cls: "" },
     { label: "IRP 공제대상 납입액", value: fmt(irpCap), cls: "" },
     { label: `세액공제율 (${selfEmployed ? "종합소득금액 4,500만" : "총급여 5,500만"} ${highIncome ? "초과" : "이하"}, 지방소득세 포함)`, value: (taxRate * 100).toFixed(1) + "%", cls: "" },
-    { label: "연금저축·IRP 세액공제", value: fmt(pensionTaxCredit), cls: "pos" },
-    { label: "ISA 일반형 비과세분 절세 예시 (만기 시)", value: fmt(isaTaxSaving), cls: "pos" },
+    { label: "연금저축·IRP 세액공제 추정", value: fmt(pensionTaxCredit), cls: "pos" },
+    { label: `ISA ${isaEligible?'서민·농어민형':'일반형'} 예상 세금 (만기 시)`, value: fmt(isaTax), cls: "" },
+    { label: "일반계좌와 비교한 ISA 절세 예시", value: fmt(isaTaxSaving), cls: "pos" },
   ];
 
   document.getElementById("breakdown").innerHTML = rows.map(r =>
@@ -198,11 +200,13 @@ function calculate() {
 
   const tips = [];
   const remainingLimit = Math.max(0, pensionIrpLimit - pensionIrpTotal);
-  if (pensionCap < 6000000 && remainingLimit > 0) {
+  const roomInTax = taxAvailable===null || taxAvailable*1.1 > maximumCredit;
+  if (roomInTax && pensionCap < 6000000 && remainingLimit > 0) {
     tips.push(`연금저축을 ${fmt(Math.min(6000000 - pensionCap, remainingLimit))} 더 납입하면 추가 세액공제 가능`);
   }
-  if (remainingLimit > 0) tips.push(`IRP를 ${fmt(remainingLimit)} 더 납입하면 최대 공제 한도에 도달할 수 있습니다.`);
-  if (isaInput < 20000000) tips.push("ISA는 연 2,000만원 납입 가능하며 미사용 한도는 이월할 수 있습니다. 의무가입기간은 3년입니다.");
+  if (roomInTax && remainingLimit > 0) tips.push(`IRP를 ${fmt(remainingLimit)} 더 납입하면 공제대상 납입 한도에 도달할 수 있습니다. 실제 공제액은 소득세 잔액에 따라 달라집니다.`);
+  if (!roomInTax && remainingLimit > 0) tips.push('입력한 소득세 잔액에 도달해 추가 납입분의 세액공제를 적용하지 않았습니다.');
+  if (pensionInput+irpInput>18000000) tips.push("입력한 연간 납입액 합계가 기본 납입한도 1,800만원을 넘습니다. ISA 만기자금 이전 등 별도 한도 적용 여부를 확인하세요.");
   document.getElementById("tipBox").innerHTML = tips.length
     ? `<h4>💡 절세 추가 팁</h4><ul>${tips.map(t => `<li>${t}</li>`).join("")}</ul>`
     : "";

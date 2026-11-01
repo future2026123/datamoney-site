@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {createRequire} from 'node:module';
+const require=createRequire(new URL('../workers/package.json',import.meta.url));
+const {JSDOM}=require('jsdom');
+const html=await readFile(new URL('../tools/index.html',import.meta.url),'utf8');
+const script=await readFile(new URL('../scripts/tools-embed.js',import.meta.url),'utf8');
+const tick=()=>new Promise(resolve=>setTimeout(resolve,40));
+for (const [path,id] of [['/tools/investor-type/','investor-type'],['/tools/etf_calculator/','etf'],['/tools/tax_simulator/','tax'],['/tools/dividend_calculator/','dividend']]) {
+  const dom=new JSDOM(html,{url:'https://datamoney.kr/tools/',runScripts:'outside-only'});
+  const w=dom.window;w.scrollTo=()=>{};w.eval(script);
+  const d=w.document, card=d.querySelector(`.grid a[href="${path}"]`);
+  card.dispatchEvent(new w.MouseEvent('click',{bubbles:true,cancelable:true,button:0}));
+  assert.equal(new URL(w.location.href).searchParams.get('tool'),id);
+  assert.equal(d.querySelector('.dm-tool-embed').hidden,false);
+  assert.ok([...d.querySelectorAll('[data-tool-list]')].every(e=>e.hidden));
+  assert.equal(d.querySelector('iframe').getAttribute('src'),path+'?embed=1&context=tools');
+  assert.ok(d.querySelector('header .logo'),'the original navigation stays visible');
+  d.querySelector('[data-tool-close]').click(); await tick();
+  assert.equal(d.querySelector('.dm-tool-embed').hidden,true);
+  assert.equal(new URL(w.location.href).searchParams.has('tool'),false);
+  dom.window.close();
+}
+const direct=new JSDOM(html,{url:'https://datamoney.kr/tools/?tool=etf',runScripts:'outside-only'});
+direct.window.scrollTo=()=>{};direct.window.eval(script);
+assert.equal(direct.window.document.querySelector('.dm-tool-embed').hidden,false,'reload restores the selected tool');
+direct.window.document.querySelector('[data-tool-close]').click();
+assert.equal(direct.window.location.search,'');
+direct.window.close();
+console.log('All tools open within the existing shell; back and reload work');

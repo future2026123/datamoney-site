@@ -7,6 +7,19 @@
 /tools/*
   Cache-Control: public, max-age=3600
 
+# Revalidate the tool pages so updated calculators and their assumptions appear promptly.
+/tools/
+  Cache-Control: no-cache
+
+/tools/etf_calculator/
+  Cache-Control: no-cache
+
+/tools/tax_simulator/
+  Cache-Control: no-cache
+
+/tools/dividend_calculator/
+  Cache-Control: no-cache
+
 # Revalidate the test document so updated characters appear promptly.
 /tools/investor-type/
   Cache-Control: no-cache

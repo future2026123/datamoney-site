@@ -39,7 +39,10 @@ jobs:
           node tests/google-admin-ui.mjs
 
       - name: Test keyboard back navigation
-        run: node tests/back-navigation.mjs
+        run: |
+          node tests/back-navigation.mjs
+          node tests/tools-embed.mjs
+          node tests/calculators.mjs
 
       - name: Test investor survey
         run: |

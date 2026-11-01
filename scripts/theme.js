@@ -4,6 +4,9 @@
   const key = 'datamoney-color-mode';
   const valid = value => ['system', 'light', 'dark'].includes(value) ? value : 'system';
   const root = document.documentElement;
+  const embedParams = new URLSearchParams(location.search);
+  if (embedParams.get('embed') === '1') root.classList.add('dm-embedded');
+  if (embedParams.get('embed') === '1' && embedParams.get('context') === 'tools') root.classList.add('dm-tools-embedded');
   const media = typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-color-scheme: dark)') : null;
   let preference = 'system';
   try { preference = valid(window.localStorage.getItem(key)); } catch (_) {}
