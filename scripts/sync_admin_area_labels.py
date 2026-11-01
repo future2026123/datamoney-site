@@ -18,13 +18,17 @@ def render(source, version):
     return source[:end.start()] + block + source[end.start():]
 
 
+def should_include(rel):
+    return not rel.startswith(('account/', 'templates/', 'preview/')) and not rel.endswith('/embed.html')
+
+
 def main():
     asset = ROOT / 'scripts' / 'admin-area-labels.js'
     version = hashlib.sha256(asset.read_bytes().replace(b'\r\n', b'\n')).hexdigest()[:8]
     changed = 0
     for path in site_pages():
         rel = path.relative_to(ROOT).as_posix()
-        if rel.startswith(('account/', 'comment-admin/', 'templates/', 'preview/')) or rel.endswith('/embed.html'):
+        if not should_include(rel):
             continue
         original = path.read_text(encoding='utf-8')
         updated = render(original, version)

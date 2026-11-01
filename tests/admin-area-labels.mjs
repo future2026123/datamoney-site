@@ -28,4 +28,13 @@ button.click();assert.equal(captured.querySelectorAll('.mark').length,0,'switch 
 button.click();await tick();authenticated=false;w.dispatchEvent(new w.Event('pageshow'));await tick();assert.equal(w.document.getElementById('dm-admin-area-inspector'),null,'an expired or signed-out session removes the inspector');
 w.close();
 const failed=new JSDOM(html,{url:'https://datamoney.kr/',runScripts:'outside-only'});failed.window.fetch=async()=>{throw new Error('offline');};failed.window.localStorage.setItem('dm-admin-section-labels','on');failed.window.eval(script);await tick();assert.equal(failed.window.document.getElementById('dm-admin-area-inspector'),null,'unavailable auth fails closed');failed.window.close();
+const adminPage=new JSDOM('<!doctype html><body><button id="admin-inspector-toggle" hidden></button></body>',{url:'https://datamoney.kr/comment-admin/',runScripts:'outside-only',pretendToBeVisual:true});
+const aw=adminPage.window, inline=aw.document.getElementById('admin-inspector-toggle');let loggedIn=false;
+aw.fetch=async()=>({ok:true,json:async()=>({authenticated:loggedIn})});aw.eval(script);await tick();
+assert.equal(inline.hidden,true,'the management-page switch is hidden before authentication');
+loggedIn=true;aw.dispatchEvent(new aw.Event('dm-admin-session-change'));await tick();
+assert.equal(inline.hidden,false,'Google login makes the management-page switch available immediately');
+inline.click();assert.equal(inline.getAttribute('aria-pressed'),'true');assert.equal(aw.localStorage.getItem('dm-admin-section-labels'),'on');
+inline.click();assert.equal(inline.getAttribute('aria-pressed'),'false');
+loggedIn=false;aw.dispatchEvent(new aw.Event('dm-admin-session-change'));await tick();assert.equal(inline.hidden,true,'sign-out hides the management-page switch');aw.close();
 console.log('Area labels: admin session gate, on/off, selectors, persistence and expiry passed');
