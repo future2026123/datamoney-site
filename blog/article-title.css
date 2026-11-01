@@ -81,7 +81,7 @@
 
 :is(.article, article:has(> .dm-article-heading), main.dm-article-page,
     .dm-article-page .content-grid main, article.dm-post)
-    h2:not(.dm-original-sidebar h2, .dm-comments h2) {
+    h2:not(.dm-original-sidebar h2, .dm-comments h2, .dm-related-posts h2) {
   color: #12284a !important;
   font-size: 26px;
   font-weight: 700;

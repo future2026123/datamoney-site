@@ -9,7 +9,7 @@ class Element {
 }
 const source = await readFile(new URL('../blog/related-articles.js', import.meta.url), 'utf8');
 const sidebarSource = await readFile(new URL('../scripts/blog-tags.js', import.meta.url), 'utf8');
-const make = (path, title, primary_tags, tags = primary_tags) => ({path, title, primary_tags, tags});
+const make = (path, title, primary_tags, tags = primary_tags) => ({path, title, primary_tags, tags, thumbnail: '/blog/thumbnails/example.jpg', card_title: title});
 const current = make('/blog/current/', '월배당 ETF', ['ETF', '월배당 ETF', '분배금']);
 const direct = make('/blog/direct/', '커버드콜 분배금', ['커버드콜', '분배금']);
 const broad = make('/blog/broad/', '반도체 ETF', ['ETF']);
@@ -34,7 +34,11 @@ const aside = result[0];
 assert.equal(aside.tag, 'aside', 'the narration and search index skip the recommendation section');
 assert.equal(aside.children[0].textContent, '함께 읽으면 좋은 글');
 const links = aside.children[1].children.map((li) => li.children[0]);
-assert.equal(links.length, 4, 'show at most four');
+assert.equal(links.length, 3, 'show at most three');
+assert.equal(links[0].children[0].tag, 'img');
+assert.equal(links[0].children[0].src, '/blog/thumbnails/example.jpg');
+assert.equal(links[0].children[0].alt, '', 'the link title supplies the accessible name');
+assert.equal(links[0].children[0].loading, 'lazy');
 assert.ok(links.some((link) => link.href === '/blog/direct/'));
 assert.ok(!links.some((link) => ['/blog/current/', '/blog/broad/', '/blog/legacy/', 'https://example.com/'].includes(link.href)),
   'exclude current article, generic-only overlap, legacy keywords and external links');
@@ -48,6 +52,8 @@ const titleMatch = await render('/blog/loan/', [make('/blog/loan/', '대출', ['
   make('/blog/deposit/', '파킹통장 금리 비교', ['예금'])]);
 assert.equal(titleMatch[0].children[1].children[0].children[0].href, '/blog/deposit/', 'a meaningful tag can match another article title');
 assert.equal((await render('/blog/current/', [current, broad, legacy])).length, 0, 'hide the section when no meaningful match exists');
+assert.equal((await render('/blog/current/', [current, {...direct, thumbnail: ''}])).length, 0, 'skip related posts without a thumbnail');
+assert.equal((await render('/blog/current/', [current, {...direct, thumbnail: 'https://example.com/img.jpg'}])).length, 0, 'do not load unrelated external images');
 assert.equal((await render('/blog/current/', articles, false)).length, 0, 'do not affect the article when the index is unavailable');
 let fetchCount = 0;
 const inserted = [], tagCard = new Element(), tagContent = new Element();

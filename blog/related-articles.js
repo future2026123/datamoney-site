@@ -19,6 +19,8 @@
     ? article.primary_tags : Array.isArray(article.tags) ? article.tags : []).map(normalize).filter(Boolean));
   const intersects = (tags, candidates) => [...tags].some((tag) => candidates.has(tag));
   const canonicalPath = (path) => path.replace(/\/?$/, '/');
+  const hasThumbnail = (article) => typeof article.thumbnail === 'string' &&
+    /^\/blog\/thumbnails\/[a-z0-9._~%-]+\.(?:png|jpe?g|webp|avif|gif)(?:\?[^#]*)?$/i.test(article.thumbnail);
 
   const index = globalThis.dmBlogTagsIndex || (globalThis.dmBlogTagsIndex = fetch('/blog/tags-index.json')
     .then((response) => {
@@ -58,10 +60,10 @@
         });
         return {article, order, score};
       }).filter(({article, score}) => {
-        if (!score || seen.has(article.path)) return false;
+        if (!score || seen.has(article.path) || !hasThumbnail(article)) return false;
         seen.add(article.path);
         return true;
-      }).sort((a, b) => b.score - a.score || a.order - b.order).slice(0, 4);
+      }).sort((a, b) => b.score - a.score || a.order - b.order).slice(0, 3);
       if (!ranked.length) return;
 
       const section = document.createElement('aside');
@@ -75,13 +77,18 @@
         const item = document.createElement('li');
         const link = document.createElement('a');
         link.href = article.path;
+        const image = document.createElement('img');
+        image.className = 'dm-related-thumb';
+        image.src = article.thumbnail;
+        image.alt = '';
+        image.width = 320;
+        image.height = 180;
+        image.loading = 'lazy';
+        image.decoding = 'async';
         const label = document.createElement('span');
-        label.textContent = article.title;
-        const arrow = document.createElement('span');
-        arrow.className = 'dm-related-arrow';
-        arrow.setAttribute('aria-hidden', 'true');
-        arrow.textContent = '→';
-        link.append(label, arrow);
+        label.className = 'dm-related-title';
+        label.textContent = typeof article.card_title === 'string' && article.card_title.trim() ? article.card_title : article.title;
+        link.append(image, label);
         item.append(link);
         list.append(item);
       });

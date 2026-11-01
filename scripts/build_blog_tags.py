@@ -59,11 +59,33 @@ class HomeOrder(HTMLParser):
     def __init__(self):
         super().__init__()
         self.paths = []
+        self.thumbnails = {}
+        self.titles = {}
+        self.current_path = None
+        self.in_title = False
+        self.title_parts = []
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
         if tag == "a" and "post-card" in attrs.get("class", "").split():
-            self.paths.append(attrs.get("href", ""))
+            self.current_path = attrs.get("href", "")
+            self.paths.append(self.current_path)
+        elif self.current_path and tag == "img" and attrs.get("src"):
+            self.thumbnails.setdefault(self.current_path, attrs["src"])
+        elif self.current_path and tag == "h3":
+            self.in_title = True
+            self.title_parts = []
+
+    def handle_data(self, data):
+        if self.in_title:
+            self.title_parts.append(data)
+
+    def handle_endtag(self, tag):
+        if tag == "h3" and self.in_title:
+            self.in_title = False
+            self.titles[self.current_path] = re.sub(r"\s+", " ", "".join(self.title_parts)).strip()
+        elif tag == "a" and self.current_path:
+            self.current_path = None
 
 
 def build_index(root=ROOT):
@@ -99,9 +121,12 @@ def build_index(root=ROOT):
                 if value and "{{" not in value and key not in primary_seen:
                     primary_seen.add(key)
                     primary.append(labels.get(key, value))
-            articles.append({"path": f"/blog/{path.parent.name}/", "title": title,
+            article_path = f"/blog/{path.parent.name}/"
+            articles.append({"path": article_path, "title": title,
                              "description": metadata.description.strip(), "tags": tags,
-                             "primary_tags": primary or tags})
+                             "primary_tags": primary or tags,
+                             "thumbnail": home.thumbnails.get(article_path, ""),
+                             "card_title": home.titles.get(article_path) or title})
         else:
             print(f"No tags yet: {path.relative_to(root)}")
     articles.sort(key=lambda article: (order.get(article["path"], len(order)), article["path"]))
