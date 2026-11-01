@@ -23,7 +23,9 @@ for (let code=0; code<8; code++) {
   await new Promise(resolve=>setTimeout(resolve,0));
   const doc=w.document;
   assert.equal(doc.getElementById('saved').hidden,false);
-  assert.ok(doc.getElementById('report-title').textContent.includes(expected[code]));
+  assert.equal(doc.getElementById('saved-name').textContent,expected[code]);
+  assert.equal(doc.getElementById('report-title').textContent,expected[code]);
+  assert.ok(!doc.getElementById('saved-tag').textContent.includes(expected[code]),'the type should not be repeated in the tagline');
   titles.add(doc.getElementById('report-title').textContent);
   for(const id of ['pattern','strength','blind','scenario','mood']) assert.ok(doc.getElementById('report-'+id).textContent.length>30,id);
   assert.equal(doc.querySelectorAll('#report-questions li').length,3);

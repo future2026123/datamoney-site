@@ -12,12 +12,12 @@ const base='https://datamoney.kr/api/article-engagement';
 const originalFetch=globalThis.fetch;
 let sent=[],sendOK=true,assetMode='valid';
 globalThis.fetch=async (url,options)=>{
-  const match=String(url).match(/^https:\/\/datamoney-tools\.pages\.dev\/tools\/investor-type\/result-cards\/20261101\/([0-7])\.png$/);
+  const match=String(url).match(/^https:\/\/datamoney-tools\.pages\.dev\/tools\/investor-type\/result-cards\/20261101-names\/([0-7])\.png$/);
   if(match){
     assert.equal(options.headers['User-Agent'],'DataMoney-Result-Email/1.0');
     if(assetMode==='missing') return new Response('missing',{status:404});
     if(assetMode==='invalid') return new Response('not a PNG',{status:200,headers:{'content-type':'image/png'}});
-    const image=await readFile(new URL(`../tools/investor-type/result-cards/20261101/${match[1]}.png`,import.meta.url));
+    const image=await readFile(new URL(`../tools/investor-type/result-cards/20261101-names/${match[1]}.png`,import.meta.url));
     return new Response(image,{status:200,headers:{'content-type':'image/png','content-length':String(image.length)}});
   }
   assert.equal(url,'https://api.resend.com/emails');
@@ -36,14 +36,14 @@ assert.equal((await call('/_email/request',{body:{...input,email:'bad\n@example.
 assert.equal((await call('/_email/request',{body:input})).status,200);
 assert.equal(sent.length,1);
 assert.deepEqual(sent[0].to,['reader@example.com']);
-assert.ok(sent[0].text.includes('살펴보는 부엉이 (뇌지컬형)'));
+assert.ok(sent[0].text.includes('나의 투자 성향 결과: 뇌지컬형'));
 assert.match(sent[0].subject, /상세 리포트/);
 assert.match(sent[0].text, /무료 상세 리포트/);
 assert.match(sent[0].html, /무료 상세 리포트 열기/);
 assert.equal(sent[0].attachments[0].filename,'datamoney-investor-result.png');
 assert.equal(sent[0].attachments[0].content_type,'image/png');
-assert.deepEqual(Buffer.from(sent[0].attachments[0].content,'base64'),await readFile(new URL('../tools/investor-type/result-cards/20261101/5.png',import.meta.url)));
-assert.ok(sent[0].html.includes('src="https://datamoney.kr/tools/investor-type/result-cards/20261101/5.png"'));
+assert.deepEqual(Buffer.from(sent[0].attachments[0].content,'base64'),await readFile(new URL('../tools/investor-type/result-cards/20261101-names/5.png',import.meta.url)));
+assert.ok(sent[0].html.includes('src="https://datamoney.kr/tools/investor-type/result-cards/20261101-names/5.png"'));
 const token=sent[0].text.match(/\/account\/result\/#([a-f0-9]{64})/)[1];
 const row=db.prepare('SELECT * FROM email_results').get();
 assert.notEqual(row.token_hash,token,'the emailed bearer token must not be stored in plaintext');
@@ -82,14 +82,17 @@ assert.equal((await call('/_email/request',{body:{...input,email:'bad-image@exam
 assert.equal(sent.length,beforeMissing,'an invalid image must never result in an incomplete email');
 assetMode='valid';
 const hashes=new Set();
+const typeNames=['존버형','짠테크형','촉형','포모형','알빠롱형','뇌지컬형','줍줍형','야수형'];
 for(let code=0;code<8;code++){
-  const bytes=await readFile(new URL(`../tools/investor-type/result-cards/20261101/${code}.png`,import.meta.url));
+  const bytes=await readFile(new URL(`../tools/investor-type/result-cards/20261101-names/${code}.png`,import.meta.url));
   assert.equal(bytes.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
   assert.equal(bytes.readUInt32BE(16),1080);assert.equal(bytes.readUInt32BE(20),1350);
   hashes.add(createHash('sha256').update(bytes).digest('hex'));
   const result=await call('/_email/request',{body:{...input,email:`card${code}@example.com`,typeCode:code,cardUrl:'https://attacker.example/file'},headers:{'cf-connecting-ip':`192.0.2.${20+code}`}});
   assert.equal(result.status,200);
-  const expected=`https://datamoney.kr/tools/investor-type/result-cards/20261101/${code}.png`;
+  const expected=`https://datamoney.kr/tools/investor-type/result-cards/20261101-names/${code}.png`;
+  assert.ok(sent.at(-1).text.includes(`나의 투자 성향 결과: ${typeNames[code]}\n`));
+  assert.ok(sent.at(-1).html.includes(`<strong>${typeNames[code]}</strong>`));
   assert.deepEqual(Buffer.from(sent.at(-1).attachments[0].content,'base64'),bytes,'attachment must match the displayed card');
   assert.ok(!('path' in sent.at(-1).attachments[0]),'attachment content cannot be a client-provided URL');
   assert.ok(sent.at(-1).html.includes(`src="${expected}"`));
@@ -97,7 +100,7 @@ for(let code=0;code<8;code++){
   const reportResult=await call('/_email/open',{body:{token:reportToken}});
   assert.equal(reportResult.status,200);
   assert.equal(reportResult.data.result.typeCode,code);
-  assert.ok(reportResult.data.report.name.includes(['존버형','짠테크형','촉형','포모형','알빠롱형','뇌지컬형','줍줍형','야수형'][code]));
+  assert.equal(reportResult.data.report.name,typeNames[code]);
 }
 assert.equal(hashes.size,8,'all eight result cards must be distinct');
 globalThis.fetch=originalFetch;

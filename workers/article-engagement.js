@@ -9,19 +9,14 @@ const SURVEY_AGGREGATE_PATH = '/api/article-engagement/_survey-aggregate';
 const SURVEY_ADMIN_PATH = '/api/article-engagement/_admin/survey';
 const EMAIL_PATH = '/api/article-engagement/_email/';
 const EMAIL_ADMIN_PATH = '/api/article-engagement/_admin/email-subscribers';
-const EMAIL_RESULT_CARD_BASE = 'https://datamoney.kr/tools/investor-type/result-cards/20261101/';
-const EMAIL_RESULT_CARD_ASSET_BASE = 'https://datamoney-tools.pages.dev/tools/investor-type/result-cards/20261101/';
+const EMAIL_RESULT_CARD_BASE = 'https://datamoney.kr/tools/investor-type/result-cards/20261101-names/';
+const EMAIL_RESULT_CARD_ASSET_BASE = 'https://datamoney-tools.pages.dev/tools/investor-type/result-cards/20261101-names/';
 const FEEDBACK_ADMIN_PATH = '/api/article-engagement/_admin/feedback';
 const FEEDBACK_ADMIN_ROUTE = /^\/api\/article-engagement\/_admin\/feedback(?:\/([1-9]\d*))?\/?$/;
 const INQUIRY_PATH = '/api/article-engagement/_inquiry';
 const INQUIRY_ADMIN_PATH = '/api/article-engagement/_admin/inquiries';
 const INQUIRY_ADMIN_ROUTE = /^\/api\/article-engagement\/_admin\/inquiries(?:\/([1-9]\d*))?\/?$/;
-const EMAIL_TYPES = [
-  {name:'차근차근 거북이',short:'존버형'}, {name:'꼼꼼한 다람쥐',short:'짠테크형'},
-  {name:'감각적인 고양이',short:'촉형'}, {name:'귀 쫑긋 토끼',short:'포모형'},
-  {name:'소신 있는 늑대',short:'알빠롱형'}, {name:'살펴보는 부엉이',short:'뇌지컬형'},
-  {name:'눈치 빠른 여우',short:'줍줍형'}, {name:'도전하는 사자',short:'야수형'}
-];
+const EMAIL_TYPES = ['존버형','짠테크형','촉형','포모형','알빠롱형','뇌지컬형','줍줍형','야수형'];
 const EMAIL_ANXIETY = ['거의 없음','가끔 신경 쓰임','자주 걱정됨','일상에 영향'];
 const EMAIL_REACTION = ['거의 없음','가끔 생각남','자주 생각남','당장 팔고 싶음'];
 async function emailTokenHash(token) {
@@ -557,11 +552,11 @@ export class ArticleEngagement {
       // The numeric, validated type selects the same fixed card used by the
       // share button. Clients cannot supply an arbitrary attachment URL.
       const cardUrl=EMAIL_RESULT_CARD_BASE+input.typeCode+'.png';
-      const body='안녕하세요. 데이터머니입니다.\n\n나의 투자 성향 결과: '+type.name+' ('+type.short+')\n최근 불안감: '+anxiety+'\n최근 매도 충동: '+reaction+'\n\n나의 결과 공유 이미지를 파일로 첨부했습니다.\n\n아래 링크에서 이메일을 확인하고 내 유형의 무료 상세 리포트를 열어 보세요. 판단 습관, 강점과 주의점, 실천 질문을 담았으며 PDF로 저장할 수 있습니다. 다음 검사 결과와도 비교할 수 있습니다.\n'+link+'\n\n이 링크는 본인만 보관해 주세요. 확인 전에는 선택한 소식 수신이 시작되지 않습니다. 요청하지 않으셨다면 이 메일을 무시해 주세요.\n\n문의: sys247365@gmail.com\n데이터머니 https://datamoney.kr';
+      const body='안녕하세요. 데이터머니입니다.\n\n나의 투자 성향 결과: '+type+'\n최근 불안감: '+anxiety+'\n최근 매도 충동: '+reaction+'\n\n나의 결과 공유 이미지를 파일로 첨부했습니다.\n\n아래 링크에서 이메일을 확인하고 내 유형의 무료 상세 리포트를 열어 보세요. 판단 습관, 강점과 주의점, 실천 질문을 담았으며 PDF로 저장할 수 있습니다. 다음 검사 결과와도 비교할 수 있습니다.\n'+link+'\n\n이 링크는 본인만 보관해 주세요. 확인 전에는 선택한 소식 수신이 시작되지 않습니다. 요청하지 않으셨다면 이 메일을 무시해 주세요.\n\n문의: sys247365@gmail.com\n데이터머니 https://datamoney.kr';
       const html='<!doctype html><html lang="ko"><body style="font-family:Arial,sans-serif;color:#182338;line-height:1.6">'+
-        '<p>안녕하세요. 데이터머니입니다.</p><p>나의 투자 성향 결과: <strong>'+type.name+' ('+type.short+')</strong><br>'+
+        '<p>안녕하세요. 데이터머니입니다.</p><p>나의 투자 성향 결과: <strong>'+type+'</strong><br>'+
         '최근 불안감: '+anxiety+'<br>최근 매도 충동: '+reaction+'</p>'+
-        '<p>나의 결과 공유 이미지를 파일로 첨부했습니다.</p><p><img src="'+cardUrl+'" alt="'+type.name+' 투자 캐릭터 결과 카드" width="480" style="display:block;width:100%;max-width:480px;height:auto"></p>'+
+        '<p>나의 결과 공유 이미지를 파일로 첨부했습니다.</p><p><img src="'+cardUrl+'" alt="'+type+' 투자 캐릭터 결과 카드" width="480" style="display:block;width:100%;max-width:480px;height:auto"></p>'+
         '<p>내 유형의 판단 습관, 강점과 주의점, 실천 질문을 담은 무료 상세 리포트입니다. 열어서 인쇄하거나 PDF로 저장할 수 있습니다.</p><p><a href="'+link+'">무료 상세 리포트 열기</a></p>'+
         '<p>다음 검사 결과와도 비교할 수 있습니다. 이 링크는 본인만 보관해 주세요. 확인 전에는 선택한 소식 수신이 시작되지 않습니다. 요청하지 않으셨다면 이 메일을 무시해 주세요.</p>'+
         '<p>문의: sys247365@gmail.com<br>데이터머니 <a href="https://datamoney.kr">datamoney.kr</a></p></body></html>';

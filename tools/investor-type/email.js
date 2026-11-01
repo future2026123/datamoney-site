@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const $=id=>document.getElementById(id);
-  const types=['차근차근 거북이','꼼꼼한 다람쥐','감각적인 고양이','귀 쫑긋 토끼','소신 있는 늑대','살펴보는 부엉이','눈치 빠른 여우','도전하는 사자'];
+  const types=['존버형','짠테크형','촉형','포모형','알빠롱형','뇌지컬형','줍줍형','야수형'];
   const anxieties=['거의 없음','가끔 신경 쓰임','자주 걱정됨','일상에 영향'];
   const reactions=['거의 없음','가끔 생각남','자주 생각남','당장 팔고 싶음'];
   let current=null;

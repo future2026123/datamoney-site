@@ -14,17 +14,17 @@
   // The three baseline choices encode risk, approach and social preference, in that order.
   // Bounds include each animal and its matching label on the supplied, unmodified 1448×1086 sheet.
   const types = [
-    {name:'차근차근 거북이',short:'존버형',art:[721,0,360,525],tag:'내 속도대로 오래 살펴보는 편',description:'흔들리는 순간에도 속도를 조절하며 스스로 세운 기준을 살펴보려 해요.',strength:'변동이 있어도 차분하게 자료와 계획을 확인할 수 있어요.',caution:'기다리는 동안에도 처음 세운 조건이 여전히 맞는지 확인해 보세요.'},
-    {name:'꼼꼼한 다람쥐',short:'짠테크형',art:[0,525,380,561],tag:'여유를 챙기고 의견도 들어보는 편',description:'한 번에 큰 위험을 지기보다 준비하고 비교하며 마음의 여유를 확보하려 해요.',strength:'현금 여유와 위험을 살피고 다른 사람의 시각도 참고해요.',caution:'다른 사람의 안정 기준이 내 상황과 같은지 생각해 보세요.'},
-    {name:'감각적인 고양이',short:'촉형',art:[1090,525,358,561],clip:[[1105,525],[1448,525],[1448,1086],[1090,1086],[1090,900],[1105,900]],tag:'내 감각과 편안함을 중요하게 생각하는 편',description:'스스로 느끼는 흐름과 마음의 안정감을 바탕으로 선택하려 해요.',strength:'주변의 소음에 휩쓸리기보다 내 느낌을 살펴볼 수 있어요.',caution:'직감으로 떠오른 생각도 거래 전 자료와 함께 확인해 보세요.'},
-    {name:'귀 쫑긋 토끼',short:'포모형',art:[380,525,348,561],tag:'사람들의 이야기에 귀가 먼저 가는 편',description:'시장 소식과 주변 반응을 빠르게 알아차리고, 그 속에서 내 선택을 고민해요.',strength:'새로운 이야기와 시장 분위기를 빠르게 접할 수 있어요.',caution:'많이 들리는 이야기와 내게 필요한 결정이 같은지는 따로 살펴보세요.'},
-    {name:'소신 있는 늑대',short:'알빠롱형',art:[728,525,377,561],clip:[[728,525],[1105,525],[1105,900],[1090,900],[1090,1086],[728,1086]],tag:'내가 납득한 기회를 직접 고르는 편',description:'새로운 기회도 살펴보되, 스스로 분석하고 판단하려는 모습이 보여요.',strength:'남의 결론을 그대로 따르기보다 내 기준을 세우려 해요.',caution:'확신이 생긴 뒤에도 반대 근거를 한 번 더 찾아보세요.'},
-    {name:'살펴보는 부엉이',short:'뇌지컬형',art:[374,0,347,525],tag:'기회를 찾아 자료와 의견을 모으는 편',description:'가능성을 살피면서 숫자와 다양한 의견을 함께 비교하려 해요.',strength:'결정을 내리기 전에 여러 자료와 관점을 살펴볼 수 있어요.',caution:'정보가 많아도 내 목적에 필요한 기준은 따로 정해 두세요.'},
-    {name:'눈치 빠른 여우',short:'줍줍형',art:[1081,0,367,525],tag:'흐름 속에서 가능성을 먼저 보는 편',description:'변화가 생기면 나만의 감각으로 기회를 찾아보려는 모습이 보여요.',strength:'새로운 상황에서 선택지를 빠르게 발견할 수 있어요.',caution:'기회가 매력적으로 보여도 손실 가능성과 자금 계획을 확인해요.'},
-    {name:'도전하는 사자',short:'야수형',art:[0,0,374,525],tag:'새로운 기회를 보면 마음이 움직이는 편',description:'시장 변화와 사람들의 이야기에 관심을 가지며 기회를 적극적으로 살펴봐요.',strength:'새로운 가능성을 열린 마음으로 탐색할 수 있어요.',caution:'주변 분위기가 뜨거울수록 감당 가능한 위험을 먼저 정해 보세요.'}
+    {name:'존버형',art:[721,0,360,525],tag:'내 속도대로 오래 살펴보는 편',description:'흔들리는 순간에도 속도를 조절하며 스스로 세운 기준을 살펴보려 해요.',strength:'변동이 있어도 차분하게 자료와 계획을 확인할 수 있어요.',caution:'기다리는 동안에도 처음 세운 조건이 여전히 맞는지 확인해 보세요.'},
+    {name:'짠테크형',art:[0,525,380,561],tag:'여유를 챙기고 의견도 들어보는 편',description:'한 번에 큰 위험을 지기보다 준비하고 비교하며 마음의 여유를 확보하려 해요.',strength:'현금 여유와 위험을 살피고 다른 사람의 시각도 참고해요.',caution:'다른 사람의 안정 기준이 내 상황과 같은지 생각해 보세요.'},
+    {name:'촉형',art:[1090,525,358,561],clip:[[1105,525],[1448,525],[1448,1086],[1090,1086],[1090,900],[1105,900]],tag:'내 감각과 편안함을 중요하게 생각하는 편',description:'스스로 느끼는 흐름과 마음의 안정감을 바탕으로 선택하려 해요.',strength:'주변의 소음에 휩쓸리기보다 내 느낌을 살펴볼 수 있어요.',caution:'직감으로 떠오른 생각도 거래 전 자료와 함께 확인해 보세요.'},
+    {name:'포모형',art:[380,525,348,561],tag:'사람들의 이야기에 귀가 먼저 가는 편',description:'시장 소식과 주변 반응을 빠르게 알아차리고, 그 속에서 내 선택을 고민해요.',strength:'새로운 이야기와 시장 분위기를 빠르게 접할 수 있어요.',caution:'많이 들리는 이야기와 내게 필요한 결정이 같은지는 따로 살펴보세요.'},
+    {name:'알빠롱형',art:[728,525,377,561],clip:[[728,525],[1105,525],[1105,900],[1090,900],[1090,1086],[728,1086]],tag:'내가 납득한 기회를 직접 고르는 편',description:'새로운 기회도 살펴보되, 스스로 분석하고 판단하려는 모습이 보여요.',strength:'남의 결론을 그대로 따르기보다 내 기준을 세우려 해요.',caution:'확신이 생긴 뒤에도 반대 근거를 한 번 더 찾아보세요.'},
+    {name:'뇌지컬형',art:[374,0,347,525],tag:'기회를 찾아 자료와 의견을 모으는 편',description:'가능성을 살피면서 숫자와 다양한 의견을 함께 비교하려 해요.',strength:'결정을 내리기 전에 여러 자료와 관점을 살펴볼 수 있어요.',caution:'정보가 많아도 내 목적에 필요한 기준은 따로 정해 두세요.'},
+    {name:'줍줍형',art:[1081,0,367,525],tag:'흐름 속에서 가능성을 먼저 보는 편',description:'변화가 생기면 나만의 감각으로 기회를 찾아보려는 모습이 보여요.',strength:'새로운 상황에서 선택지를 빠르게 발견할 수 있어요.',caution:'기회가 매력적으로 보여도 손실 가능성과 자금 계획을 확인해요.'},
+    {name:'야수형',art:[0,0,374,525],tag:'새로운 기회를 보면 마음이 움직이는 편',description:'시장 변화와 사람들의 이야기에 관심을 가지며 기회를 적극적으로 살펴봐요.',strength:'새로운 가능성을 열린 마음으로 탐색할 수 있어요.',caution:'주변 분위기가 뜨거울수록 감당 가능한 위험을 먼저 정해 보세요.'}
   ];
   const answers={}; let step=0,result=null,resultCode=null,finishing=false;
-  const cardPath=code=>`/tools/investor-type/result-cards/20261101/${code}.png`;
+  const cardPath=code=>`/tools/investor-type/result-cards/20261101-names/${code}.png`;
   const artOutline = type => {
     if (type.clip) return type.clip;
     const [x,y,w,h]=type.art;
@@ -62,7 +62,7 @@
     resultCode=4*baseline[0]+2*baseline[1]+baseline[2];result=types[resultCode];
     $('character-image').setAttribute('viewBox',result.art.join(' '));$('character-image').setAttribute('aria-label',`${result.name} 캐릭터`);
     $('character-clip').setAttribute('d',artOutline(result).map(([x,y],i)=>`${i?'L':'M'}${x} ${y}`).join(' ')+' Z');
-    $('result-title').textContent=result.name;$('tagline').textContent=`${result.short} · ${result.tag}`;$('description').textContent=result.description;$('strength').textContent=result.strength;$('caution').textContent=result.caution;$('tip').textContent=tip();
+    $('result-title').textContent=result.name;$('tagline').textContent=result.tag;$('description').textContent=result.description;$('strength').textContent=result.strength;$('caution').textContent=result.caution;$('tip').textContent=tip();
     $('anxiety-result').textContent=['거의 없음','가끔 신경 쓰임','자주 걱정됨','일상에 영향'][answers.anxiety];
     $('sell-result').textContent=['거의 없음','가끔 생각남','자주 생각남','당장 팔고 싶음'][answers.reaction];
     $('notice').textContent=message;show('result');$('card-preview').src=cardPath(resultCode);$('result-title').focus();finishing=false;$('quiz-status').textContent='';
