@@ -3,7 +3,8 @@
   if (window.top !== window || new URLSearchParams(location.search).get('embed') === '1') return;
   const preference = 'dm-admin-section-labels';
   const endpoint = '/api/article-engagement/_auth/session';
-  let host, shadow, toggle, marks, observer, active = false, authorized = false, scheduled = false, checking = false, checkAgain = false;
+  let host, shadow, toggle, marks, observer, brand, brandGroup, header, controlStyle;
+  let active = false, authorized = false, scheduled = false, checking = false, checkAgain = false;
   const frames = new WeakSet();
   const rules = [
     ['.dm-site-header, .topbar', '상단 헤더'],
@@ -106,31 +107,68 @@
   }
   function schedule() { if (authorized && active && !scheduled) { scheduled = true;requestAnimationFrame(render); } }
   function setActive(value) {
-    active = !!value;toggle.setAttribute('aria-pressed', String(active));toggle.textContent = active ? '영역 이름 끄기' : '영역 이름 켜기';
+    active = !!value;
+    toggle.setAttribute('aria-checked', String(active));
+    toggle.title = active ? '영역 이름 표시 끄기' : '영역 이름 표시 켜기';
+    toggle.querySelector('.dm-admin-area-state').textContent = active ? 'ON' : 'OFF';
     try { localStorage.setItem(preference, active ? 'on' : 'off'); } catch (_) {}
     if (active) schedule();else marks.replaceChildren();
   }
   function mount() {
     if (host) return;
+    brand=document.querySelector('.dm-site-header .dm-brand, .topbar .brand, .site-header .site-brand, .site-header .brand');
+    header=brand?.closest('header');
+    if (!brand || !header) return;
+    controlStyle=document.createElement('style');
+    controlStyle.id='dm-admin-area-style';
+    controlStyle.textContent=`
+      .dm-admin-brand-group{display:inline-flex;align-items:center;gap:10px;min-width:0;width:max-content;max-width:100%}
+      .dm-admin-area-toggle{display:inline-flex;align-items:center;gap:6px;flex:none;min-height:30px;padding:5px 8px;border:1px solid #c6d6ee;border-radius:8px;background:#eff5ff;color:#1e3a68;font:700 12px/1.2 Pretendard,'Apple SD Gothic Neo',sans-serif;white-space:nowrap;cursor:pointer}
+      .dm-admin-area-toggle .dm-admin-area-state{min-width:27px;padding:3px 4px;border-radius:5px;background:#dbe5f2;color:#475569;text-align:center;font-size:10px}
+      .dm-admin-area-toggle[aria-checked=true] .dm-admin-area-state{background:#0f6c56;color:#fff}
+      .dm-admin-area-toggle:focus-visible{outline:3px solid #f0a33c;outline-offset:2px}
+      html[data-dm-theme=dark] .dm-admin-area-toggle{background:#243b5a;border-color:#7893b8;color:#edf4ff}
+      html[data-dm-theme=dark] .dm-admin-area-toggle .dm-admin-area-state{background:#455a76;color:#f2f6fc}
+      html[data-dm-theme=dark] .dm-admin-area-toggle[aria-checked=true] .dm-admin-area-state{background:#167b61;color:#fff}
+      @media(max-width:900px){
+        .dm-site-header.dm-admin-area-header{grid-template-columns:minmax(0,1fr) auto;gap:8px 12px}
+        .dm-site-header.dm-admin-area-header .dm-admin-brand-group{grid-column:1/-1;grid-row:1}
+        .dm-site-header.dm-admin-area-header .dm-site-nav{grid-column:1/-1;grid-row:2;justify-self:start}
+        .dm-site-header.dm-admin-area-header .dm-header-utility{grid-column:1/-1;grid-row:3}
+        body:has(.dm-shared-sidebar) .dm-site-header.dm-admin-area-header .dm-mobile-investor-banner{grid-column:1/-1;grid-row:4}
+        .topbar.dm-admin-area-header,.site-header.dm-admin-area-header{flex-wrap:wrap}
+      }
+      @media print{.dm-admin-area-toggle{display:none!important}}
+    `;
+    document.head.append(controlStyle);
+    brandGroup=document.createElement('div');brandGroup.className='dm-admin-brand-group';
+    brand.before(brandGroup);brandGroup.append(brand);
+    toggle=document.createElement('button');toggle.type='button';toggle.className='dm-admin-area-toggle';
+    toggle.setAttribute('role','switch');toggle.setAttribute('aria-label','영역 이름 표시');
+    const label=document.createElement('span');label.textContent='영역 이름';
+    const state=document.createElement('span');state.className='dm-admin-area-state';state.setAttribute('aria-hidden','true');
+    toggle.append(label,state);toggle.addEventListener('click',()=>setActive(!active));brandGroup.append(toggle);
+    header.classList.add('dm-admin-area-header');
     host=document.createElement('div');host.id='dm-admin-area-inspector';
     shadow=host.attachShadow({mode:'closed'});
     const style=document.createElement('style');style.textContent=`
       :host{position:fixed;inset:0;z-index:2147483000;pointer-events:none;font-family:Pretendard,'Apple SD Gothic Neo',sans-serif}
-      .controls{position:fixed;left:14px;bottom:14px;pointer-events:auto;display:flex;gap:6px;align-items:center}
-      button{appearance:none;border:1px solid #315dba;border-radius:9px;background:#183c83;color:#fff;box-shadow:0 4px 14px #0003;padding:10px 13px;font:700 13px/1.3 Pretendard,'Apple SD Gothic Neo',sans-serif;cursor:pointer}
-      button[aria-pressed=true]{background:#0f5f4c;border-color:#127e64}button:focus-visible{outline:3px solid #fbbf24;outline-offset:2px}
       .mark{position:fixed;box-sizing:border-box;border:1px dashed #ec4899;pointer-events:none}
       .badge{position:absolute;top:0;left:0;max-width:min(300px,calc(100vw - 32px));overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:2px 5px;border-radius:0 0 4px 0;color:#fff;background:#a21caf;font:700 11px/1.25 Pretendard,'Apple SD Gothic Neo',sans-serif}
       @media print{:host{display:none!important}}
     `;
-    const control=document.createElement('div');control.className='controls';toggle=document.createElement('button');toggle.type='button';toggle.addEventListener('click',()=>setActive(!active));control.append(toggle);
-    marks=document.createElement('div');marks.setAttribute('aria-hidden','true');shadow.append(style,marks,control);document.body.append(host);
+    marks=document.createElement('div');marks.setAttribute('aria-hidden','true');shadow.append(style,marks);document.body.append(host);
     let saved=false;try {saved=localStorage.getItem(preference)==='on';} catch (_) {}
     setActive(saved);
     observer = new MutationObserver(schedule);
     observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class','style']});
   }
-  function revoke() { authorized=false;active=false;observer?.disconnect();observer=null;host?.remove();host=shadow=toggle=marks=null; }
+  function revoke() {
+    authorized=false;active=false;observer?.disconnect();observer=null;host?.remove();
+    if (brandGroup?.parentNode && brandGroup.contains(brand)) brandGroup.before(brand);
+    brandGroup?.remove();header?.classList.remove('dm-admin-area-header');controlStyle?.remove();
+    host=shadow=toggle=marks=brand=brandGroup=header=controlStyle=null;
+  }
   async function verify() {
     if (checking) {checkAgain=true;return;}checking=true;
     try {

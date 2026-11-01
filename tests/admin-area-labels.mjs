@@ -12,7 +12,7 @@ function setup(isAdmin, saved) {
  w.HTMLElement.prototype.getBoundingClientRect=()=>({left:10,top:10,right:310,bottom:110,width:300,height:100});
  w.eval(script);return {dom,w,deny:()=>{allowed=false;}};
 }
-const visitor=setup(false,'on');await tick();assert.equal(visitor.w.document.getElementById('dm-admin-area-inspector'),null,'visitors cannot enable the panel with local storage');visitor.dom.window.close();
+const visitor=setup(false,'on');await tick();assert.equal(visitor.w.document.getElementById('dm-admin-area-inspector'),null,'visitors cannot enable the panel with local storage');assert.equal(visitor.w.document.querySelector('.dm-admin-area-toggle'),null);visitor.dom.window.close();
 const admin=setup(true);await tick();const host=admin.w.document.getElementById('dm-admin-area-inspector');assert.ok(host,'verified administrator gets a control');
 // The shadow root is deliberately closed. Capture it through a test-only wrapper below.
 admin.dom.window.close();
@@ -21,11 +21,13 @@ const w=dom.window;let authenticated=true, captured;
 const attach=w.Element.prototype.attachShadow;w.Element.prototype.attachShadow=function(init){captured=attach.call(this,init);return captured;};
 w.fetch=async()=>({ok:true,json:async()=>({authenticated})});
 w.HTMLElement.prototype.getBoundingClientRect=()=>({left:10,top:10,right:310,bottom:110,width:300,height:100});
-w.eval(script);await tick();let button=captured.querySelector('button');assert.equal(button.getAttribute('aria-pressed'),'false');assert.equal(captured.querySelectorAll('.mark').length,0);
-button.click();await tick();assert.equal(button.getAttribute('aria-pressed'),'true');assert.equal(w.localStorage.getItem('dm-admin-section-labels'),'on');
+w.eval(script);await tick();let button=w.document.querySelector('.dm-admin-area-toggle');assert.equal(button.getAttribute('role'),'switch');assert.equal(button.getAttribute('aria-checked'),'false');assert.equal(captured.querySelectorAll('.mark').length,0);
+assert.equal(button.previousElementSibling.className,'dm-brand','the switch appears immediately after the logo');
+button.click();await tick();assert.equal(button.getAttribute('aria-checked'),'true');assert.equal(w.localStorage.getItem('dm-admin-section-labels'),'on');
 assert.ok([...captured.querySelectorAll('.badge')].some(el=>el.textContent.includes('제목 영역 · .dm-article-heading')),'labels contain meaningful names and selectors');
 button.click();assert.equal(captured.querySelectorAll('.mark').length,0,'switch off clears labels');
 button.click();await tick();authenticated=false;w.dispatchEvent(new w.Event('pageshow'));await tick();assert.equal(w.document.getElementById('dm-admin-area-inspector'),null,'an expired or signed-out session removes the inspector');
+assert.equal(w.document.querySelector('.dm-admin-area-toggle'),null);assert.equal(w.document.querySelector('.dm-site-header > .dm-brand').textContent,'로고','the original header is restored on sign-out');
 w.close();
 const failed=new JSDOM(html,{url:'https://datamoney.kr/',runScripts:'outside-only'});failed.window.fetch=async()=>{throw new Error('offline');};failed.window.localStorage.setItem('dm-admin-section-labels','on');failed.window.eval(script);await tick();assert.equal(failed.window.document.getElementById('dm-admin-area-inspector'),null,'unavailable auth fails closed');failed.window.close();
 const home=new JSDOM(html,{url:'https://datamoney.kr/blog/',runScripts:'outside-only',pretendToBeVisual:true});
@@ -34,6 +36,7 @@ hw.fetch=async()=>({ok:true,json:async()=>({authenticated:loggedIn})});hw.eval(s
 assert.equal(hw.document.getElementById('dm-admin-area-inspector'),null,'the homepage switch is hidden before authentication');
 loggedIn=true;hw.dispatchEvent(new hw.Event('focus'));await tick();
 assert.ok(hw.document.getElementById('dm-admin-area-inspector'),'the homepage switch appears when the authenticated tab regains focus');
+assert.ok(hw.document.querySelector('.dm-brand + .dm-admin-area-toggle'),'the homepage switch is next to the logo');
 loggedIn=false;hw.dispatchEvent(new hw.Event('focus'));await tick();
 assert.equal(hw.document.getElementById('dm-admin-area-inspector'),null,'the homepage switch disappears after sign-out');hw.close();
 console.log('Area labels: admin session gate, on/off, selectors, persistence and expiry passed');
