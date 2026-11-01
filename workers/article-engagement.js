@@ -9,8 +9,8 @@ const SURVEY_AGGREGATE_PATH = '/api/article-engagement/_survey-aggregate';
 const SURVEY_ADMIN_PATH = '/api/article-engagement/_admin/survey';
 const EMAIL_PATH = '/api/article-engagement/_email/';
 const EMAIL_ADMIN_PATH = '/api/article-engagement/_admin/email-subscribers';
-const EMAIL_RESULT_CARD_BASE = 'https://datamoney.kr/tools/investor-type/result-cards/20261101-names/';
-const EMAIL_RESULT_CARD_ASSET_BASE = 'https://datamoney-tools.pages.dev/tools/investor-type/result-cards/20261101-names/';
+const EMAIL_RESULT_CARD_BASE = 'https://datamoney.kr/tools/investor-type/result-cards/20261101-types/';
+const EMAIL_RESULT_CARD_ASSET_BASE = 'https://datamoney-tools.pages.dev/tools/investor-type/result-cards/20261101-types/';
 const FEEDBACK_ADMIN_PATH = '/api/article-engagement/_admin/feedback';
 const FEEDBACK_ADMIN_ROUTE = /^\/api\/article-engagement\/_admin\/feedback(?:\/([1-9]\d*))?\/?$/;
 const INQUIRY_PATH = '/api/article-engagement/_inquiry';
@@ -556,7 +556,7 @@ export class ArticleEngagement {
       const html='<!doctype html><html lang="ko"><body style="font-family:Arial,sans-serif;color:#182338;line-height:1.6">'+
         '<p>안녕하세요. 데이터머니입니다.</p><p>나의 투자 성향 결과: <strong>'+type+'</strong><br>'+
         '최근 불안감: '+anxiety+'<br>최근 매도 충동: '+reaction+'</p>'+
-        '<p>나의 결과 공유 이미지를 파일로 첨부했습니다.</p><p><img src="'+cardUrl+'" alt="'+type+' 투자 캐릭터 결과 카드" width="480" style="display:block;width:100%;max-width:480px;height:auto"></p>'+
+        '<p>나의 결과 공유 이미지를 파일로 첨부했습니다.</p><p><img src="'+cardUrl+'" alt="'+type+' 투자 유형 결과 카드" width="480" style="display:block;width:100%;max-width:480px;height:auto"></p>'+
         '<p>내 유형의 판단 습관, 강점과 주의점, 실천 질문을 담은 무료 상세 리포트입니다. 열어서 인쇄하거나 PDF로 저장할 수 있습니다.</p><p><a href="'+link+'">무료 상세 리포트 열기</a></p>'+
         '<p>다음 검사 결과와도 비교할 수 있습니다. 이 링크는 본인만 보관해 주세요. 확인 전에는 선택한 소식 수신이 시작되지 않습니다. 요청하지 않으셨다면 이 메일을 무시해 주세요.</p>'+
         '<p>문의: sys247365@gmail.com<br>데이터머니 <a href="https://datamoney.kr">datamoney.kr</a></p></body></html>';

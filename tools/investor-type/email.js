@@ -18,7 +18,7 @@
     }
     const day=new Date(previous.createdAt).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
     for (const [label,before,after] of [
-      ['투자 캐릭터',types[previous.typeCode],types[result.typeCode]],
+      ['투자 유형',types[previous.typeCode],types[result.typeCode]],
       ['최근 불안감',anxieties[previous.anxiety],anxieties[result.anxiety]],
       ['최근 매도 충동',reactions[previous.reaction],reactions[result.reaction]]
     ]) {

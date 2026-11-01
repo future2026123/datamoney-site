@@ -6,6 +6,7 @@ import {investorReports} from '../workers/investor-reports.js';
 const require = createRequire(new URL('../workers/package.json', import.meta.url));
 const {JSDOM} = require('jsdom');
 const html = await readFile(new URL('../account/result/index.html', import.meta.url), 'utf8');
+assert.doesNotMatch(html,/캐릭터/);
 const script = await readFile(new URL('../account/result/result.js', import.meta.url), 'utf8');
 const expected = ['존버형','짠테크형','촉형','포모형','알빠롱형','뇌지컬형','줍줍형','야수형'];
 const titles = new Set();

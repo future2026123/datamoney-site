@@ -12,12 +12,12 @@ const base='https://datamoney.kr/api/article-engagement';
 const originalFetch=globalThis.fetch;
 let sent=[],sendOK=true,assetMode='valid';
 globalThis.fetch=async (url,options)=>{
-  const match=String(url).match(/^https:\/\/datamoney-tools\.pages\.dev\/tools\/investor-type\/result-cards\/20261101-names\/([0-7])\.png$/);
+  const match=String(url).match(/^https:\/\/datamoney-tools\.pages\.dev\/tools\/investor-type\/result-cards\/20261101-types\/([0-7])\.png$/);
   if(match){
     assert.equal(options.headers['User-Agent'],'DataMoney-Result-Email/1.0');
     if(assetMode==='missing') return new Response('missing',{status:404});
     if(assetMode==='invalid') return new Response('not a PNG',{status:200,headers:{'content-type':'image/png'}});
-    const image=await readFile(new URL(`../tools/investor-type/result-cards/20261101-names/${match[1]}.png`,import.meta.url));
+    const image=await readFile(new URL(`../tools/investor-type/result-cards/20261101-types/${match[1]}.png`,import.meta.url));
     return new Response(image,{status:200,headers:{'content-type':'image/png','content-length':String(image.length)}});
   }
   assert.equal(url,'https://api.resend.com/emails');
@@ -42,8 +42,9 @@ assert.match(sent[0].text, /무료 상세 리포트/);
 assert.match(sent[0].html, /무료 상세 리포트 열기/);
 assert.equal(sent[0].attachments[0].filename,'datamoney-investor-result.png');
 assert.equal(sent[0].attachments[0].content_type,'image/png');
-assert.deepEqual(Buffer.from(sent[0].attachments[0].content,'base64'),await readFile(new URL('../tools/investor-type/result-cards/20261101-names/5.png',import.meta.url)));
-assert.ok(sent[0].html.includes('src="https://datamoney.kr/tools/investor-type/result-cards/20261101-names/5.png"'));
+assert.deepEqual(Buffer.from(sent[0].attachments[0].content,'base64'),await readFile(new URL('../tools/investor-type/result-cards/20261101-types/5.png',import.meta.url)));
+assert.ok(sent[0].html.includes('src="https://datamoney.kr/tools/investor-type/result-cards/20261101-types/5.png"'));
+assert.doesNotMatch(sent[0].html,/캐릭터/);
 const token=sent[0].text.match(/\/account\/result\/#([a-f0-9]{64})/)[1];
 const row=db.prepare('SELECT * FROM email_results').get();
 assert.notEqual(row.token_hash,token,'the emailed bearer token must not be stored in plaintext');
@@ -84,13 +85,13 @@ assetMode='valid';
 const hashes=new Set();
 const typeNames=['존버형','짠테크형','촉형','포모형','알빠롱형','뇌지컬형','줍줍형','야수형'];
 for(let code=0;code<8;code++){
-  const bytes=await readFile(new URL(`../tools/investor-type/result-cards/20261101-names/${code}.png`,import.meta.url));
+  const bytes=await readFile(new URL(`../tools/investor-type/result-cards/20261101-types/${code}.png`,import.meta.url));
   assert.equal(bytes.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
   assert.equal(bytes.readUInt32BE(16),1080);assert.equal(bytes.readUInt32BE(20),1350);
   hashes.add(createHash('sha256').update(bytes).digest('hex'));
   const result=await call('/_email/request',{body:{...input,email:`card${code}@example.com`,typeCode:code,cardUrl:'https://attacker.example/file'},headers:{'cf-connecting-ip':`192.0.2.${20+code}`}});
   assert.equal(result.status,200);
-  const expected=`https://datamoney.kr/tools/investor-type/result-cards/20261101-names/${code}.png`;
+  const expected=`https://datamoney.kr/tools/investor-type/result-cards/20261101-types/${code}.png`;
   assert.ok(sent.at(-1).text.includes(`나의 투자 성향 결과: ${typeNames[code]}\n`));
   assert.ok(sent.at(-1).html.includes(`<strong>${typeNames[code]}</strong>`));
   assert.deepEqual(Buffer.from(sent.at(-1).attachments[0].content,'base64'),bytes,'attachment must match the displayed card');

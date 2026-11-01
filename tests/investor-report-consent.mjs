@@ -13,6 +13,7 @@ w.eval(script);
 w.sessionStorage.setItem('dm-investor-comparison',JSON.stringify({typeCode:3,anxiety:0,reaction:1,createdAt:Date.now()}));
 w.dmOnInvestorResult({typeCode:5,anxiety:0,reaction:0,tipCode:0});
 assert.match(d.getElementById('comparison-content').textContent,/포모형 → 뇌지컬형/);
+assert.match(d.getElementById('comparison-content').textContent,/투자 유형/);
 w.sessionStorage.removeItem('dm-investor-comparison');
 w.dmOnInvestorResult({typeCode:0,anxiety:0,reaction:0,tipCode:0});
 assert.equal(calls.length,0,'receiving the basic result never requests an email');

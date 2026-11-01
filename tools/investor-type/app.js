@@ -24,7 +24,7 @@
     {name:'야수형',art:[0,0,374,525],tag:'새로운 기회를 보면 마음이 움직이는 편',description:'시장 변화와 사람들의 이야기에 관심을 가지며 기회를 적극적으로 살펴봐요.',strength:'새로운 가능성을 열린 마음으로 탐색할 수 있어요.',caution:'주변 분위기가 뜨거울수록 감당 가능한 위험을 먼저 정해 보세요.'}
   ];
   const answers={}; let step=0,result=null,resultCode=null,finishing=false;
-  const cardPath=code=>`/tools/investor-type/result-cards/20261101-names/${code}.png`;
+  const cardPath=code=>`/tools/investor-type/result-cards/20261101-types/${code}.png`;
   const artOutline = type => {
     if (type.clip) return type.clip;
     const [x,y,w,h]=type.art;
@@ -60,7 +60,7 @@
       fetch('/api/article-engagement/_survey-aggregate',{method:'POST',credentials:'omit',headers:{'content-type':'application/json'},body:JSON.stringify({baseline,answers:current})}).then(response=>{if(response.ok)try{localStorage.setItem(key,day);}catch(_){}}).catch(()=>{});
     }
     resultCode=4*baseline[0]+2*baseline[1]+baseline[2];result=types[resultCode];
-    $('character-image').setAttribute('viewBox',result.art.join(' '));$('character-image').setAttribute('aria-label',`${result.name} 캐릭터`);
+    $('character-image').setAttribute('viewBox',result.art.join(' '));$('character-image').setAttribute('aria-label',result.name);
     $('character-clip').setAttribute('d',artOutline(result).map(([x,y],i)=>`${i?'L':'M'}${x} ${y}`).join(' ')+' Z');
     $('result-title').textContent=result.name;$('tagline').textContent=result.tag;$('description').textContent=result.description;$('strength').textContent=result.strength;$('caution').textContent=result.caution;$('tip').textContent=tip();
     $('anxiety-result').textContent=['거의 없음','가끔 신경 쓰임','자주 걱정됨','일상에 영향'][answers.anxiety];
@@ -71,7 +71,7 @@
   }
   $('save').addEventListener('click',()=>{const a=document.createElement('a');a.href=cardPath(resultCode);a.download='datamoney-investor-type.png';a.click();});
   $('share').addEventListener('click',async()=>{
-    const data={title:'나의 투자 캐릭터 테스트',text:`나는 ${result.name}! 당신은 어떤 투자자일까요?`,url:'https://datamoney.kr/tools/investor-type/'};
+    const data={title:'나의 투자 유형 테스트',text:`나는 ${result.name}! 당신은 어떤 투자자일까요?`,url:'https://datamoney.kr/tools/investor-type/'};
     try{if(navigator.share){
       if(navigator.canShare){try{const response=await fetch(cardPath(resultCode),{cache:'force-cache'});if(response.ok){const file=new File([await response.blob()],'datamoney-result.png',{type:'image/png'});if(navigator.canShare({files:[file]}))data.files=[file];}}catch(_) {}}
       await navigator.share(data);

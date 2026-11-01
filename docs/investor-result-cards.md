@@ -1,6 +1,6 @@
 # Investor result cards
 
-`tools/investor-type/result-cards/20261101-names/0.png` through `7.png` are the
+`tools/investor-type/result-cards/20261101-types/0.png` through `7.png` are the
 canonical share images, in the same order as the result type codes. The result
 preview, image download, device share and result-email attachment all use the
 same corresponding PNG. The images contain the character and its general type,
@@ -10,7 +10,8 @@ The type names, in code order, are 존버형, 짠테크형, 촉형, 포모형, �
 뇌지컬형, 줍줍형, and 야수형. Use these names consistently in the result,
 comparison, saved report, email, and card; the animal illustrations do not
 replace the type names. Keep type codes stable so previously saved results retain
-the same type.
+the same type. Use 투자 유형 in interface copy and do not append another label
+to the type name.
 
 When the card design or character artwork changes, regenerate all eight cards,
 place them under a new versioned directory, and update the card paths in both

@@ -16,6 +16,7 @@ const calls=[],anchors=[];
 const storage=new Map();const localStorage={getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,value)};
 class TestFile {constructor(parts,name,options){this.parts=parts;this.name=name;this.type=options.type;}}
 const context={document:{getElementById:get,createElement:tag=>{const e=new Element();if(tag==='a')anchors.push(e);return e;}},window:{scrollTo(){}},navigator:{},File:TestFile,localStorage,confirm:()=>true,alert(){},fetch:async (...args)=>{calls.push(args);return {ok:true,blob:async()=>({image:args[0]})};},console};
+assert.doesNotMatch(await readFile(new URL('../tools/investor-type/index.html',import.meta.url),'utf8'),/캐릭터/);
 vm.runInNewContext(await readFile(new URL('../tools/investor-type/app.js',import.meta.url),'utf8'),context);
 async function answer(values=[0,0,0,0,0,0,0,0]){await get('start').click();for(let i=0;i<8;i++){assert.equal(get('choices').children.length,i<3?2:4);await get('choices').children[values[i]].click();}await new Promise(resolve=>setTimeout(resolve,0));}
 await answer();
@@ -35,8 +36,8 @@ for(let code=0;code<8;code++){
   await get('again').click();await answer([code>>2,(code>>1)&1,code&1,0,0,0,0,0]);
   const title=get('result-title').textContent, label=get('tagline').textContent;
   types.add(title);assert.equal(title,expected[code][0]);assert.equal(label,expected[code][1]);
-  assert.equal(get('character-image').attributes['aria-label'],`${title} 캐릭터`);
-  assert.equal(get('card-preview').src,`/tools/investor-type/result-cards/20261101-names/${code}.png`);
+  assert.equal(get('character-image').attributes['aria-label'],title);
+  assert.equal(get('card-preview').src,`/tools/investor-type/result-cards/20261101-types/${code}.png`);
   const bounds=get('character-image').attributes.viewBox.split(' ').map(Number);
   assert.deepEqual(bounds,expected[code][2]);
   assert.ok(get('character-clip').attributes.d.startsWith('M')&&get('character-clip').attributes.d.endsWith(' Z'));
@@ -49,6 +50,7 @@ assert.equal(Object.keys(JSON.parse(calls[1][1].body).answers).length,5);
 let shared=null;
 context.navigator.canShare=()=>true;context.navigator.share=async data=>{shared=data;};
 await get('share').click();
+assert.equal(shared.title,'나의 투자 유형 테스트');
 assert.match(shared.text,/나는 뇌지컬형!/);
 assert.equal(calls.at(-1)[0],get('card-preview').src,'sharing must fetch the displayed result image');
 assert.equal(shared.files[0].name,'datamoney-result.png');
