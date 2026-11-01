@@ -38,6 +38,7 @@ jobs:
           node tests/google-admin-auth.mjs
           node tests/google-admin-ui.mjs
           node tests/admin-area-labels.mjs
+          node tests/admin-footer-login.mjs
 
       - name: Test keyboard back navigation
         run: |
