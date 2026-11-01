@@ -9,6 +9,7 @@ const SURVEY_AGGREGATE_PATH = '/api/article-engagement/_survey-aggregate';
 const SURVEY_ADMIN_PATH = '/api/article-engagement/_admin/survey';
 const EMAIL_PATH = '/api/article-engagement/_email/';
 const EMAIL_ADMIN_PATH = '/api/article-engagement/_admin/email-subscribers';
+const CONTACT_EMAIL = 'datamoneykr@gmail.com';
 const EMAIL_RESULT_CARD_BASE = 'https://datamoney.kr/tools/investor-type/result-cards/20261101-types/';
 const EMAIL_RESULT_CARD_ASSET_BASE = 'https://datamoney-tools.pages.dev/tools/investor-type/result-cards/20261101-types/';
 const FEEDBACK_ADMIN_PATH = '/api/article-engagement/_admin/feedback';
@@ -552,17 +553,17 @@ export class ArticleEngagement {
       // The numeric, validated type selects the same fixed card used by the
       // share button. Clients cannot supply an arbitrary attachment URL.
       const cardUrl=EMAIL_RESULT_CARD_BASE+input.typeCode+'.png';
-      const body='안녕하세요. 데이터머니입니다.\n\n나의 투자 성향 결과: '+type+'\n최근 불안감: '+anxiety+'\n최근 매도 충동: '+reaction+'\n\n나의 결과 공유 이미지를 파일로 첨부했습니다.\n\n아래 링크에서 이메일을 확인하고 내 유형의 무료 상세 리포트를 열어 보세요. 판단 습관, 강점과 주의점, 실천 질문을 담았으며 PDF로 저장할 수 있습니다. 다음 검사 결과와도 비교할 수 있습니다.\n'+link+'\n\n이 링크는 본인만 보관해 주세요. 확인 전에는 선택한 소식 수신이 시작되지 않습니다. 요청하지 않으셨다면 이 메일을 무시해 주세요.\n\n문의: sys247365@gmail.com\n데이터머니 https://datamoney.kr';
+      const body='안녕하세요. 데이터머니입니다.\n\n나의 투자 성향 결과: '+type+'\n최근 불안감: '+anxiety+'\n최근 매도 충동: '+reaction+'\n\n나의 결과 공유 이미지를 파일로 첨부했습니다.\n\n아래 링크에서 이메일을 확인하고 내 유형의 무료 상세 리포트를 열어 보세요. 판단 습관, 강점과 주의점, 실천 질문을 담았으며 PDF로 저장할 수 있습니다. 다음 검사 결과와도 비교할 수 있습니다.\n'+link+'\n\n이 링크는 본인만 보관해 주세요. 확인 전에는 선택한 소식 수신이 시작되지 않습니다. 요청하지 않으셨다면 이 메일을 무시해 주세요.\n\n문의: '+CONTACT_EMAIL+'\n데이터머니 https://datamoney.kr';
       const html='<!doctype html><html lang="ko"><body style="font-family:Arial,sans-serif;color:#182338;line-height:1.6">'+
         '<p>안녕하세요. 데이터머니입니다.</p><p>나의 투자 성향 결과: <strong>'+type+'</strong><br>'+
         '최근 불안감: '+anxiety+'<br>최근 매도 충동: '+reaction+'</p>'+
         '<p>나의 결과 공유 이미지를 파일로 첨부했습니다.</p><p><img src="'+cardUrl+'" alt="'+type+' 투자 유형 결과 카드" width="480" style="display:block;width:100%;max-width:480px;height:auto"></p>'+
         '<p>내 유형의 판단 습관, 강점과 주의점, 실천 질문을 담은 무료 상세 리포트입니다. 열어서 인쇄하거나 PDF로 저장할 수 있습니다.</p><p><a href="'+link+'">무료 상세 리포트 열기</a></p>'+
         '<p>다음 검사 결과와도 비교할 수 있습니다. 이 링크는 본인만 보관해 주세요. 확인 전에는 선택한 소식 수신이 시작되지 않습니다. 요청하지 않으셨다면 이 메일을 무시해 주세요.</p>'+
-        '<p>문의: sys247365@gmail.com<br>데이터머니 <a href="https://datamoney.kr">datamoney.kr</a></p></body></html>';
+        '<p>문의: '+CONTACT_EMAIL+'<br>데이터머니 <a href="https://datamoney.kr">datamoney.kr</a></p></body></html>';
       let sent=false;
       try {
-        const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{authorization:'Bearer '+this.env.RESEND_API_KEY,'content-type':'application/json'},body:JSON.stringify({from:'데이터머니 <hello@send.datamoney.kr>',to:[email],subject:'[데이터머니] 나의 투자 유형 상세 리포트',text:body,html,attachments:[{filename:'datamoney-investor-result.png',content:cardContent,content_type:'image/png'}]})});
+        const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{authorization:'Bearer '+this.env.RESEND_API_KEY,'content-type':'application/json'},body:JSON.stringify({from:'데이터머니 <hello@send.datamoney.kr>',to:[email],reply_to:CONTACT_EMAIL,subject:'[데이터머니] 나의 투자 유형 상세 리포트',text:body,html,attachments:[{filename:'datamoney-investor-result.png',content:cardContent,content_type:'image/png'}]})});
         sent=response.ok;
       } catch (_) {}
       if (!sent) { this.sql.exec('DELETE FROM email_results WHERE token_hash = ?',hash); return json({error:'Email delivery unavailable'},502); }
@@ -630,11 +631,11 @@ export class ArticleEngagement {
     const labels = {question:'질문', error:'오류 제보', suggestion:'제안', other:'기타'};
     for (const row of rows) {
       try {
-        if (!this.env.RESEND_API_KEY || !this.env.DM_GOOGLE_ADMIN_EMAIL) throw new Error('Notification unavailable');
+        if (!this.env.RESEND_API_KEY) throw new Error('Notification unavailable');
         const response = await fetch('https://api.resend.com/emails', {
           method:'POST', signal:AbortSignal.timeout(10000),
           headers:{authorization:'Bearer ' + this.env.RESEND_API_KEY, 'content-type':'application/json', 'Idempotency-Key':'datamoney-inquiry-' + row.request_id},
-          body:JSON.stringify({from:'데이터머니 <hello@send.datamoney.kr>', to:[this.env.DM_GOOGLE_ADMIN_EMAIL],
+          body:JSON.stringify({from:'데이터머니 <hello@send.datamoney.kr>', to:[CONTACT_EMAIL],
             subject:'[데이터머니] 새 문의가 도착했습니다',
             text:`새 문의가 접수되었습니다.\n유형: ${labels[row.category] || '기타'}\n문의 번호: ${row.id}\n\n운영자 화면에서 확인해 주세요: https://datamoney.kr/comment-admin/?tab=inquiries`})
         });

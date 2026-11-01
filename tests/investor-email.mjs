@@ -36,6 +36,9 @@ assert.equal((await call('/_email/request',{body:{...input,email:'bad\n@example.
 assert.equal((await call('/_email/request',{body:input})).status,200);
 assert.equal(sent.length,1);
 assert.deepEqual(sent[0].to,['reader@example.com']);
+assert.equal(sent[0].reply_to,'datamoneykr@gmail.com');
+assert.match(sent[0].text, /문의: datamoneykr@gmail\.com/);
+assert.match(sent[0].html, /문의: datamoneykr@gmail\.com/);
 assert.ok(sent[0].text.includes('나의 투자 성향 결과: 뇌지컬형'));
 assert.match(sent[0].subject, /상세 리포트/);
 assert.match(sent[0].text, /무료 상세 리포트/);

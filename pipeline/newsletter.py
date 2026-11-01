@@ -98,7 +98,7 @@ async def _create_mailchimp_campaign(
                     "subject_line": subject,
                     "preview_text": preview_text,
                     "from_name": "데이터머니",
-                    "reply_to": "noreply@datamoney.kr",
+                    "reply_to": "datamoneykr@gmail.com",
                 },
             },
             auth=auth,

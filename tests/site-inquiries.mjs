@@ -51,7 +51,7 @@ try {
   await object.alarm();
   assert.equal(db.prepare('SELECT notify_status FROM inquiries').get().notify_status, 'pending', 'a failed alert is retried');
   const alert = JSON.parse(sent[0].body);
-  assert.deepEqual(alert.to, ['owner@example.com']);
+  assert.deepEqual(alert.to, ['datamoneykr@gmail.com'], 'alerts go to the official contact email, independently of the admin login');
   assert.ok(!JSON.stringify(alert).includes(input.body));
   assert.ok(!JSON.stringify(alert).includes(input.email), 'the alert excludes the visitor email');
   assert.equal(sent[0].headers['Idempotency-Key'], 'datamoney-inquiry-' + id);
