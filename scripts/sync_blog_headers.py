@@ -15,9 +15,12 @@ ARTICLE_SPEECH_JS_VERSION = hashlib.sha256((ROOT / "blog" / "article-speech.js")
 ARTICLE_ACTIONS_CSS = f'<link rel="stylesheet" href="/blog/article-actions.css?v={ARTICLE_ACTIONS_CSS_VERSION}">'
 ARTICLE_ACTIONS_JS = f'<script src="/blog/article-actions.js?v={ARTICLE_ACTIONS_JS_VERSION}" defer></script>'
 ARTICLE_SPEECH_JS = f'<script src="/blog/article-speech.js?v={ARTICLE_SPEECH_JS_VERSION}" defer></script>'
+RELATED_JS_VERSION = hashlib.sha256((ROOT / "blog" / "related-articles.js").read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:8]
+RELATED_JS = f'<script src="/blog/related-articles.js?v={RELATED_JS_VERSION}" defer></script>'
 ARTICLE_ACTIONS_CSS_TAG = re.compile(r'''<link\s+rel=["']stylesheet["']\s+href=["']/blog/article-actions\.css(?:\?[^"']*)?["']\s*/?>''', re.IGNORECASE)
 ARTICLE_ACTIONS_JS_TAG = re.compile(r'''<script\s+src=["']/blog/article-actions\.js(?:\?[^"']*)?["']\s+defer\s*></script\s*>''', re.IGNORECASE)
 ARTICLE_SPEECH_JS_TAG = re.compile(r'''<script\s+src=["']/blog/article-speech\.js(?:\?[^"']*)?["']\s+defer\s*></script\s*>''', re.IGNORECASE)
+RELATED_JS_TAG = re.compile(r'''<script\s+src=["']/blog/related-articles\.js(?:\?[^"']*)?["']\s+defer\s*></script\s*>''', re.IGNORECASE)
 ARTICLE_TITLE_CSS_VERSION = hashlib.sha256((ROOT / "blog" / "article-title.css").read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:8]
 ARTICLE_TITLE_CSS = f'<link rel="stylesheet" href="/blog/article-title.css?v={ARTICLE_TITLE_CSS_VERSION}">'
 ARTICLE_TITLE_CSS_TAG = re.compile(r'''<link\s+rel=["']stylesheet["']\s+href=["']/blog/article-title\.css(?:\?[^"']*)?["']\s*/?>''', re.IGNORECASE)
@@ -75,6 +78,11 @@ def synchronize(path: Path, fragment: str) -> bool:
         else:
             head_end = HEAD_END.search(updated)
             updated = updated[:head_end.start()] + ARTICLE_ACTIONS_JS + "\n" + updated[head_end.start():]
+        if RELATED_JS_TAG.search(updated):
+            updated = RELATED_JS_TAG.sub(RELATED_JS, updated)
+        else:
+            actions = ARTICLE_ACTIONS_JS_TAG.search(updated)
+            updated = updated[:actions.end()] + "\n" + RELATED_JS + updated[actions.end():]
         if ARTICLE_SPEECH_JS_TAG.search(updated):
             updated = ARTICLE_SPEECH_JS_TAG.sub(ARTICLE_SPEECH_JS, updated)
         else:

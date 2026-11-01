@@ -27,6 +27,7 @@ class BlogTagsTests(unittest.TestCase):
         self.assertEqual(article["title"], "A")
         self.assertEqual(article["description"], "A & B")
         self.assertEqual([tag_key(t) for t in article["tags"]], ["etf", "복리", "절세", "s&p 500"])
+        self.assertEqual([tag_key(t) for t in article["primary_tags"]], ["etf", "복리"])
         self.assertEqual(next(t["count"] for t in data["tags"] if tag_key(t["name"]) == "etf"), 2)
 
     def test_all_current_articles_have_reachable_tags(self):

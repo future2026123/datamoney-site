@@ -26,6 +26,7 @@ class ArticleMetadata(HTMLParser):
         self.title = []
         self.description = ""
         self.tags = []
+        self.primary_tags = []
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
@@ -40,6 +41,8 @@ class ArticleMetadata(HTMLParser):
             self.description = content
         if name in {"dm-tags", "keywords"}:
             self.tags.extend(content.split(","))
+            if name == "dm-tags":
+                self.primary_tags.extend(content.split(","))
         elif prop == "article:tag":
             self.tags.append(content)
 
@@ -88,8 +91,17 @@ def build_index(root=ROOT):
         if not title:
             raise ValueError(f"Missing article title: {path}")
         if tags:
+            primary = []
+            primary_seen = set()
+            for raw in metadata.primary_tags:
+                value = clean_tag(raw)
+                key = tag_key(value)
+                if value and "{{" not in value and key not in primary_seen:
+                    primary_seen.add(key)
+                    primary.append(labels.get(key, value))
             articles.append({"path": f"/blog/{path.parent.name}/", "title": title,
-                             "description": metadata.description.strip(), "tags": tags})
+                             "description": metadata.description.strip(), "tags": tags,
+                             "primary_tags": primary or tags})
         else:
             print(f"No tags yet: {path.relative_to(root)}")
     articles.sort(key=lambda article: (order.get(article["path"], len(order)), article["path"]))
