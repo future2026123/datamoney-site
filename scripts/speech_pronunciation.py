@@ -13,6 +13,8 @@ RULES = json.loads(found.group(1))
 COMPILED = [(re.compile(r"(^|[^A-Za-z0-9])(?:" + rule["pattern"] + r")(?![A-Za-z0-9])",
                         re.IGNORECASE if rule.get("ignoreCase") else 0), rule["spoken"])
             for rule in RULES]
+# Preserve the original spelling; this is not a pronunciation substitution.
+PASSTHROUGH_TERMS = {"AI"}
 
 
 def prepare_pronunciation(text):
@@ -29,4 +31,4 @@ def unknown_financial_terms(parts):
             continue
         prepared = prepare_pronunciation(part)
         unknown.update(re.findall(r"(?<![A-Za-z0-9])[A-Z][A-Z0-9]{1,11}(?![A-Za-z0-9])", prepared))
-    return sorted(unknown)
+    return sorted(unknown - PASSTHROUGH_TERMS)

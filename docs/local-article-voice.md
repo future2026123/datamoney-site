@@ -49,6 +49,13 @@ review before uploading. Update the dictionary after checking each term; this
 conservative check can also flag an ordinary name or ticker. The check does not
 prove that every other word is pronounced correctly.
 
+Do not add speculative pronunciation substitutions. Verify a real error in
+the relevant voice and context, compare the original and replacement audio,
+and preserve the original spelling when a replacement is unverified. Honor an
+explicit user-requested pronunciation. `AI` is currently passed through as
+written instead of being changed to spaced Korean syllables. Other existing
+dictionary entries have not automatically been validated by this change.
+
 The Qwen generator caches individual groups, verifies the entire recording with
 a local transcription model and checks number tokens before uploading. This
 automated check catches some omissions but does not guarantee pronunciation or

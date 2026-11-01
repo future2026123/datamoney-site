@@ -27,6 +27,8 @@ class PronunciationTests(unittest.TestCase):
 
     def test_unlisted_capitalized_terms_are_reported_for_review(self):
         self.assertEqual(unknown_financial_terms(["ETF와 XYZ의 ABC2 가격", "AN ENGLISH QUOTE"]), ["ABC2", "XYZ"])
+        self.assertEqual(prepare_pronunciation("AI가 AI 투자를 설명한다."), "AI가 AI 투자를 설명한다.")
+        self.assertEqual(unknown_financial_terms(["AI와 XYZ의 투자"]), ["XYZ"])
 
     def test_pronunciation_changes_invalidate_only_affected_recordings(self):
         html = '<article class="dm-post"><h1>제목</h1><p>PER를 본다.</p></article>'

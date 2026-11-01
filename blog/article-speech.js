@@ -31,7 +31,6 @@
     {"pattern":"ISA", "spoken":"아이 에스 에이"},
     {"pattern":"IRP", "spoken":"아이 알 피"},
     {"pattern":"SEC", "spoken":"에스 이 씨"},
-    {"pattern":"AI", "spoken":"에이 아이"},
     {"pattern":"GPU", "spoken":"지 피 유"},
     {"pattern":"CMA", "spoken":"씨 엠 에이"},
     {"pattern":"MMF", "spoken":"엠 엠 에프"},
