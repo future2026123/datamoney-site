@@ -25,6 +25,7 @@ function setup({existingSession=false, google=true, legacyAllowed=false, feedbac
     }
     if (authorized || options.headers?.authorization === 'Bearer test-key') {
       if (url.includes('/_admin/feedback?') && feedback) return response(200, {items:[{id:1,article:'test-article',choice:'helpful',body:'<img src=x onerror=alert(1)>',updated_at:Date.now()}], totals:[{article:'test-article',helpful:1,difficult:0,disappointing:0}],nextBefore:null});
+      if (url.includes('/_admin/email-subscribers')) return response(200, {items:[],requests:[{email:'report@example.com',test_news:0,monthly_report:0,confirmed_at:Date.now()}]});
       return response(200, emptyList);
     }
     return response(401);
@@ -58,6 +59,10 @@ const feedbackDocument = feedbackPage.dom.window.document;
 assert.match(feedbackDocument.querySelector('#feedback-summary').textContent, /도움됐어요 1/);
 assert.match(feedbackDocument.querySelector('#admin-comments').textContent, /<img src=x/);
 assert.equal(feedbackDocument.querySelector('#admin-comments img'), null, 'reader input remains text in the admin panel');
+feedbackDocument.querySelector('[data-status=subscribers]').click();
+await tick();
+assert.match(feedbackDocument.querySelector('#admin-comments').textContent, /report@example.com/);
+assert.match(feedbackDocument.querySelector('#admin-comments').textContent, /소식 수신 동의 없음/);
 
 for (const legacyAllowed of [true, false]) {
   const page = setup({legacyAllowed});

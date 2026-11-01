@@ -33,12 +33,22 @@
       $('saved-strength').textContent=type[3];$('saved-caution').textContent=type[4];$('saved-tip').textContent=tips[saved.tipCode];
       $('saved-anxiety').textContent=anxieties[saved.anxiety];$('saved-reaction').textContent=reactions[saved.reaction];
       $('saved-date').textContent='검사일: '+new Date(saved.createdAt).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+      const report=data.report;
+      if(!report)throw new Error('report unavailable');
+      $('report-title').textContent=report.name;
+      for(const key of ['pattern','strength','blind','scenario']) $('report-'+key).textContent=report[key];
+      for(const key of ['questions','steps']) {
+        const list=$('report-'+key); list.replaceChildren();
+        report[key].forEach(text=>{const item=document.createElement('li');item.textContent=text;list.append(item);});
+      }
+      $('report-mood').textContent=`이번 답변에서 최근 불안감은 ‘${anxieties[saved.anxiety]}’, 매도 충동은 ‘${reactions[saved.reaction]}’으로 표시됐어요. ${tips[saved.tipCode]} 평소 성향과 지금의 감정은 다를 수 있으니 현재의 생활 여건도 함께 살펴보세요.`;
       $('news').checked=data.subscriptions.testNews;$('news').disabled=!data.subscriptions.testNews;
       $('report').checked=data.subscriptions.monthlyReport;$('report').disabled=!data.subscriptions.monthlyReport;
       $('confirm').hidden=true;$('saved').hidden=false;
     } catch(_){status.textContent='결과를 열지 못했습니다. 링크가 만료되었거나 삭제되었을 수 있습니다. 이메일의 링크를 다시 확인해 주세요.';}
     finally{button.disabled=false;}
   });
+  $('print-report').addEventListener('click',()=>window.print());
   $('compare').addEventListener('click',()=>{
     try{sessionStorage.setItem('dm-investor-comparison',JSON.stringify(saved));location.href='/tools/investor-type/';}
     catch(_){$('preferences-status').textContent='브라우저의 저장 기능을 허용한 후 다시 시도해 주세요.';}

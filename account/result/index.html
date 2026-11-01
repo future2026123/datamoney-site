@@ -6,8 +6,8 @@
 <title>저장한 투자 성향 결과 | 데이터머니</title>
 <link rel="icon" href="/favicon.ico?v=20261031-round">
 <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png?v=20261031-round">
-<link rel="stylesheet" href="result.css?v=20261031-1">
-<script src="result.js?v=20261031-stickers" defer></script>
+<link rel="stylesheet" href="result.css?v=20261101-detailed">
+<script src="result.js?v=20261101-detailed" defer></script>
 <link rel="stylesheet" href="/brand.css?v=20261031-round">
 </head><body>
 <div class="wrap">
@@ -15,9 +15,9 @@
   <main>
     <section id="confirm" class="card">
       <p class="eyebrow">데이터머니 투자 성향 테스트</p>
-      <h1>이메일을 확인하고<br>저장한 결과를 열어 보세요</h1>
-      <p>확인하면 저장된 결과를 다시 볼 수 있고 신청할 때 선택한 소식 수신이 시작됩니다.</p>
-      <button id="open" class="primary" type="button">내 결과 확인하기</button>
+      <h1>내 투자 유형 상세 리포트</h1>
+      <p>이메일을 확인하고 나의 상세 리포트와 저장된 결과를 열어 보세요. 신청할 때 선택한 소식 수신도 시작됩니다.</p>
+      <button id="open" class="primary" type="button">무료 상세 리포트 열기</button>
       <p id="confirm-status" role="status"></p>
     </section>
     <section id="saved" hidden>
@@ -34,7 +34,22 @@
         <button id="compare" class="primary" type="button">다시 검사하고 이전 결과와 비교하기</button>
         <p class="muted">같은 기기의 이 브라우저에서 이어서 검사해 주세요. 새 결과를 저장하려면 검사 후 이메일을 다시 신청해 주세요.</p>
       </div>
-      <div class="card">
+      <article class="card detailed-report" aria-labelledby="report-title">
+        <p class="eyebrow">데이터머니 투자 유형 상세 리포트</p>
+        <h2 id="report-title"></h2>
+        <p class="muted">평소 성향을 돌아보기 위한 안내입니다. 아래 내용은 답변을 바탕으로 한 가능성이며 모든 사람에게 똑같이 적용되지 않습니다.</p>
+        <h3>나의 판단 패턴</h3><p id="report-pattern"></p>
+        <h3>이런 강점이 있어요</h3><p id="report-strength"></p>
+        <h3>놓치기 쉬운 부분</h3><p id="report-blind"></p>
+        <h3>이럴 때 적용해 보세요</h3><p id="report-scenario"></p>
+        <h3>스스로에게 물어볼 질문</h3><ul id="report-questions"></ul>
+        <h3>나만의 점검 순서</h3><ol id="report-steps"></ol>
+        <h3>지금 내 마음 살펴보기</h3><p id="report-mood"></p>
+        <p class="muted">이 리포트는 세 가지 답을 조합한 자기 점검 자료이며 검증된 심리검사, 개별 투자 자문 또는 수익 보장이 아닙니다. 투자 기간과 재정 상황에 따라 판단이 달라질 수 있습니다.</p>
+        <p class="muted">더 읽어보기: <a href="https://www.investor.gov/introduction-investing/getting-started/asset-allocation" target="_blank" rel="noopener noreferrer">미국 SEC 투자자 안내: 투자 기간·위험과 분산</a></p>
+        <button id="print-report" class="secondary" type="button">리포트 인쇄 또는 PDF로 저장</button>
+      </article>
+      <div class="card account-preferences">
         <h2>이메일 수신 관리</h2>
         <p class="muted">선택한 항목의 수신을 각각 철회할 수 있습니다. 새로 수신하려면 테스트 결과 화면에서 신청해 주세요.</p>
         <form id="preferences">

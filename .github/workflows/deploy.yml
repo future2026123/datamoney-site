@@ -45,6 +45,7 @@ jobs:
           node tests/investor-ui.mjs
           node tests/investor-embed-reload.mjs
           node tests/investor-email.mjs
+          node tests/investor-reports.mjs
 
       - name: Synchronize blog navigation
         run: python3 scripts/sync_blog_headers.py
@@ -142,7 +143,9 @@ jobs:
           command: deploy --config wrangler.article-engagement.toml --secrets-file ${{ runner.temp }}/datamoney-worker-secrets.json
 
       - name: Exclude worker dependencies from static site
-        run: rm -rf workers/node_modules
+        run: |
+          rm -rf workers/node_modules
+          rm -f workers/investor-reports.js
 
       - name: Deploy to Cloudflare Pages
         if: github.event_name != 'schedule' || steps.popular.outputs.updated == 'true' || steps.ai_traffic.outputs.updated == 'true'

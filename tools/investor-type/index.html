@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="/blog/header.css?v=11c66c07">
 <link rel="stylesheet" href="style.css?v=20261101-footer">
 <script src="app.js?v=20261101-email-image" defer></script>
-<script src="email.js?v=20261101-email-image" defer></script>
+<script src="email.js?v=20261101-detailed-report" defer></script>
 <script src="/scripts/back-navigation.js?v=20261031-1" defer></script>
 <link rel="stylesheet" href="/brand.css?v=20261031-round">
 </head>
@@ -33,19 +33,19 @@
     <div class="result-details"><div><h3>나의 강점</h3><p id="strength"></p></div><div><h3>이럴 때 주의</h3><p id="caution"></p></div><div><h3>지금 나에게 필요한 한 가지</h3><p id="tip"></p></div></div>
     <section id="comparison" class="comparison-panel" hidden aria-labelledby="comparison-title"><p class="eyebrow">지난 결과와 비교</p><h3 id="comparison-title">그때와 지금, 내 마음은?</h3><div id="comparison-content"></div><p>이번 결과는 이메일로 다시 신청할 때 저장됩니다.</p></section>
     <section class="email-panel" aria-labelledby="email-heading">
-      <p class="eyebrow">나의 결과 보관하기</p>
-      <h3 id="email-heading">나의 투자 성향, 다음 달에도 같을까요?</h3>
-      <p class="email-lead">지금의 투자 성향과 심리 결과, 공유 이미지를 이메일로 받아두고 한 달 뒤 다시 검사해 비교해 보세요.</p>
+      <p class="eyebrow">나의 투자 유형 더 알아보기</p>
+      <h3 id="email-heading">나의 상세 리포트를 무료로 받아보세요</h3>
+      <p class="email-lead">내 유형의 판단 습관과 강점, 주의할 점, 실천 질문을 담았습니다. 이메일로 상세 리포트 링크와 결과 이미지를 보내드려요.</p>
       <form id="result-email-form">
         <label class="email-label" for="result-email">이메일 주소</label>
         <input id="result-email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="이메일 주소를 입력해 주세요" required>
         <div class="email-consents">
-          <label><input id="result-email-consent" type="checkbox" required><span><strong>[필수] 결과 발송 및 저장을 위한 개인정보 수집·이용 동의</strong><small>이메일 주소, 투자 유형·심리 결과와 수신 선택을 결과 발송·비교와 선택 소식 발송에 이용하며, 1년 또는 삭제 요청 시까지 보관합니다. 이메일 발송을 위해 Resend(미국)에 이메일 주소와 결과 안내 내용, 결과 이미지가 전송됩니다. 동의하지 않아도 검사 결과를 볼 수 있습니다.</small></span></label>
+          <label><input id="result-email-consent" type="checkbox" required><span><strong>[필수] 상세 리포트·결과 발송 및 저장을 위한 개인정보 수집·이용 동의</strong><small>이메일 주소, 투자 유형·심리 결과와 수신 선택을 상세 리포트·결과 발송과 결과 비교, 선택 소식 발송에 이용하며, 1년 또는 삭제 요청 시까지 보관합니다. 이메일 발송을 위해 Resend(미국)에 이메일 주소와 결과 안내 내용, 결과 이미지가 전송됩니다. 동의하지 않아도 검사 결과를 볼 수 있습니다.</small></span></label>
           <label><input id="result-test-news" type="checkbox"><span>[선택] 새로운 무료 검사 소식 받기 <small>광고성 정보 포함</small></span></label>
           <label><input id="result-monthly-report" type="checkbox"><span>[선택] 월간 데이터머니 금융 리포트 받기 <small>광고성 정보 포함</small></span></label>
         </div>
         <p class="email-privacy">이메일로 발송된 확인 링크를 열어야 선택한 수신 동의가 적용됩니다. 링크에서 수신을 철회하거나 정보를 삭제할 수 있습니다. <a href="/privacy/">개인정보처리방침</a></p>
-        <button class="primary email-submit" type="submit">내 결과 이메일로 받기</button>
+        <button class="primary email-submit" type="submit">무료 상세 리포트 이메일로 받기</button>
         <p id="result-email-status" role="status" aria-live="polite"></p>
       </form>
     </section>

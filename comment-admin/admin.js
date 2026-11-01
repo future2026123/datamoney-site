@@ -163,14 +163,15 @@
         if (!response.ok) { const error = new Error('Request failed'); error.status=response.status; throw error; }
         const data = await response.json();
         list.replaceChildren();
-        data.items.forEach(row => {
+        (data.requests || data.items).forEach(row => {
           const item=document.createElement('li');item.className='comment';
           const address=document.createElement('strong');address.textContent=row.email;
           const detail=document.createElement('p');detail.className='comment-body';
-          detail.textContent=[row.test_news?'새로운 무료 검사 소식':'',row.monthly_report?'월간 금융 리포트':''].filter(Boolean).join(' · ')+' / 이메일 확인 '+new Intl.DateTimeFormat('ko-KR',{dateStyle:'medium',timeZone:'Asia/Seoul'}).format(new Date(row.confirmed_at));
+          const consent=[row.test_news?'새로운 무료 검사 소식':'',row.monthly_report?'월간 금융 리포트':''].filter(Boolean);
+          detail.textContent=(consent.length?'수신 동의: '+consent.join(' · '):'소식 수신 동의 없음')+' / 이메일 확인 '+new Intl.DateTimeFormat('ko-KR',{dateStyle:'medium',timeZone:'Asia/Seoul'}).format(new Date(row.confirmed_at));
           item.append(address,detail);list.append(item);
         });
-        empty.hidden=!!data.items.length;empty.textContent='이메일을 확인하고 소식 수신에 동의한 구독자가 없습니다.';
+        empty.hidden=!!(data.requests || data.items).length;empty.textContent='이메일을 확인한 결과 신청이 없습니다.';
         more.hidden=true;panel.hidden=false;login.hidden=true;keyInput.value='';return;
       }
       if (currentStatus === 'survey') {

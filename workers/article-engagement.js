@@ -1,4 +1,5 @@
 import {AUTH_CONFIG_PATH, AUTH_LOGIN_PATH, AUTH_LOGOUT_PATH, getGoogleAdminConfig, googleAdminLogin, googleAdminLogout, googleAdminMode, hasGoogleAdminSession} from './admin-auth.js';
+import {investorReports} from './investor-reports.js';
 
 const ROUTE = /^\/api\/article-engagement\/([a-z0-9][a-z0-9-]{0,95})(?:\/(reaction|dislike|comments|feedback)(?:\/([1-9]\d*)(?:\/(vote))?)?)?\/?$/;
 const ADMIN_ROUTE = /^\/api\/article-engagement\/_admin\/comments(?:\/([1-9]\d*)(?:\/(approve))?)?\/?$/;
@@ -282,7 +283,8 @@ export class ArticleEngagement {
     }
     if (url.pathname === EMAIL_ADMIN_PATH && request.headers.get('x-article-admin') === 'authorized' && request.method === 'GET') {
       const items = this.sql.exec('SELECT email, MAX(test_news) AS test_news, MAX(monthly_report) AS monthly_report, MAX(confirmed_at) AS confirmed_at FROM email_results WHERE confirmed_at IS NOT NULL AND created_at > ? GROUP BY email HAVING MAX(test_news) = 1 OR MAX(monthly_report) = 1 ORDER BY confirmed_at DESC LIMIT 5000', Date.now() - YEAR).toArray();
-      return json({items});
+      const requests = this.sql.exec('SELECT email, MAX(test_news) AS test_news, MAX(monthly_report) AS monthly_report, MAX(confirmed_at) AS confirmed_at FROM email_results WHERE confirmed_at IS NOT NULL AND created_at > ? GROUP BY email ORDER BY confirmed_at DESC LIMIT 5000', Date.now() - YEAR).toArray();
+      return json({items, requests});
     }
     if (url.pathname.startsWith(EMAIL_PATH)) return this.email(request, url);
     if (url.pathname === SURVEY_ADMIN_PATH && request.headers.get('x-article-admin') === 'authorized' && request.method === 'GET') {
@@ -499,17 +501,17 @@ export class ArticleEngagement {
       // The numeric, validated type selects the same fixed card used by the
       // share button. Clients cannot supply an arbitrary attachment URL.
       const cardUrl=EMAIL_RESULT_CARD_BASE+input.typeCode+'.png';
-      const body='안녕하세요. 데이터머니입니다.\n\n나의 투자 성향 결과: '+type.name+' ('+type.short+')\n최근 불안감: '+anxiety+'\n최근 매도 충동: '+reaction+'\n\n나의 결과 공유 이미지를 파일로 첨부했습니다.\n\n아래 링크에서 이메일을 확인하고 전체 결과를 저장해 보세요. 다음 검사 결과와도 비교할 수 있습니다.\n'+link+'\n\n이 링크는 본인만 보관해 주세요. 확인 전에는 선택한 소식 수신이 시작되지 않습니다. 요청하지 않으셨다면 이 메일을 무시해 주세요.\n\n문의: sys247365@gmail.com\n데이터머니 https://datamoney.kr';
+      const body='안녕하세요. 데이터머니입니다.\n\n나의 투자 성향 결과: '+type.name+' ('+type.short+')\n최근 불안감: '+anxiety+'\n최근 매도 충동: '+reaction+'\n\n나의 결과 공유 이미지를 파일로 첨부했습니다.\n\n아래 링크에서 이메일을 확인하고 내 유형의 무료 상세 리포트를 열어 보세요. 판단 습관, 강점과 주의점, 실천 질문을 담았으며 PDF로 저장할 수 있습니다. 다음 검사 결과와도 비교할 수 있습니다.\n'+link+'\n\n이 링크는 본인만 보관해 주세요. 확인 전에는 선택한 소식 수신이 시작되지 않습니다. 요청하지 않으셨다면 이 메일을 무시해 주세요.\n\n문의: sys247365@gmail.com\n데이터머니 https://datamoney.kr';
       const html='<!doctype html><html lang="ko"><body style="font-family:Arial,sans-serif;color:#182338;line-height:1.6">'+
         '<p>안녕하세요. 데이터머니입니다.</p><p>나의 투자 성향 결과: <strong>'+type.name+' ('+type.short+')</strong><br>'+
         '최근 불안감: '+anxiety+'<br>최근 매도 충동: '+reaction+'</p>'+
         '<p>나의 결과 공유 이미지를 파일로 첨부했습니다.</p><p><img src="'+cardUrl+'" alt="'+type.name+' 투자 캐릭터 결과 카드" width="480" style="display:block;width:100%;max-width:480px;height:auto"></p>'+
-        '<p><a href="'+link+'">이메일을 확인하고 전체 결과 저장하기</a></p>'+
+        '<p>내 유형의 판단 습관, 강점과 주의점, 실천 질문을 담은 무료 상세 리포트입니다. 열어서 인쇄하거나 PDF로 저장할 수 있습니다.</p><p><a href="'+link+'">무료 상세 리포트 열기</a></p>'+
         '<p>다음 검사 결과와도 비교할 수 있습니다. 이 링크는 본인만 보관해 주세요. 확인 전에는 선택한 소식 수신이 시작되지 않습니다. 요청하지 않으셨다면 이 메일을 무시해 주세요.</p>'+
         '<p>문의: sys247365@gmail.com<br>데이터머니 <a href="https://datamoney.kr">datamoney.kr</a></p></body></html>';
       let sent=false;
       try {
-        const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{authorization:'Bearer '+this.env.RESEND_API_KEY,'content-type':'application/json'},body:JSON.stringify({from:'데이터머니 <hello@send.datamoney.kr>',to:[email],subject:'[데이터머니] 나의 투자 성향 결과를 확인해 주세요',text:body,html,attachments:[{filename:'datamoney-investor-result.png',content:cardContent,content_type:'image/png'}]})});
+        const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{authorization:'Bearer '+this.env.RESEND_API_KEY,'content-type':'application/json'},body:JSON.stringify({from:'데이터머니 <hello@send.datamoney.kr>',to:[email],subject:'[데이터머니] 나의 투자 유형 상세 리포트',text:body,html,attachments:[{filename:'datamoney-investor-result.png',content:cardContent,content_type:'image/png'}]})});
         sent=response.ok;
       } catch (_) {}
       if (!sent) { this.sql.exec('DELETE FROM email_results WHERE token_hash = ?',hash); return json({error:'Email delivery unavailable'},502); }
@@ -523,7 +525,7 @@ export class ArticleEngagement {
     if (action === 'open') {
       if (!row.confirmed_at) this.sql.exec('UPDATE email_results SET confirmed_at = ? WHERE token_hash = ?',now,hash);
       const subscriptions=this.sql.exec('SELECT MAX(test_news) AS test_news, MAX(monthly_report) AS monthly_report FROM email_results WHERE email = ? AND confirmed_at IS NOT NULL AND created_at > ?',row.email,now-YEAR).one();
-      return json({result:{typeCode:row.type_code,anxiety:row.anxiety,reaction:row.reaction,tipCode:row.tip_code,createdAt:row.created_at},subscriptions:{testNews:!!subscriptions.test_news,monthlyReport:!!subscriptions.monthly_report}});
+      return json({result:{typeCode:row.type_code,anxiety:row.anxiety,reaction:row.reaction,tipCode:row.tip_code,createdAt:row.created_at},report:investorReports[row.type_code],subscriptions:{testNews:!!subscriptions.test_news,monthlyReport:!!subscriptions.monthly_report}});
     }
     if (!row.confirmed_at) return json({error:'Not confirmed'},403);
     if (action === 'preferences') {
