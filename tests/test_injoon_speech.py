@@ -90,6 +90,15 @@ class InJoonSpeechTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "does not match"):
             validate_cues(self.SOURCE, self.EVENTS[:-1], "a" * 64)
 
+    def test_duplicate_boundary_word_has_small_overlap_corrected(self):
+        events = [dict(e) for e in self.EVENTS]
+        events[3]['end'] = 2.8
+        cues = validate_cues(self.SOURCE, events, "a" * 64)["cues"]
+        self.assertEqual(cues[1]['end'], cues[2]['start'])
+        events[3]['end'] = 3.8
+        with self.assertRaisesRegex(ValueError, 'overlap'):
+            validate_cues(self.SOURCE, events, "a" * 64)
+
     def test_ranges_and_reference_numbers_are_spoken_naturally(self):
         self.assertEqual(prepare_spoken_text("생활비 3~6개월을 준비한다.[8] 수입은 다르다."),
                          "생활비 3개월에서 6개월을 준비한다. 수입은 다르다.")

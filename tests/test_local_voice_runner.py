@@ -31,6 +31,7 @@ class GeneratorWaitTests(unittest.TestCase):
     def test_generator_refuses_to_replace_a_separately_managed_voice(self):
         root = Path(__file__).resolve().parents[1]
         article = (root / "blog" / "ai-semiconductor-per-2026" / "index.html").read_text(encoding="utf-8")
+        article = article.replace('<meta name="dm-speech-voice" content="ko-KR-InJoonNeural-low5-v2">', '')
         article = article.replace("</head>", '<meta name="dm-speech-voice" content="ko-KR-InJoonNeural-v1"></head>', 1)
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "blog" / "test"

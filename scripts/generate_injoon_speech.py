@@ -114,9 +114,15 @@ def validate_cues(source, events, content_id):
         raise ValueError("Some article sentences could not be timed; review required")
     for previous, current in zip(cues, cues[1:]):
         if current["start"] < previous["end"]:
-            if previous["end"] - current["start"] > .15 or current["start"] <= previous["start"]:
+            if (previous["end"] - current["start"] > 1.25 or
+                    current["start"] <= previous["start"] or current["end"] <= previous["end"]):
                 raise ValueError("Speech sentence timings overlap; review required")
-            previous["end"] = current["start"]
+            # The service can report the same boundary word in both adjacent
+            # metadata events. Divide only a small, ordered overlap; anything
+            # larger or out of order still requires review.
+            boundary = round((previous["end"] + current["start"]) / 2, 3)
+            previous["end"] = boundary
+            current["start"] = boundary
     if any(item["end"] <= item["start"] for item in cues):
         raise ValueError("Invalid sentence timings; review required")
     return timing

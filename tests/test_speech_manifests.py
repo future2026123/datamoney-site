@@ -115,6 +115,7 @@ class SpeechManifestTests(unittest.TestCase):
 
     def test_article_voice_gets_its_own_fingerprint(self):
         source = (ROOT / "blog" / "ai-semiconductor-per-2026" / "index.html").read_text(encoding="utf-8")
+        source = source.replace('<meta name="dm-speech-voice" content="ko-KR-InJoonNeural-low5-v2">', '')
         original = speech.build_manifest(source)
         changed = source.replace("</head>", '<meta name="dm-speech-voice" content="ko-KR-InJoonNeural-v1"></head>', 1)
         selected = speech.build_manifest(changed)
@@ -128,6 +129,7 @@ class SpeechManifestTests(unittest.TestCase):
 
     def test_unknown_voice_fails_instead_of_publishing_the_wrong_recording(self):
         source = (ROOT / "blog" / "ai-semiconductor-per-2026" / "index.html").read_text(encoding="utf-8")
+        source = source.replace('<meta name="dm-speech-voice" content="ko-KR-InJoonNeural-low5-v2">', '')
         source = source.replace("</head>", '<meta name="dm-speech-voice" content="unknown"></head>', 1)
         with self.assertRaisesRegex(ValueError, "Unsupported article speech voice"):
             speech.build_manifest(source)
