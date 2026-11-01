@@ -13,6 +13,9 @@ const EMAIL_RESULT_CARD_BASE = 'https://datamoney.kr/tools/investor-type/result-
 const EMAIL_RESULT_CARD_ASSET_BASE = 'https://datamoney-tools.pages.dev/tools/investor-type/result-cards/20261101/';
 const FEEDBACK_ADMIN_PATH = '/api/article-engagement/_admin/feedback';
 const FEEDBACK_ADMIN_ROUTE = /^\/api\/article-engagement\/_admin\/feedback(?:\/([1-9]\d*))?\/?$/;
+const INQUIRY_PATH = '/api/article-engagement/_inquiry';
+const INQUIRY_ADMIN_PATH = '/api/article-engagement/_admin/inquiries';
+const INQUIRY_ADMIN_ROUTE = /^\/api\/article-engagement\/_admin\/inquiries(?:\/([1-9]\d*))?\/?$/;
 const EMAIL_TYPES = [
   {name:'차근차근 거북이',short:'존버형'}, {name:'꼼꼼한 다람쥐',short:'짠테크형'},
   {name:'감각적인 고양이',short:'촉형'}, {name:'귀 쫑긋 토끼',short:'포모형'},
@@ -115,11 +118,13 @@ export default {
     const surveyAdmin = url.pathname === SURVEY_ADMIN_PATH;
     const emailAdmin = url.pathname === EMAIL_ADMIN_PATH;
     const feedbackAdmin = url.pathname.match(FEEDBACK_ADMIN_ROUTE);
+    const inquiryAdmin = url.pathname.match(INQUIRY_ADMIN_ROUTE);
+    const inquiry = url.pathname === INQUIRY_PATH;
     const emailRoute = /^\/api\/article-engagement\/_email\/(request|open|preferences|delete)$/.test(url.pathname);
     const authConfig = url.pathname === AUTH_CONFIG_PATH;
     const authLogin = url.pathname === AUTH_LOGIN_PATH;
     const authLogout = url.pathname === AUTH_LOGOUT_PATH;
-    if (!adminRoute && !route && !survey && !surveyAdmin && !surveyAggregate && !emailRoute && !emailAdmin && !feedbackAdmin && !authConfig && !authLogin && !authLogout) return json({error: 'Not found'}, 404);
+    if (!adminRoute && !route && !survey && !surveyAdmin && !surveyAggregate && !emailRoute && !emailAdmin && !feedbackAdmin && !inquiryAdmin && !inquiry && !authConfig && !authLogin && !authLogout) return json({error: 'Not found'}, 404);
     if (!['GET', 'POST', 'DELETE'].includes(request.method)) return json({error: 'Method not allowed'}, 405);
     if (request.method !== 'GET' && request.headers.get('origin') !== url.origin) {
       return json({error: 'Invalid origin'}, 403);
@@ -135,7 +140,7 @@ export default {
       const headers = new Headers({'content-type':'application/json'});
       return env.ARTICLE_ENGAGEMENT.get(id).fetch(new Request(request, {headers}));
     }
-    if (adminRoute || surveyAdmin || emailAdmin || feedbackAdmin) {
+    if (adminRoute || surveyAdmin || emailAdmin || feedbackAdmin || inquiryAdmin) {
       const mode = googleAdminMode(env);
       if (mode === 'unavailable') return json({error: 'Administrator access unavailable'}, 503);
       if (mode === 'enabled') {
@@ -153,6 +158,15 @@ export default {
       headers.set('x-article-admin', 'authorized');
       headers.delete('x-article-visitor');
       headers.delete('x-article-rate');
+      const id = env.ARTICLE_ENGAGEMENT.idFromName('datamoney');
+      return env.ARTICLE_ENGAGEMENT.get(id).fetch(new Request(request, {headers}));
+    }
+    if (inquiry) {
+      if (request.method !== 'POST') return json({error:'Method not allowed'}, 405);
+      if ((Number(request.headers.get('content-length')) || 0) > 8192) return json({error:'Invalid input'}, 400);
+      const rate = await rateIdentifier(request.headers.get('cf-connecting-ip'), env.DM_COMMENT_ADMIN_KEY);
+      if (!rate) return json({error:'Service unavailable'}, 503);
+      const headers = new Headers({'content-type':'application/json', 'x-inquiry-rate':rate});
       const id = env.ARTICLE_ENGAGEMENT.idFromName('datamoney');
       return env.ARTICLE_ENGAGEMENT.get(id).fetch(new Request(request, {headers}));
     }
@@ -243,6 +257,10 @@ export class ArticleEngagement {
     this.sql.exec('CREATE TABLE IF NOT EXISTS article_feedback (id INTEGER PRIMARY KEY AUTOINCREMENT, article TEXT NOT NULL, visitor TEXT NOT NULL, choice TEXT NOT NULL, body TEXT NOT NULL DEFAULT \'\', created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, UNIQUE(article, visitor))');
     this.sql.exec('CREATE TABLE IF NOT EXISTS feedback_rate (identity TEXT NOT NULL, created_at INTEGER NOT NULL)');
     this.sql.exec('CREATE INDEX IF NOT EXISTS feedback_rate_identity_time ON feedback_rate (identity, created_at DESC)');
+    this.sql.exec("CREATE TABLE IF NOT EXISTS inquiries (id INTEGER PRIMARY KEY AUTOINCREMENT, request_id TEXT NOT NULL UNIQUE, category TEXT NOT NULL, body TEXT NOT NULL, email TEXT NOT NULL, created_at INTEGER NOT NULL, notify_status TEXT NOT NULL DEFAULT 'pending', notify_attempts INTEGER NOT NULL DEFAULT 0, notify_next INTEGER, notified_at INTEGER)");
+    this.sql.exec('CREATE INDEX IF NOT EXISTS inquiries_notification ON inquiries (notify_status, notify_next)');
+    this.sql.exec('CREATE TABLE IF NOT EXISTS inquiry_rate (identity TEXT NOT NULL, created_at INTEGER NOT NULL)');
+    this.sql.exec('CREATE INDEX IF NOT EXISTS inquiry_rate_identity_time ON inquiry_rate (identity, created_at DESC)');
     this.sql.exec('CREATE TABLE IF NOT EXISTS survey_answers (visitor TEXT NOT NULL, day TEXT NOT NULL, created_at INTEGER NOT NULL, loss INTEGER NOT NULL, anxiety INTEGER NOT NULL, horizon INTEGER NOT NULL, reaction INTEGER NOT NULL, buffer INTEGER NOT NULL, PRIMARY KEY(visitor, day))');
     this.sql.exec('CREATE TABLE IF NOT EXISTS survey_aggregates (day TEXT NOT NULL, type_code INTEGER NOT NULL, participants INTEGER NOT NULL, loss INTEGER NOT NULL, anxiety INTEGER NOT NULL, horizon INTEGER NOT NULL, reaction INTEGER NOT NULL, buffer INTEGER NOT NULL, PRIMARY KEY(day, type_code))');
     const surveyColumns = new Set(this.sql.exec('PRAGMA table_info(survey_answers)').toArray().map(column => column.name));
@@ -268,6 +286,44 @@ export class ArticleEngagement {
 
   async fetch(request) {
     const url = new URL(request.url);
+    const inquiryAdmin = url.pathname.match(INQUIRY_ADMIN_ROUTE);
+    if (inquiryAdmin && request.headers.get('x-article-admin') === 'authorized') {
+      if (request.method === 'GET' && !inquiryAdmin[1]) {
+        const before = Number(url.searchParams.get('before')) || Number.MAX_SAFE_INTEGER;
+        const rows = this.sql.exec('SELECT id, category, body, email, created_at, notify_status FROM inquiries WHERE id < ? ORDER BY id DESC LIMIT 51', before).toArray();
+        return json({items:rows.slice(0,50), nextBefore:rows.length > 50 ? rows[49].id : null});
+      }
+      if (request.method === 'DELETE' && inquiryAdmin[1]) {
+        this.sql.exec('DELETE FROM inquiries WHERE id = ?', Number(inquiryAdmin[1]));
+        return json({ok:true});
+      }
+      return json({error:'Method not allowed'}, 405);
+    }
+    if (url.pathname === INQUIRY_PATH && request.method === 'POST') {
+      const identity = request.headers.get('x-inquiry-rate');
+      if (!identity) return json({error:'Not authorized'}, 403);
+      const raw = await request.text();
+      if (raw.length > 4096) return json({error:'Invalid input'}, 400);
+      let input;
+      try { input = JSON.parse(raw); } catch (_) { return json({error:'Invalid input'}, 400); }
+      const body = typeof input?.body === 'string' ? input.body.trim() : '';
+      const email = typeof input?.email === 'string' ? input.email.trim() : '';
+      if (!/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(input?.requestId || '') ||
+          !['question','error','suggestion','other'].includes(input?.category) || !body || body.length > 2000 ||
+          (input.email !== undefined && typeof input.email !== 'string') || email.length > 254 ||
+          (email && !/^[^\s@<>]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$/.test(email))) return json({error:'Invalid input'}, 400);
+      const previous = this.sql.exec('SELECT category, body, email FROM inquiries WHERE request_id = ?', input.requestId).toArray()[0];
+      if (previous) return previous.category === input.category && previous.body === body && previous.email === email
+        ? json({ok:true}) : json({error:'Request already submitted'}, 409);
+      const now = Date.now();
+      this.sql.exec('DELETE FROM inquiry_rate WHERE created_at <= ?', now - 3600000);
+      if (this.sql.exec('SELECT COUNT(*) AS n FROM inquiry_rate WHERE identity = ?', identity).one().n >= 5 ||
+          this.sql.exec('SELECT COUNT(*) AS n FROM inquiry_rate').one().n >= 40) return json({error:'Too many requests'}, 429);
+      this.sql.exec('INSERT INTO inquiry_rate (identity, created_at) VALUES (?, ?)', identity, now);
+      this.sql.exec('INSERT INTO inquiries (request_id, category, body, email, created_at, notify_next) VALUES (?, ?, ?, ?, ?, ?)', input.requestId, input.category, body, email, now, now);
+      await this.state.storage.setAlarm(now + 1000);
+      return json({ok:true}, 201);
+    }
     const feedbackAdmin = url.pathname.match(FEEDBACK_ADMIN_ROUTE);
     if (feedbackAdmin && request.headers.get('x-article-admin') === 'authorized' && request.method === 'DELETE' && feedbackAdmin[1]) {
       this.sql.exec('DELETE FROM article_feedback WHERE id = ?', Number(feedbackAdmin[1]));
@@ -574,6 +630,29 @@ export class ArticleEngagement {
     return json({error: 'Not found'}, 404);
   }
 
+  async notifyInquiries(now) {
+    const rows = this.sql.exec("SELECT id, request_id, category, notify_attempts FROM inquiries WHERE notify_status = 'pending' AND notify_next <= ? ORDER BY notify_next LIMIT 10", now).toArray();
+    const labels = {question:'질문', error:'오류 제보', suggestion:'제안', other:'기타'};
+    for (const row of rows) {
+      try {
+        if (!this.env.RESEND_API_KEY || !this.env.DM_GOOGLE_ADMIN_EMAIL) throw new Error('Notification unavailable');
+        const response = await fetch('https://api.resend.com/emails', {
+          method:'POST', signal:AbortSignal.timeout(10000),
+          headers:{authorization:'Bearer ' + this.env.RESEND_API_KEY, 'content-type':'application/json', 'Idempotency-Key':'datamoney-inquiry-' + row.request_id},
+          body:JSON.stringify({from:'데이터머니 <hello@send.datamoney.kr>', to:[this.env.DM_GOOGLE_ADMIN_EMAIL],
+            subject:'[데이터머니] 새 문의가 도착했습니다',
+            text:`새 문의가 접수되었습니다.\n유형: ${labels[row.category] || '기타'}\n문의 번호: ${row.id}\n\n운영자 화면에서 확인해 주세요: https://datamoney.kr/comment-admin/?tab=inquiries`})
+        });
+        if (!response.ok) throw new Error('Notification failed');
+        this.sql.exec("UPDATE inquiries SET notify_status = 'sent', notified_at = ?, notify_next = NULL WHERE id = ?", Date.now(), row.id);
+      } catch (_) {
+        const attempts = row.notify_attempts + 1;
+        const delay = [60000, 300000, 900000, 3600000, 14400000][attempts - 1];
+        this.sql.exec('UPDATE inquiries SET notify_status = ?, notify_attempts = ?, notify_next = ? WHERE id = ?', delay ? 'pending' : 'failed', attempts, delay ? Date.now() + delay : null, row.id);
+      }
+    }
+  }
+
   async alarm() {
     const now = Date.now();
     this.sql.exec('DELETE FROM comment_rate WHERE created_at <= ?', now - 60000);
@@ -581,14 +660,20 @@ export class ArticleEngagement {
     this.sql.exec('DELETE FROM email_rate WHERE created_at <= ?', now - 86400000);
     this.sql.exec('DELETE FROM feedback_rate WHERE created_at <= ?', now - 3600000);
     this.sql.exec('DELETE FROM article_feedback WHERE updated_at <= ?', now - YEAR);
+    this.sql.exec('DELETE FROM inquiry_rate WHERE created_at <= ?', now - 3600000);
+    this.sql.exec('DELETE FROM inquiries WHERE created_at <= ?', now - YEAR);
     this.sql.exec('DELETE FROM email_results WHERE (confirmed_at IS NULL AND created_at <= ?) OR created_at <= ?', now - 2*86400000, now - YEAR);
+    await this.notifyInquiries(now);
     const next = this.sql.exec('SELECT MIN(created_at) AS time FROM comment_rate').one().time;
     const surveyNext = this.sql.exec('SELECT MIN(created_at) AS time FROM survey_answers').one().time;
     const emailNext = this.sql.exec('SELECT MIN(CASE WHEN confirmed_at IS NULL THEN created_at + ? ELSE created_at + ? END) AS time FROM email_results', 2*86400000, YEAR).one().time;
     const emailRateNext = this.sql.exec('SELECT MIN(created_at) AS time FROM email_rate').one().time;
     const feedbackNext = this.sql.exec('SELECT MIN(updated_at) AS time FROM article_feedback').one().time;
     const feedbackRateNext = this.sql.exec('SELECT MIN(created_at) AS time FROM feedback_rate').one().time;
-    const deadlines = [next === null ? null : next + 61000, surveyNext === null ? null : surveyNext + YEAR, emailNext, emailRateNext === null ? null : emailRateNext + 86400000, feedbackNext === null ? null : feedbackNext + YEAR, feedbackRateNext === null ? null : feedbackRateNext + 3600000].filter(value => value !== null);
+    const inquiryNext = this.sql.exec('SELECT MIN(created_at) AS time FROM inquiries').one().time;
+    const inquiryRateNext = this.sql.exec('SELECT MIN(created_at) AS time FROM inquiry_rate').one().time;
+    const notificationNext = this.sql.exec("SELECT MIN(notify_next) AS time FROM inquiries WHERE notify_status = 'pending'").one().time;
+    const deadlines = [next === null ? null : next + 61000, surveyNext === null ? null : surveyNext + YEAR, emailNext, emailRateNext === null ? null : emailRateNext + 86400000, feedbackNext === null ? null : feedbackNext + YEAR, feedbackRateNext === null ? null : feedbackRateNext + 3600000, inquiryNext === null ? null : inquiryNext + YEAR, inquiryRateNext === null ? null : inquiryRateNext + 3600000, notificationNext].filter(value => value !== null);
     if (deadlines.length) await this.state.storage.setAlarm(Math.max(now + 1000, Math.min(...deadlines)));
   }
 }

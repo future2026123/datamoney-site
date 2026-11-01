@@ -10,8 +10,8 @@ const tick = () => new Promise(resolve => setTimeout(resolve, 0));
 const response = (status, data = {}) => ({ok:status === 200, status, json:async () => data});
 const emptyList = {items:[], nextBefore:null};
 
-function setup({existingSession=false, google=true, legacyAllowed=false, feedback=false} = {}) {
-  const dom = new JSDOM(html, {url:'https://datamoney.kr/comment-admin/', runScripts:'outside-only'});
+function setup({existingSession=false, google=true, legacyAllowed=false, feedback=false, inquiry=false} = {}) {
+  const dom = new JSDOM(html, {url:'https://datamoney.kr/comment-admin/' + (inquiry ? '?tab=inquiries' : ''), runScripts:'outside-only'});
   let authorized = existingSession;
   let googleConfig;
   const calls = [];
@@ -25,6 +25,7 @@ function setup({existingSession=false, google=true, legacyAllowed=false, feedbac
     }
     if (authorized || options.headers?.authorization === 'Bearer test-key') {
       if (url.includes('/_admin/feedback?') && feedback) return response(200, {items:[{id:1,article:'test-article',choice:'helpful',body:'<img src=x onerror=alert(1)>',updated_at:Date.now()}], totals:[{article:'test-article',helpful:1,difficult:0,disappointing:0}],nextBefore:null});
+      if (url.includes('/_admin/inquiries?') && inquiry) return response(200, {items:[{id:2,category:'question',body:'<img src=x onerror=alert(1)>',email:'reader@example.com',created_at:Date.now(),notify_status:'pending'}],nextBefore:null});
       if (url.includes('/_admin/email-subscribers')) return response(200, {items:[],requests:[{email:'report@example.com',test_news:0,monthly_report:0,confirmed_at:Date.now()}]});
       return response(200, emptyList);
     }
@@ -63,6 +64,16 @@ feedbackDocument.querySelector('[data-status=subscribers]').click();
 await tick();
 assert.match(feedbackDocument.querySelector('#admin-comments').textContent, /report@example.com/);
 assert.match(feedbackDocument.querySelector('#admin-comments').textContent, /소식 수신 동의 없음/);
+
+const inquiryPage = setup({existingSession:true, inquiry:true});
+await tick();
+const inquiryDocument = inquiryPage.dom.window.document;
+assert.equal(inquiryDocument.querySelector('[data-status=inquiries]').getAttribute('aria-pressed'), 'true');
+assert.equal(inquiryDocument.querySelector('#admin-panel').hidden, false);
+assert.equal(inquiryDocument.querySelector('#admin-signout').hidden, false, 'a direct inquiry link retains Google session controls');
+assert.match(inquiryDocument.querySelector('#admin-comments').textContent, /reader@example.com/);
+assert.equal(inquiryDocument.querySelector('#admin-comments img'), null, 'inquiry text cannot inject markup');
+assert.match(inquiryDocument.querySelector('#admin-comments a').getAttribute('href'), /^mailto:/);
 
 for (const legacyAllowed of [true, false]) {
   const page = setup({legacyAllowed});

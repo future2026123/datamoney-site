@@ -40,7 +40,7 @@ def render(source, js_version=None, css_version=None):
 
 def site_pages(root=ROOT):
     paths = [root / 'index.html', root / 'blog' / 'index.html', root / 'tools' / 'index.html',
-             root / 'search' / 'index.html', root / 'about' / 'index.html', root / 'privacy' / 'index.html',
+             root / 'search' / 'index.html', root / 'about' / 'index.html', root / 'privacy' / 'index.html', root / 'contact' / 'index.html',
              root / 'account' / 'result' / 'index.html', root / 'comment-admin' / 'index.html',
              root / 'preview' / 'article-format' / 'index.html', root / 'templates' / 'blog_post.html']
     paths += sorted((root / 'blog').glob('*/index.html'))

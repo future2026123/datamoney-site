@@ -67,7 +67,7 @@ assert.equal(authenticated.status, 200);
 const sessionSetCookie = authenticated.headers.getSetCookie().find(value => value.startsWith('__Host-dm_admin_session='));
 assert.match(sessionSetCookie, /Secure; HttpOnly; SameSite=Strict; Max-Age=86400/);
 const session = sessionSetCookie.split(';')[0];
-for (const path of ['/_admin/comments?status=private','/_admin/comments?status=pending','/_admin/survey','/_admin/email-subscribers','/_admin/feedback']) {
+for (const path of ['/_admin/comments?status=private','/_admin/comments?status=pending','/_admin/survey','/_admin/email-subscribers','/_admin/feedback','/_admin/inquiries']) {
   assert.equal((await call(path, {headers:{cookie:session}})).status, 200);
   assert.equal((await call(path, {headers:{'x-article-admin':'authorized'}})).status, 401);
 }

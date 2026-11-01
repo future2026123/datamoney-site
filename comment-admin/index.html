@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <title>댓글 관리 | 데이터머니</title>
+  <title>운영자 관리 | 데이터머니</title>
   <link rel="icon" href="/favicon.ico?v=20261031-round">
 <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png?v=20261031-round">
   <style>
@@ -46,13 +46,14 @@
     @media (max-width:560px) { main { padding:20px 16px; } header a { font-size:20px; } form .primary { width:100%; } }
   </style>
 <link rel="stylesheet" href="/brand.css?v=20261031-round">
+
 </head>
 <body>
   <div class="wrap">
     <header><a href="/blog/"><img class="dm-inline-logo" src="/blog/datamoney-logo-display.png?v=20261031-round" width="28" height="28" alt="">데이터<span>머니</span></a><a class="home" href="/blog/">블로그로 돌아가기</a></header>
     <main>
-      <h1>댓글과 피드백 관리</h1>
-      <p class="intro">댓글과 독자가 남긴 비공개 피드백을 확인할 수 있습니다.</p>
+      <h1>운영자 관리</h1>
+      <p class="intro">댓글, 비공개 피드백과 일반 문의를 확인할 수 있습니다.</p>
       <form id="admin-login">
         <div class="key-field"><label for="admin-key">관리자 접속키</label><input id="admin-key" type="password" autocomplete="off" required></div>
         <button class="primary" type="submit">열기</button>
@@ -68,6 +69,7 @@
           <button type="button" data-status="pending" aria-pressed="true">검토 대기</button>
           <button type="button" data-status="published" aria-pressed="false">공개 댓글</button>
           <button type="button" data-status="private" aria-pressed="false">비밀댓글</button>
+          <button type="button" data-status="inquiries" aria-pressed="false">일반 문의</button>
           <button type="button" data-status="feedback" aria-pressed="false">글 피드백</button>
           <button type="button" data-status="survey" aria-pressed="false">투자 심리 응답</button>
           <button type="button" data-status="subscribers" aria-pressed="false">결과·리포트 이메일</button>
@@ -79,6 +81,6 @@
       </section>
     </main>
   </div>
-  <script src="/comment-admin/admin.js?v=20261101-report-requests" defer></script>
+  <script src="/comment-admin/admin.js?v=20261102-inquiries" defer></script>
 </body>
 </html>

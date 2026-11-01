@@ -15,8 +15,9 @@
   const endpoint = '/api/article-engagement/_admin/comments';
   let key = '';
   let googleSession = false;
-  let currentStatus = 'pending';
+  let currentStatus = new URLSearchParams(location.search).get('tab') === 'inquiries' ? 'inquiries' : 'pending';
   let nextBefore = null;
+  tabs.forEach(tab => tab.setAttribute('aria-pressed', String(tab.dataset.status === currentStatus)));
   let articleTitles;
 
   const loadArticleTitles = async () => {
@@ -107,6 +108,48 @@
     status.textContent = '';
     feedbackSummary.hidden = currentStatus !== 'feedback';
     try {
+      if (currentStatus === 'inquiries') {
+        const params = new URLSearchParams();
+        if (append && nextBefore) params.set('before', String(nextBefore));
+        const response = await fetch('/api/article-engagement/_admin/inquiries?' + params, {cache:'no-store', headers:authHeaders()});
+        if (!response.ok) { const error = new Error('Request failed'); error.status = response.status; throw error; }
+        const data = await response.json();
+        if (!append) list.replaceChildren();
+        const labels = {question:'질문', error:'오류 제보', suggestion:'제안', other:'기타'};
+        data.items.forEach(row => {
+          const item = document.createElement('li'); item.className = 'comment';
+          const header = document.createElement('div'); header.className = 'comment-header';
+          const type = document.createElement('strong'); type.textContent = labels[row.category] || '기타';
+          const date = document.createElement('time'); date.dateTime = new Date(row.created_at).toISOString();
+          date.textContent = new Intl.DateTimeFormat('ko-KR', {dateStyle:'medium', timeStyle:'short', timeZone:'Asia/Seoul'}).format(new Date(row.created_at));
+          const delivery = document.createElement('span');
+          delivery.textContent = row.notify_status === 'sent' ? '알림 요청됨' : row.notify_status === 'failed' ? '메일 알림 실패' : '메일 알림 대기 중';
+          header.append(type, date, delivery); item.append(header);
+          const body = document.createElement('p'); body.className = 'comment-body'; body.textContent = row.body; item.append(body);
+          const actions = document.createElement('div'); actions.className = 'comment-actions';
+          if (row.email) {
+            const reply = document.createElement('a'); reply.textContent = '답장하기 · ' + row.email;
+            const at = row.email.lastIndexOf('@');
+            reply.href = 'mailto:' + encodeURIComponent(row.email.slice(0, at)) + '@' + row.email.slice(at + 1) + '?subject=' + encodeURIComponent('[데이터머니] 문의 답변');
+            actions.append(reply);
+          }
+          const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'delete'; remove.textContent = '삭제';
+          remove.addEventListener('click', async () => {
+            if (!window.confirm('이 문의를 삭제할까요?')) return;
+            remove.disabled = true;
+            try {
+              const result = await fetch('/api/article-engagement/_admin/inquiries/' + row.id, {method:'DELETE', cache:'no-store', headers:authHeaders()});
+              if (!result.ok) throw new Error('Delete failed');
+              item.remove(); empty.hidden = list.children.length > 0; status.textContent = '문의를 삭제했습니다.';
+            } catch (_) { status.textContent = '삭제하지 못했습니다. 다시 시도해 주세요.'; remove.disabled = false; }
+          });
+          actions.append(remove); item.append(actions); list.append(item);
+        });
+        nextBefore = data.nextBefore; more.hidden = !nextBefore;
+        empty.hidden = !!list.children.length; empty.textContent = '아직 접수된 문의가 없습니다.';
+        if (!key) { googleSession = true; signout.hidden = false; }
+        panel.hidden = false; login.hidden = true; googleLogin.hidden = true; keyInput.value = ''; return;
+      }
       if (currentStatus === 'feedback') {
         const params = new URLSearchParams();
         if (append && nextBefore) params.set('before', String(nextBefore));
@@ -207,7 +250,7 @@
       if (!(silent && error.status === 401)) {
         status.textContent = error.status === 401
           ? (googleSession ? '로그인이 만료되었습니다. 페이지를 새로고침해 다시 로그인해 주세요.' : '접속키가 맞지 않습니다.')
-          : '댓글 목록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+          : '목록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
       }
       if (!append && panel.hidden && !silent) key = '';
     } finally { more.disabled = false; }
