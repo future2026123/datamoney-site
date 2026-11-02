@@ -108,6 +108,7 @@ def synchronize(path: Path, fragment: str) -> bool:
 def main() -> None:
     fragment = FRAGMENT.read_text(encoding="utf-8").strip()
     paths = [ROOT / "blog" / "index.html", *sorted((ROOT / "blog").glob("*/index.html"))]
+    paths.append(ROOT / "about" / "index.html")
     paths.append(ROOT / "templates" / "blog_post.html")
     search_page = ROOT / "search" / "index.html"
     if search_page.exists():

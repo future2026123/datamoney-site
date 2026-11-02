@@ -53,7 +53,7 @@
   @media (max-width:880px){.article-shell{grid-template-columns:1fr;}.aside-card{position:static;}}
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6705155374292160" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="/blog/header.css?v=4cec9b36">
+<link rel="stylesheet" href="/blog/header.css?v=e4026d64">
 <link rel="stylesheet" href="/blog/article-title.css?v=756e8ca3">
 <link rel="stylesheet" href="/blog/article-actions.css?v=7b892f9f">
 <script src="/blog/article-speech.js?v=48fc0e02" defer></script>
@@ -72,17 +72,23 @@
 <div class="wrap">
   <header class="dm-site-header">
   <a class="dm-brand" href="/"><span class="dm-brand-icon" aria-hidden="true"><img src="/blog/datamoney-logo-display.png?v=20261031-round" width="256" height="256" alt=""></span><span class="dm-brand-text">데이터<span>머니</span></span></a>
-  <form class="dm-header-search" action="/search/" method="get" role="search">
-    <label class="dm-visually-hidden" for="dm-header-query">블로그 검색</label>
-    <input id="dm-header-query" name="q" type="search" placeholder="블로그 글 검색" autocomplete="off" required>
-    <button type="submit" aria-label="검색"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4 4"></path></svg></button>
-  </form>
+  <div class="dm-header-utility">
+    <form class="dm-header-search" action="/search/" method="get" role="search">
+      <label class="dm-visually-hidden" for="dm-header-query">블로그 검색</label>
+      <input id="dm-header-query" name="q" type="search" placeholder="블로그 글 검색" autocomplete="off" required>
+      <button type="submit" aria-label="검색"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4 4"></path></svg></button>
+    </form>
+    <a class="dm-header-about" href="/about/">소개</a>
+    <a class="dm-header-contact" href="/contact/" data-dm-contact-link>문의하기</a>
+  </div>
   <a class="dm-mobile-investor-banner" href="/tools/investor-type/" aria-label="나의 투자 성향 테스트 시작하기">
     <img src="/blog/investor-type-mobile-banner.png?v=20261031-1" width="2172" height="724" alt="나의 투자 성향 테스트, 8가지 성향. 지금 테스트하기">
   </a>
   <nav class="dm-site-nav" aria-label="주 메뉴">
     <a href="/">홈</a>
+    <a href="/about/" data-dm-about-nav>소개</a>
     <a href="/tools/">도구</a>
+    <a href="/contact/" data-dm-contact-link>문의하기</a>
   </nav>
   <script src="/scripts/back-navigation.js?v=20261031-1" defer></script>
 </header>

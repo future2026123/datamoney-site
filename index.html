@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<!-- dm-theme-init:start --><script src="/scripts/theme.js?v=389b51c6"></script><!-- dm-theme-init:end -->
 <link rel="icon" href="/favicon.ico?v=20261031-round">
 <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png?v=20261031-round">
 <meta charset="UTF-8">
@@ -75,12 +76,17 @@
   @media (max-width:980px) { .hero,.blog-strip,.tools { grid-template-columns:1fr; } .section-head,.footer { display:block; } .footer a { display:inline-block; margin-top:10px; } }
   @media (max-width:780px) { .mini-strip { grid-template-columns:1fr; } }
   @media (max-width:640px) { .shell { width:min(100% - 20px,1180px); padding-top:12px; } .topbar,.hero-copy,.hero-side,.section,.footer { border-radius:24px; } .hero-copy,.section { padding:24px; } .hero-side { padding:18px; } h1 { font-size:42px; } .hero-copy p { font-size:15px; } }
+  @media (max-width:640px) { .topbar { flex-wrap:wrap; gap:12px; padding:14px; } .topbar .brand { width:100%; gap:8px; } .topbar .brand small { display:none; } .topbar .nav { width:100%; align-items:center; gap:6px; } .topbar .nav a { padding:8px 10px; font-size:13px; } }
 </style>
 <link rel="stylesheet" href="/global.css">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6705155374292160" crossorigin="anonymous"></script>
 <script src="/scripts/back-navigation.js?v=20261031-1" defer></script>
 <link rel="stylesheet" href="/brand.css?v=20261031-round">
 <script src="/scripts/admin-footer-login.js?v=20261102-home-return" defer></script>
+
+<!-- dm-theme-style:start --><link rel="stylesheet" href="/theme.css?v=a452196e"><!-- dm-theme-style:end -->
+
+<!-- dm-contact:start --><link rel="stylesheet" href="/contact.css?v=84e71085"><script src="/scripts/contact.js?v=4d373613" defer></script><!-- dm-contact:end -->
 </head>
 <body>
   <div class="shell">
@@ -88,6 +94,7 @@
       <a class="brand" href="/"><img class="dm-inline-logo" src="/blog/datamoney-logo-display.png?v=20261031-round" width="28" height="28" alt=""><span>데이터머니<small>Finance Utility Deck</small></span></a>
       <nav class="nav">
         <a href="/blog/">블로그</a>
+        <a href="/about/">소개</a>
         <a href="#tools">도구</a>
         <a class="cta-link" href="https://www.youtube.com/@datamoneykr" target="_blank" rel="noopener noreferrer">YouTube</a>
       </nav>
@@ -170,6 +177,7 @@
     <footer class="footer">
       <span>© 2026 데이터머니 · datamoney.kr · 본 사이트의 정보는 투자 권유가 아닙니다.</span>
       <a href="https://www.youtube.com/@datamoneykr" target="_blank" rel="noopener noreferrer">채널 방문</a>
+<span data-site-info-links="true" style="display:block;margin-top:12px;font-size:14px;line-height:1.8"><a href="/about/" style="color:inherit;text-decoration:underline">사이트 소개</a> <span aria-hidden="true">·</span> <a href="/privacy/" style="color:inherit;text-decoration:underline">개인정보처리방침</a></span>
     </footer>
   </div>
 </body>

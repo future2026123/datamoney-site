@@ -72,7 +72,7 @@ body > .dm-site-header {
   border: 0;
 }
 .dm-site-header .dm-header-utility { display: flex; align-items: center; min-width: 0; }
-.dm-site-header .dm-header-contact { display: none; }
+.dm-site-header .dm-header-about, .dm-site-header .dm-header-contact { display: none; }
 .dm-site-header .dm-header-search {
   display: flex;
   align-items: center;
@@ -137,8 +137,9 @@ body.dm-header-flush .dm-site-header { margin-top: 18px; }
   .dm-site-header .dm-site-nav { grid-column: 2; grid-row: 1; }
   .dm-site-header .dm-header-utility { grid-column: 1 / -1; grid-row: 2; gap: 8px; }
   .dm-site-header .dm-header-search { flex: 1 1 auto; min-width: 0; }
-  .dm-site-header .dm-site-nav [data-dm-contact-link] { display: none; }
-  .dm-site-header .dm-header-contact { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 0 12px; border: 1px solid #d9e1ec; border-radius: 12px; background: #fff; color: #334155; font-size: 13px; white-space: nowrap; }
+  .dm-site-header .dm-site-nav :is([data-dm-contact-link], [data-dm-about-nav]) { display: none; }
+  .dm-site-header :is(.dm-header-about, .dm-header-contact) { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 0 12px; border: 1px solid #d9e1ec; border-radius: 12px; background: #fff; color: #334155; font-size: 13px; white-space: nowrap; }
+  html[data-dm-theme="dark"] .dm-site-header .dm-header-about { border-color: #40516a; background: #243348; color: #e7edf7; }
   body:has(.dm-shared-sidebar) .dm-site-header .dm-mobile-investor-banner { display: block; grid-column: 1 / -1; grid-row: 3; min-width: 0; }
 }
 @media (max-width: 560px) {
