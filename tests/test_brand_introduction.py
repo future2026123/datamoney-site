@@ -46,18 +46,19 @@ class BrandIntroductionTest(unittest.TestCase):
         reader = ArticleReader()
         reader.feed((ROOT / "about/index.html").read_text(encoding="utf-8"))
         self.assertEqual(reader.blocks, [
-            ("h1", "데이터머니 | 브랜드 철학과 사명문"),
-            ("h2", "1. 존재 이유 (WHY)"),
+            ("h1", "돈을 잃으며 배우지 않아도 되도록."),
+            ("p", "데이터머니는 더 많이 알아보고, 스스로 판단할 수 있도록 돕는 금융 친구입니다."),
+            ("h2", "존재 이유"),
             ("p", "투자를 처음 시작했을 때, 우리는 무엇을 알아야 하는지조차 모를 수 있습니다."),
             ("p", "정보가 부족하다는 이유로 돈을 잃고, 잘못된 판단의 대가를 치르면서 투자에 대해 배우기도 합니다."),
             ("p", "하지만 모든 사람이 그렇게 비싼 수업료를 낼 필요는 없습니다."),
             ("p", "데이터머니는 사람들이 돈을 투자하기 전에 충분히 알아보고, 잘못된 금융 상식을 바로잡으며, 더 넓은 시야에서 금융과 투자를 이해할 수 있도록 돕기 위해 존재합니다."),
-            ("h2", "2. 사명 (MISSION)"),
+            ("h2", "사명"),
             ("p", "왜곡된 금융 상식을 바로잡고, 사람들이 위험을 이해하고 관리하며 스스로 판단할 수 있도록 돕습니다."),
-            ("h2", "3. 비전 (VISION)"),
+            ("h2", "비전"),
             ("p", "누구나 돈과 투자를 막연히 두려워하거나 조급해하지 않고, 건강한 금융 철학을 바탕으로 더 멀리 내다볼 수 있는 세상."),
             ("p", "데이터머니는 그 과정에서 믿고 찾아올 수 있는 금융 친구가 되고자 합니다."),
-            ("h2", "4. 핵심 가치 (CORE VALUES)"),
+            ("h2", "핵심 가치"),
             ("h3", "① 신뢰 — 근거 있는 정보를 제공합니다."),
             ("p", "확인된 사실과 해석을 구분하고, 검증할 수 있는 자료를 바탕으로 이야기합니다."),
             ("h3", "② 균형 — 가능성과 위험을 함께 설명합니다."),
@@ -68,16 +69,23 @@ class BrandIntroductionTest(unittest.TestCase):
             ("p", "투자를 자극적인 오락이나 구경거리로 만들기보다, 사람들의 소중한 돈이 걸린 문제로 진지하게 다룹니다."),
             ("h3", "⑤ 친근함 — 어렵지 않은 금융 친구가 됩니다."),
             ("p", "금융을 쉽게 설명하되 가볍게 취급하지 않습니다. 독자가 부담 없이 찾아와 이해하고 생각할 수 있는 콘텐츠를 지향합니다."),
-            ("h2", "5. 독자와의 약속 (BRAND PROMISE)"),
+            ("h2", "독자와의 약속"),
             ("li", "수익보다 독자의 신뢰와 안전을 우선하겠습니다."),
             ("li", "근거 없는 확신이나 수익 보장으로 독자를 유혹하지 않겠습니다."),
             ("li", "광고와 콘텐츠의 상업적 관계를 투명하게 알리겠습니다."),
             ("li", "위험성이 있는 금융상품과 서비스는 주의점도 함께 설명하겠습니다."),
             ("li", "잘못된 정보는 바로잡고, 중요한 오류는 정정 사실을 공개하겠습니다."),
-            ("h2", "6. 브랜드가 지향하는 모습"),
+            ("h2", "브랜드가 지향하는 모습"),
             ("p", "진지하지만 어렵지 않고, 친근하지만 가볍지 않은 금융 브랜드."),
             ("p", "데이터머니는 투자 정답을 대신 내려주는 곳이 아니라, 독자가 자신의 판단 기준을 만들어 갈 수 있도록 돕는 곳입니다."),
+            ("h2", "데이터머니가 전하는 이야기"),
         ])
+
+    def test_examples_link_to_published_articles(self):
+        about = (ROOT / "about/index.html").read_text(encoding="utf-8")
+        for slug in ("etf-safety-illusion-2026", "why-we-want-financial-freedom-ep01"):
+            self.assertIn(f'href="/blog/{slug}/"', about)
+            self.assertTrue((ROOT / "blog" / slug / "index.html").is_file())
 
     def test_navigation_and_canonical_use_existing_introduction_url(self):
         fragment = (ROOT / "templates/blog_header.html").read_text(encoding="utf-8")
