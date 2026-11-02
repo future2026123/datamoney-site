@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import re
 import unicodedata
+from article_dates import publication_date
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -97,7 +98,8 @@ def build_index(root=ROOT):
     counts = Counter()
     for path in sorted((root / "blog").glob("*/index.html")):
         metadata = ArticleMetadata()
-        metadata.feed(path.read_text(encoding="utf-8"))
+        source = path.read_text(encoding="utf-8")
+        metadata.feed(source)
         title = re.sub(r"\s*[|｜]\s*(?:데이터머니|DataMoney)\s*$", "", "".join(metadata.title).strip(), flags=re.I)
         tags = []
         seen = set()
@@ -122,11 +124,15 @@ def build_index(root=ROOT):
                     primary_seen.add(key)
                     primary.append(labels.get(key, value))
             article_path = f"/blog/{path.parent.name}/"
-            articles.append({"path": article_path, "title": title,
-                             "description": metadata.description.strip(), "tags": tags,
-                             "primary_tags": primary or tags,
-                             "thumbnail": home.thumbnails.get(article_path, ""),
-                             "card_title": home.titles.get(article_path) or title})
+            article = {"path": article_path, "title": title,
+                       "description": metadata.description.strip(), "tags": tags,
+                       "primary_tags": primary or tags,
+                       "thumbnail": home.thumbnails.get(article_path, ""),
+                       "card_title": home.titles.get(article_path) or title}
+            published = publication_date(source)
+            if published:
+                article["publishedAt"] = published
+            articles.append(article)
         else:
             print(f"No tags yet: {path.relative_to(root)}")
     articles.sort(key=lambda article: (order.get(article["path"], len(order)), article["path"]))

@@ -9,6 +9,7 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 from html.parser import HTMLParser
 from pathlib import Path
+from article_dates import publication_date
 
 ROOT = Path(__file__).resolve().parent.parent
 BLOG = ROOT / "blog"
@@ -37,6 +38,23 @@ class TitleParser(HTMLParser):
             self.parts.append(value)
 
 
+def article_dates():
+    """Read the original publication date, not a later update date."""
+    result = {}
+    for index in BLOG.glob("*/index.html"):
+        published = publication_date(index.read_text(encoding="utf-8"))
+        if published:
+            result[f"/blog/{index.parent.name}/"] = published
+    return result
+
+
+def with_metadata(path, titles, dates):
+    post = {"path": path, "title": titles[path]}
+    if path in dates:
+        post["publishedAt"] = dates[path]
+    return post
+
+
 def article_titles():
     result = {}
     for directory in BLOG.iterdir():
@@ -51,7 +69,7 @@ def article_titles():
     return result
 
 
-def make_ranking(rows, titles):
+def make_ranking(rows, titles, dates=None):
     totals = {}
     for row in rows:
         path = (row.get("dimensions") or {}).get("clientRequestPath", "")
@@ -63,7 +81,7 @@ def make_ranking(rows, titles):
             continue
         totals[path] = totals.get(path, 0) + count
     ordered = sorted(totals, key=lambda path: (-totals[path], path))[:LIMIT]
-    return [{"path": path, "title": titles[path]} for path in ordered]
+    return [with_metadata(path, titles, dates or {}) for path in ordered]
 
 
 def valid_saved_data(data, titles):
@@ -81,7 +99,7 @@ def save(data):
     OUTPUT.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
 
 
-def preserve_published(titles):
+def preserve_published(titles, dates=None):
     """Keep the last successful list if analytics is temporarily unavailable."""
     try:
         request = urllib.request.Request(
@@ -91,7 +109,7 @@ def preserve_published(titles):
         with urllib.request.urlopen(request, timeout=8) as response:
             data = json.load(response)
         if valid_saved_data(data, titles):
-            data["posts"] = [{"path": p["path"], "title": titles[p["path"]]} for p in data["posts"]]
+            data["posts"] = [with_metadata(p["path"], titles, dates or {}) for p in data["posts"]]
             save(data)
     except (OSError, ValueError, KeyError, TypeError):
         pass
@@ -118,7 +136,7 @@ def internal_ips():
     return list(dict.fromkeys(str(ipaddress.ip_address(item)) for item in re.split(r"[\s,]+", raw)))
 
 
-def refresh(token, titles):
+def refresh(token, titles, dates=None):
     excluded_ips = internal_ips()
     zones = cloudflare_json("https://api.cloudflare.com/client/v4/zones?name=datamoney.kr", token)
     account_id = os.environ.get("CF_ACCOUNT_ID", "")
@@ -164,21 +182,22 @@ def refresh(token, titles):
         "generatedAt": end.isoformat(),
         "periodDays": PERIOD_DAYS,
         "basis": "cloudflare_page_requests",
-        "posts": make_ranking(rows, titles),
+        "posts": make_ranking(rows, titles, dates),
     })
     print("Popular-post order updated from Cloudflare.")
 
 
 def main():
     titles = article_titles()
-    preserve_published(titles)
+    dates = article_dates()
+    preserve_published(titles, dates)
     token = os.environ.get("CF_ANALYTICS_TOKEN", "").strip()
     updated = False
     if not token:
         print("Cloudflare analytics token is not configured; keeping the last available list.")
     else:
         try:
-            refresh(token, titles)
+            refresh(token, titles, dates)
             updated = True
         except (OSError, ValueError, KeyError, TypeError, RuntimeError) as error:
             print(f"Cloudflare analytics could not be refreshed; keeping the last available list: {type(error).__name__}")

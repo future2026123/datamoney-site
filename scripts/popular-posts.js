@@ -56,10 +56,24 @@
         } else {
           link.classList.add("no-thumbnail");
         }
+        const text = document.createElement("span");
+        text.className = "popular-copy";
         const title = document.createElement("span");
         title.className = "popular-title";
         title.textContent = post.title;
-        link.appendChild(title);
+        text.appendChild(title);
+        const cardDate = [...(cards.get(post.path)?.querySelectorAll(".meta span") || [])]
+          .map(element => element.textContent.trim()).find(value => /^\d{4}-\d{2}-\d{2}$/.test(value));
+        const published = typeof post.publishedAt === "string" && /^\d{4}-\d{2}-\d{2}$/.test(post.publishedAt)
+          ? post.publishedAt : cardDate;
+        if (published) {
+          const date = document.createElement("time");
+          date.className = "popular-date";
+          date.dateTime = published;
+          date.textContent = published.replace(/-/g, ".");
+          text.appendChild(date);
+        }
+        link.appendChild(text);
         item.appendChild(link);
         list.appendChild(item);
       });

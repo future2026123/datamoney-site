@@ -19,7 +19,8 @@ class BlogTagsTests(unittest.TestCase):
             (blog / "a/index.html").write_text(
                 '<title>A | 데이터머니</title><meta name="description" content="A &amp; B">'
                 '<meta name="dm-tags" content="ETF, 복리"><meta name="keywords" content="ｅｔｆ, 절세">'
-                '<meta property="article:tag" content="S&amp;P 500">', encoding="utf-8")
+                '<meta property="article:tag" content="S&amp;P 500">'
+                '<div class="dm-article-byline"><span>2026. 04. 14.</span><span>수정 2026. 10. 31.</span></div>', encoding="utf-8")
             (blog / "b/index.html").write_text('<title>B | DataMoney</title><meta name="dm-tags" content="etf, 장기투자">', encoding="utf-8")
             data = build_index(root)
         self.assertEqual([a["path"] for a in data["articles"]], ["/blog/b/", "/blog/a/"])
@@ -28,6 +29,8 @@ class BlogTagsTests(unittest.TestCase):
         self.assertEqual(article["description"], "A & B")
         self.assertEqual(article["thumbnail"], "/blog/thumbnails/a.png")
         self.assertEqual(article["card_title"], "보이는 A 제목")
+        self.assertEqual(article["publishedAt"], "2026-04-14")
+        self.assertNotIn("publishedAt", data["articles"][0])
         self.assertEqual([tag_key(t) for t in article["tags"]], ["etf", "복리", "절세", "s&p 500"])
         self.assertEqual([tag_key(t) for t in article["primary_tags"]], ["etf", "복리"])
         self.assertEqual(next(t["count"] for t in data["tags"] if tag_key(t["name"]) == "etf"), 2)

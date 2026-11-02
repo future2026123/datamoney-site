@@ -23,7 +23,7 @@
     return container;
   }
 
-  const index = globalThis.dmBlogTagsIndex || (globalThis.dmBlogTagsIndex = fetch("/blog/tags-index.json")
+  const index = globalThis.dmBlogTagsIndex || (globalThis.dmBlogTagsIndex = fetch("/blog/tags-index.json?v=20261102-dates", {cache:"no-cache"})
     .then((response) => {
       if (!response.ok) throw new Error("Tag index unavailable");
       return response.json();

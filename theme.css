@@ -122,7 +122,7 @@ html[data-dm-page="calculator"] body > header > .dm-theme-control { margin-left:
 
   html[data-dm-theme="dark"] .dm-shared-sidebar { color: var(--dm-dark-text); }
   html[data-dm-theme="dark"] .dm-shared-sidebar :is(.home-card h2, .popular-title, .popular-list li::before, .quote-card blockquote, .quote-meta) { color: var(--dm-dark-text) !important; }
-  html[data-dm-theme="dark"] .dm-shared-sidebar :is(.card-note, .popular-empty, .quote-original, .quote-review-note, .quote-translation-source, .ai-traffic-period, .ai-traffic-info, .tag-count, .dm-channel-arrow) { color: var(--dm-dark-muted) !important; }
+  html[data-dm-theme="dark"] .dm-shared-sidebar :is(.card-note, .popular-empty, .popular-date, .quote-original, .quote-review-note, .quote-translation-source, .ai-traffic-period, .ai-traffic-info, .tag-count, .dm-channel-arrow) { color: var(--dm-dark-muted) !important; }
   html[data-dm-theme="dark"] .dm-shared-sidebar :is(.tool-links a, .tag-chip, .quote-card button, .dm-channel-links a, .dm-channel-links button) { background: var(--dm-dark-raised); border-color: var(--dm-dark-border); color: var(--dm-dark-text); }
   html[data-dm-theme="dark"] .dm-shared-sidebar :is(.dm-channel-threads, .dm-channel-x, .dm-channel-tiktok) { color: #f1f5fb; }
   html[data-dm-theme="dark"] .dm-shared-sidebar :is(.popular-list li, .dm-original-sidebar) { border-color: var(--dm-dark-border); }

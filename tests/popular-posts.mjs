@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {createRequire} from 'node:module';
+const {JSDOM}=createRequire(new URL('../workers/package.json',import.meta.url))('jsdom');
+const source=await readFile(new URL('../scripts/popular-posts.js',import.meta.url),'utf8');
+const html='<!doctype html><body><aside class="dm-shared-sidebar"><p id="popular-posts-note" hidden></p><div id="popular-posts"><p class="popular-empty"></p></div></aside></body>';
+const posts=[{path:'/blog/a/',title:'제목 A',publishedAt:'2026-04-14'}, {path:'/blog/b/',title:'제목 B'}, {path:'/blog/c/',title:'제목 C',publishedAt:'bad'}];
+const home='<div class="latest-posts"><a class="post-card" href="/blog/a/"><span class="post-thumb"><img src="/a.jpg"></span></a><a class="post-card" href="/blog/b/"><div class="meta"><span>읽는 시간 3분</span><span>2026-05-01</span></div></a></div>';
+const dom=new JSDOM(html,{url:'https://datamoney.kr/blog/test/',runScripts:'outside-only'});
+dom.window.fetch=async url=>url==='/blog/'?{ok:true,text:async()=>home}:{ok:true,json:async()=>({posts,generatedAt:'2026-11-02'})};
+dom.window.eval(source);await new Promise(resolve=>setTimeout(resolve,40));
+const rows=[...dom.window.document.querySelectorAll('.popular-list li')];assert.equal(rows.length,3);
+assert.equal(rows[0].querySelector('.popular-title').textContent,'제목 A');assert.equal(rows[0].querySelector('time').dateTime,'2026-04-14');assert.equal(rows[0].querySelector('time').textContent,'2026.04.14');
+assert.equal(rows[1].querySelector('time').dateTime,'2026-05-01','older rankings fall back to the displayed article date');
+assert.equal(rows[2].querySelector('time'),null,'missing dates are not invented');
+assert.ok(rows[0].querySelector('.popular-copy > .popular-title + time'),'date follows its title');
+assert.equal(rows[0].querySelector('img').getAttribute('src'),'/a.jpg');dom.window.close();
+console.log('Popular posts: dates, older data fallback, titles and thumbnails passed');

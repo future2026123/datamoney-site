@@ -67,6 +67,7 @@ jobs:
           python3 scripts/build_blog_tags.py
           node tests/blog-tags.mjs
           node tests/related-articles.mjs
+          node tests/popular-posts.mjs
 
       - name: Synchronize blog sidebars
         run: python3 scripts/sync_blog_sidebars.py

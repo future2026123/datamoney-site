@@ -12,6 +12,7 @@ const sidebarSource = await readFile(new URL('../scripts/blog-tags.js', import.m
 const make = (path, title, primary_tags, tags = primary_tags) => ({path, title, primary_tags, tags, thumbnail: '/blog/thumbnails/example.jpg', card_title: title});
 const current = make('/blog/current/', '월배당 ETF', ['ETF', '월배당 ETF', '분배금']);
 const direct = make('/blog/direct/', '커버드콜 분배금', ['커버드콜', '분배금']);
+direct.publishedAt = '2026-04-14';
 const broad = make('/blog/broad/', '반도체 ETF', ['ETF']);
 const legacy = make('/blog/legacy/', 'ISA 계좌', ['ISA'], ['ISA', '분배금']);
 const articles = [current, direct, broad, legacy,
@@ -40,6 +41,11 @@ assert.equal(links[0].children[0].src, '/blog/thumbnails/example.jpg');
 assert.equal(links[0].children[0].alt, '', 'the link title supplies the accessible name');
 assert.equal(links[0].children[0].loading, 'lazy');
 assert.ok(links.some((link) => link.href === '/blog/direct/'));
+const directLink = links.find((link) => link.href === '/blog/direct/');
+assert.equal(directLink.children[1].children[0].className, 'dm-related-title');
+assert.equal(directLink.children[1].children[1].tag, 'time');
+assert.equal(directLink.children[1].children[1].dateTime, '2026-04-14');
+assert.equal(directLink.children[1].children[1].textContent, '2026.04.14');
 assert.ok(!links.some((link) => ['/blog/current/', '/blog/broad/', '/blog/legacy/', 'https://example.com/'].includes(link.href)),
   'exclude current article, generic-only overlap, legacy keywords and external links');
 const later = make('/blog/added/', '새 분배금 글', ['분배금']);

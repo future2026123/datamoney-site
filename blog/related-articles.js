@@ -27,7 +27,7 @@
     } catch (_) { return false; }
   };
 
-  const index = globalThis.dmBlogTagsIndex || (globalThis.dmBlogTagsIndex = fetch('/blog/tags-index.json')
+  const index = globalThis.dmBlogTagsIndex || (globalThis.dmBlogTagsIndex = fetch('/blog/tags-index.json?v=20261102-dates', {cache:'no-cache'})
     .then((response) => {
       if (!response.ok) throw new Error('Article index unavailable');
       return response.json();
@@ -93,7 +93,17 @@
         const label = document.createElement('span');
         label.className = 'dm-related-title';
         label.textContent = typeof article.card_title === 'string' && article.card_title.trim() ? article.card_title : article.title;
-        link.append(image, label);
+        const copy = document.createElement('span');
+        copy.className = 'dm-related-copy';
+        copy.append(label);
+        if (typeof article.publishedAt === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(article.publishedAt)) {
+          const date = document.createElement('time');
+          date.className = 'dm-related-date';
+          date.dateTime = article.publishedAt;
+          date.textContent = article.publishedAt.replace(/-/g, '.');
+          copy.append(date);
+        }
+        link.append(image, copy);
         item.append(link);
         list.append(item);
       });
